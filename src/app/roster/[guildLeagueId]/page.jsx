@@ -16,6 +16,7 @@ import {
   Zap,
 } from "lucide-react";
 import { fetchGuildLeagueDetail } from "@/lib/api";
+import { RosterDetailSkeleton } from "@/components/ui/LoadingState";
 
 const LANE_SECTIONS = [
   {
@@ -279,10 +280,10 @@ export default function PublicRosterPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-zinc-50">
-        <div className="flex flex-col items-center gap-3">
-          <div className="size-6 animate-spin rounded-full border-2 border-zinc-300 border-t-red-700" />
-          <p className="text-xs text-zinc-500 font-medium">Loading Roster...</p>
+      <div className="min-h-screen bg-[#fafafa]">
+        <div className="h-16 border-b border-zinc-200 bg-white" />
+        <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+          <RosterDetailSkeleton isPublic={true} />
         </div>
       </div>
     );

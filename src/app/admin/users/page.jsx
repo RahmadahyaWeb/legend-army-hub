@@ -138,8 +138,19 @@ export default function AdminUsersPage() {
 
         <div className="divide-y divide-zinc-100">
           {loading ? (
-            <div className="p-8 text-center text-xs text-zinc-500">
-              Loading admin accounts...
+            <div className="animate-pulse divide-y divide-zinc-100">
+              {Array.from({ length: 4 }, (_, i) => (
+                <div key={i} className="flex items-center justify-between px-6 py-4">
+                  <div className="flex items-center gap-3">
+                    <div className="size-9 rounded-xl bg-zinc-200" />
+                    <div className="space-y-1">
+                      <div className="h-4 w-32 rounded bg-zinc-200" />
+                      <div className="h-3 w-44 rounded bg-zinc-100" />
+                    </div>
+                  </div>
+                  <div className="h-7 w-20 rounded-lg bg-zinc-100" />
+                </div>
+              ))}
             </div>
           ) : users.length === 0 ? (
             <div className="p-8 text-center text-xs text-zinc-500">

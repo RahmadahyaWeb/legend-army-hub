@@ -18,7 +18,11 @@ import {
   normalizeClassName,
   isMemberActive,
 } from "@/utils/formatters";
-import { PageLoading, SkeletonCard } from "@/components/ui/LoadingState";
+import {
+  PageLoading,
+  SkeletonCard,
+  AdminDashboardSkeleton,
+} from "@/components/ui/LoadingState";
 import EmptyState from "@/components/ui/EmptyState";
 
 function Stat({ value, label }) {
@@ -98,7 +102,7 @@ export default function AdminDashboardPage() {
   }, [guildLeagues]);
 
   if (loading && members.length === 0 && guildLeagues.length === 0) {
-    return <PageLoading message="Loading dashboard..." />;
+    return <AdminDashboardSkeleton />;
   }
 
   return (

@@ -13,6 +13,7 @@ import {
   Users,
 } from "lucide-react";
 import { fetchMembers, fetchGuildLeagues } from "@/lib/api";
+import { PublicDashboardSkeleton } from "@/components/ui/LoadingState";
 
 function formatNumber(value) {
   const number = Number(value);
@@ -369,16 +370,7 @@ export default function PublicDashboard() {
   }, [guildLeagues]);
 
   if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-zinc-50">
-        <div className="flex flex-col items-center gap-4">
-          <div className="flex size-12 items-center justify-center rounded-xl bg-red-700 shadow-sm">
-            <Shield className="size-5 text-white" />
-          </div>
-          <div className="size-5 animate-spin rounded-full border-2 border-zinc-300 border-t-red-700" />
-        </div>
-      </div>
-    );
+    return <PublicDashboardSkeleton />;
   }
 
   return (

@@ -146,8 +146,17 @@ export default function StrategyPage() {
 
           <div className="space-y-2 max-h-[75vh] overflow-y-auto pr-1">
             {loading && strategies.length === 0 ? (
-              <div className="rounded-2xl border border-zinc-200 bg-white p-8 text-center text-xs text-zinc-400 animate-pulse">
-                Loading saved documents...
+              <div className="space-y-2.5 animate-pulse">
+                {Array.from({ length: 4 }, (_, i) => (
+                  <div
+                    key={i}
+                    className="rounded-2xl border border-zinc-200 bg-white p-4 space-y-2"
+                  >
+                    <div className="h-4 w-16 rounded bg-zinc-100" />
+                    <div className="h-5 w-4/5 rounded bg-zinc-200" />
+                    <div className="h-3 w-1/2 rounded bg-zinc-100" />
+                  </div>
+                ))}
               </div>
             ) : strategies.length === 0 ? (
               <EmptyState

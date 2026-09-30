@@ -29,6 +29,7 @@ import AssignRosterMemberModal from "@/components/guild-league/AssignRosterMembe
 import ManageRosterMemberModal from "@/components/guild-league/ManageRosterMemberModal";
 import CopyRosterModal from "@/components/guild-league/CopyRosterModal";
 import { sendGuildLeagueToDiscord } from "@/services/guild-league/guildLeagueDiscordService";
+import { RosterDetailSkeleton } from "@/components/ui/LoadingState";
 
 const LANES = [
   { id: "top", label: "Top Lane" },
@@ -321,13 +322,9 @@ export default function GuildLeagueDetailPage() {
     }
   };
 
-  // Only show full loading spinner on initial page visit before any data is loaded
+  // Only show skeleton on initial page visit before any data is loaded
   if (loading && !data) {
-    return (
-      <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="size-6 animate-spin rounded-full border-2 border-zinc-300 border-t-red-700" />
-      </div>
-    );
+    return <RosterDetailSkeleton />;
   }
 
   if (error || !guildLeague) {

@@ -21,6 +21,7 @@ import {
   fetchAttendance,
   saveAttendance,
 } from "@/lib/api";
+import { SkeletonTable } from "@/components/ui/LoadingState";
 
 function formatDate(timestamp) {
   if (!timestamp) return "—";
@@ -400,8 +401,8 @@ export default function AttendancePage() {
             <tbody className="divide-y divide-zinc-100">
               {loadingMatch ? (
                 <tr>
-                  <td colSpan={6} className="p-8 text-center text-zinc-500">
-                    Loading match roster...
+                  <td colSpan={6} className="p-0">
+                    <SkeletonTable rows={6} cols={6} />
                   </td>
                 </tr>
               ) : matchRoster.length === 0 ? (
