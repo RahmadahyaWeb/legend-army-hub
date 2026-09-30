@@ -136,31 +136,31 @@ export default function TeamCard({
 
       {/* TACTICAL DUTY BANNER */}
       {laneConfig?.tacticalType === "mvp" && (
-        <div className="flex items-start gap-2.5 border-b border-amber-200/80 bg-amber-50/90 px-4 py-2 text-xs text-amber-950">
+        <div className="flex items-center gap-2 border-b border-amber-200/70 bg-amber-50/80 px-4 py-2 text-xs text-amber-950 font-medium">
           <span className="shrink-0 text-sm">👑</span>
-          <div className="min-w-0 leading-tight">
-            <span className="font-bold text-amber-900">Tugas MVP: </span>
-            <span>Wajib regroup di area MVP pada menit <strong>18:00</strong> & <strong>08:00</strong>.</span>
+          <div className="min-w-0 truncate">
+            <span className="font-bold text-amber-900">MVP Directive: </span>
+            <span>Regroup at MVP spawn at <strong>18:00</strong> & <strong>08:00</strong></span>
           </div>
         </div>
       )}
 
       {laneConfig?.tacticalType === "defend" && (
-        <div className="flex items-start gap-2.5 border-b border-orange-200/80 bg-orange-50/90 px-4 py-2 text-xs text-orange-950">
+        <div className="flex items-center gap-2 border-b border-orange-200/70 bg-orange-50/80 px-4 py-2 text-xs text-orange-950 font-medium">
           <span className="shrink-0 text-sm">🛡️</span>
-          <div className="min-w-0 leading-tight">
-            <span className="font-bold text-orange-900">Tugas Defend: </span>
-            <span>Fokus defend lane (<strong>TIDAK ikut MVP</strong>) & delay pergerakan musuh di portal ke MVP.</span>
+          <div className="min-w-0 truncate">
+            <span className="font-bold text-orange-900">Defend Directive: </span>
+            <span>Hold lane defense (Skip MVP) & delay enemy at portal</span>
           </div>
         </div>
       )}
 
       {laneConfig?.tacticalType === "attack" && (
-        <div className="flex items-start gap-2.5 border-b border-red-200/80 bg-red-50/90 px-4 py-2 text-xs text-red-950">
+        <div className="flex items-center gap-2 border-b border-red-200/70 bg-red-50/80 px-4 py-2 text-xs text-red-950 font-medium">
           <span className="shrink-0 text-sm">⚔️</span>
-          <div className="min-w-0 leading-tight">
-            <span className="font-bold text-red-900">Tugas Attack: </span>
-            <span>Fokus serang & push pertahanan/tower musuh di lane ini.</span>
+          <div className="min-w-0 truncate">
+            <span className="font-bold text-red-900">Attack Directive: </span>
+            <span>Push enemy lane and breach defensive barricades</span>
           </div>
         </div>
       )}

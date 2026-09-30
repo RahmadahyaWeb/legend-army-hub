@@ -6,10 +6,7 @@ import Link from "next/link";
 import {
   ArrowLeft,
   CalendarDays,
-  ChevronRight,
-  Flame,
   Layers,
-  MapPin,
   Shield,
   Swords,
   Users,
@@ -24,10 +21,9 @@ const LANE_SECTIONS = [
   {
     id: "top",
     name: "Top Lane",
-    tagline: "Top Lane Force • Tim MVP & Tim Defend Lane",
     icon: Swords,
     badgeBg: "bg-orange-50 border-orange-200 text-orange-800",
-    headerBg: "bg-gradient-to-r from-orange-500/10 via-amber-500/5 to-transparent border-orange-200",
+    headerBg: "bg-zinc-50/80 border-zinc-200",
     pillActive: "bg-orange-600 text-white shadow-orange-600/25",
     accentColor: "text-orange-600",
     dotColor: "bg-orange-500",
@@ -35,10 +31,9 @@ const LANE_SECTIONS = [
   {
     id: "mid",
     name: "Mid Lane",
-    tagline: "Mid Lane Force • Tim MVP & Tim Defend Lane",
     icon: Shield,
     badgeBg: "bg-blue-50 border-blue-200 text-blue-800",
-    headerBg: "bg-gradient-to-r from-blue-500/10 via-indigo-500/5 to-transparent border-blue-200",
+    headerBg: "bg-zinc-50/80 border-zinc-200",
     pillActive: "bg-blue-600 text-white shadow-blue-600/25",
     accentColor: "text-blue-600",
     dotColor: "bg-blue-500",
@@ -46,10 +41,9 @@ const LANE_SECTIONS = [
   {
     id: "bot",
     name: "Bottom Lane",
-    tagline: "Bottom Lane Force • Tim MVP & Tim Defend Lane",
     icon: Zap,
     badgeBg: "bg-emerald-50 border-emerald-200 text-emerald-800",
-    headerBg: "bg-gradient-to-r from-emerald-500/10 via-teal-500/5 to-transparent border-emerald-200",
+    headerBg: "bg-zinc-50/80 border-zinc-200",
     pillActive: "bg-emerald-600 text-white shadow-emerald-600/25",
     accentColor: "text-emerald-600",
     dotColor: "bg-emerald-500",
@@ -74,7 +68,7 @@ function formatNumber(value) {
   return number.toLocaleString();
 }
 
-function PublicTeamCard({ teamNumber, team, rosterMembers, membersPerTeam = 10, laneInfo }) {
+function PublicTeamCard({ teamNumber, team, rosterMembers, membersPerTeam = 10 }) {
   const members = useMemo(
     () =>
       rosterMembers
@@ -98,7 +92,7 @@ function PublicTeamCard({ teamNumber, team, rosterMembers, membersPerTeam = 10, 
   return (
     <div className="flex flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-xs hover:shadow-md transition">
       {/* TEAM HEADER */}
-      <div className="flex items-center justify-between gap-4 border-b border-zinc-200 bg-zinc-50/75 px-5 py-4">
+      <div className="flex items-center justify-between gap-4 border-b border-zinc-200 bg-zinc-50/60 px-5 py-4">
         <div className="flex min-w-0 items-center gap-3">
           <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-zinc-900 text-xs font-black text-white shadow-xs">
             T{teamNumber}
@@ -119,10 +113,10 @@ function PublicTeamCard({ teamNumber, team, rosterMembers, membersPerTeam = 10, 
             </div>
             <div className="flex items-center gap-2 text-[11px] text-zinc-500">
               <span className="font-semibold text-zinc-700">
-                {members.length}/{membersPerTeam} players
+                {members.length}/{membersPerTeam} Players
               </span>
               <span>•</span>
-              <span>{fillPercent}% filled</span>
+              <span>{fillPercent}% Filled</span>
             </div>
           </div>
         </div>
@@ -137,33 +131,33 @@ function PublicTeamCard({ teamNumber, team, rosterMembers, membersPerTeam = 10, 
         </div>
       </div>
 
-      {/* TACTICAL DUTY BANNER */}
+      {/* TACTICAL DUTY BANNER (MINIMALIST SINGLE STRIPE) */}
       {laneConfig?.tacticalType === "mvp" && (
-        <div className="flex items-start gap-2.5 border-b border-amber-200/80 bg-amber-50/90 px-5 py-2.5 text-xs text-amber-950">
-          <span className="shrink-0 text-base">👑</span>
-          <div className="min-w-0 leading-snug">
-            <span className="font-bold text-amber-900">Tugas MVP: </span>
-            <span>Wajib fokus regroup di area MVP pada menit <strong>18:00</strong> & <strong>08:00</strong>.</span>
+        <div className="flex items-center gap-2 border-b border-amber-200/70 bg-amber-50/80 px-5 py-2 text-xs text-amber-950 font-medium">
+          <span className="shrink-0 text-sm">👑</span>
+          <div className="min-w-0 truncate">
+            <span className="font-bold text-amber-900">MVP Directive: </span>
+            <span>Regroup at MVP area at <strong>18:00</strong> & <strong>08:00</strong></span>
           </div>
         </div>
       )}
 
       {laneConfig?.tacticalType === "defend" && (
-        <div className="flex items-start gap-2.5 border-b border-orange-200/80 bg-orange-50/90 px-5 py-2.5 text-xs text-orange-950">
-          <span className="shrink-0 text-base">🛡️</span>
-          <div className="min-w-0 leading-snug">
-            <span className="font-bold text-orange-900">Tugas Defend: </span>
-            <span>Fokus defend lane (<strong>TIDAK ikut MVP</strong>) & delay pergerakan musuh di portal ke MVP.</span>
+        <div className="flex items-center gap-2 border-b border-orange-200/70 bg-orange-50/80 px-5 py-2 text-xs text-orange-950 font-medium">
+          <span className="shrink-0 text-sm">🛡️</span>
+          <div className="min-w-0 truncate">
+            <span className="font-bold text-orange-900">Defend Directive: </span>
+            <span>Hold lane (Skip MVP) & delay enemy at portal</span>
           </div>
         </div>
       )}
 
       {laneConfig?.tacticalType === "attack" && (
-        <div className="flex items-start gap-2.5 border-b border-red-200/80 bg-red-50/90 px-5 py-2.5 text-xs text-red-950">
-          <span className="shrink-0 text-base">⚔️</span>
-          <div className="min-w-0 leading-snug">
-            <span className="font-bold text-red-900">Tugas Attack: </span>
-            <span>Fokus push pertahanan dan hancurkan tower/barricade musuh di lane ini.</span>
+        <div className="flex items-center gap-2 border-b border-red-200/70 bg-red-50/80 px-5 py-2 text-xs text-red-950 font-medium">
+          <span className="shrink-0 text-sm">⚔️</span>
+          <div className="min-w-0 truncate">
+            <span className="font-bold text-red-900">Attack Directive: </span>
+            <span>Push enemy lane and breach defensive barricades</span>
           </div>
         </div>
       )}
@@ -178,7 +172,7 @@ function PublicTeamCard({ teamNumber, team, rosterMembers, membersPerTeam = 10, 
             return (
               <div
                 key={slot}
-                className="flex items-center justify-between px-5 py-3 text-xs text-zinc-400 bg-zinc-50/30"
+                className="flex items-center justify-between px-5 py-2.5 text-xs text-zinc-400 bg-zinc-50/20"
               >
                 <div className="flex items-center gap-3">
                   <span className="w-5 text-zinc-300 font-mono text-[11px]">
@@ -194,7 +188,7 @@ function PublicTeamCard({ teamNumber, team, rosterMembers, membersPerTeam = 10, 
           return (
             <div
               key={slot}
-              className="flex items-center justify-between px-5 py-3 text-xs transition hover:bg-zinc-50/80"
+              className="flex items-center justify-between px-5 py-2.5 text-xs transition hover:bg-zinc-50/80"
             >
               <div className="flex min-w-0 items-center gap-3">
                 <span className="w-5 font-bold font-mono text-[11px] text-zinc-400">
@@ -505,140 +499,154 @@ export default function PublicRosterPage() {
         </div>
       </section>
 
-      {/* 3 BATTLEFIELD LANE SECTIONS */}
-      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 space-y-10">
-        {/* TACTICAL DIRECTIVES OVERVIEW */}
-        <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-xs space-y-3.5">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-zinc-100 pb-3">
-            <div className="flex items-center gap-2.5">
-              <span className="flex size-8 items-center justify-center rounded-xl bg-red-600 text-white font-bold text-xs shadow-xs">
-                🎯
+      {/* MAIN CONTENT AREA */}
+      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 space-y-8">
+        {/* SLEEK TACTICAL DIRECTIVES BAR */}
+        <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-xs">
+          <div className="grid grid-cols-1 divide-y divide-zinc-100 sm:grid-cols-3 sm:divide-x sm:divide-y-0 text-xs">
+            <div className="flex items-center gap-3 p-3.5 sm:px-5">
+              <span className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-800 text-sm border border-amber-200">
+                👑
               </span>
-              <div>
-                <h3 className="text-sm font-bold text-zinc-900">Instruksi & Tugas Taktis Tim</h3>
-                <p className="text-[11px] text-zinc-500">Pedoman pergerakan wajib seluruh tim selama Guild League</p>
-              </div>
-            </div>
-            <div className="text-[11px] font-semibold text-zinc-400">
-              Legend Army Battlefield Directive
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-            <div className="rounded-xl border border-amber-200 bg-amber-50/70 p-4 space-y-1.5">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5 text-xs font-bold text-amber-950">
-                  <span>👑</span>
-                  <span>TIM MVP</span>
+              <div className="min-w-0">
+                <div className="flex items-center gap-1.5 font-bold text-zinc-900">
+                  <span>MVP Strike</span>
+                  <span className="font-mono text-[10px] text-amber-700 bg-amber-50 px-1.5 py-0.2 rounded border border-amber-200">18:00 & 08:00</span>
                 </div>
-                <span className="rounded-md bg-amber-200/70 px-2 py-0.5 text-[10px] font-mono font-bold text-amber-900">
-                  18:00 & 08:00
-                </span>
+                <p className="text-[11px] text-zinc-500 leading-snug">
+                  Regroup at MVP spawn at 18:00 & 08:00 to secure boss kill.
+                </p>
               </div>
-              <p className="text-xs text-amber-900 leading-relaxed font-medium">
-                Wajib fokus <strong>regroup dan standby di area MVP</strong> tepat pada menit <strong>18:00</strong> dan <strong>08:00</strong> untuk mengamankan kill boss monster.
-              </p>
             </div>
 
-            <div className="rounded-xl border border-orange-200 bg-orange-50/70 p-4 space-y-1.5">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5 text-xs font-bold text-orange-950">
-                  <span>🛡️</span>
-                  <span>TIM DEFEND</span>
+            <div className="flex items-center gap-3 p-3.5 sm:px-5">
+              <span className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-orange-50 text-orange-800 text-sm border border-orange-200">
+                🛡️
+              </span>
+              <div className="min-w-0">
+                <div className="flex items-center gap-1.5 font-bold text-zinc-900">
+                  <span>Lane Defense</span>
+                  <span className="text-[10px] text-orange-700 bg-orange-50 px-1.5 py-0.2 rounded border border-orange-200 uppercase font-bold">Skip MVP</span>
                 </div>
-                <span className="rounded-md bg-orange-200/70 px-2 py-0.5 text-[10px] font-bold text-orange-900 uppercase">
-                  Delay Portal
-                </span>
+                <p className="text-[11px] text-zinc-500 leading-snug">
+                  Hold lane defense & delay enemy advance at the MVP portal.
+                </p>
               </div>
-              <p className="text-xs text-orange-900 leading-relaxed font-medium">
-                Fokus <strong>defend lane (TIDAK IKUT MVP)</strong>. Bertugas menahan dan <strong>delay pergerakan musuh di portal</strong> menuju area MVP agar tim MVP leluasa.
-              </p>
             </div>
 
-            <div className="rounded-xl border border-red-200 bg-red-50/70 p-4 space-y-1.5">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5 text-xs font-bold text-red-950">
-                  <span>⚔️</span>
-                  <span>TIM ATTACK</span>
+            <div className="flex items-center gap-3 p-3.5 sm:px-5">
+              <span className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-red-50 text-red-800 text-sm border border-red-200">
+                ⚔️
+              </span>
+              <div className="min-w-0">
+                <div className="flex items-center gap-1.5 font-bold text-zinc-900">
+                  <span>Lane Assault</span>
+                  <span className="text-[10px] text-red-700 bg-red-50 px-1.5 py-0.2 rounded border border-red-200 uppercase font-bold">Siege</span>
                 </div>
-                <span className="rounded-md bg-red-200/70 px-2 py-0.5 text-[10px] font-bold text-red-900 uppercase">
-                  Push Tower
-                </span>
+                <p className="text-[11px] text-zinc-500 leading-snug">
+                  Push enemy lane and breach defensive barricades.
+                </p>
               </div>
-              <p className="text-xs text-red-900 leading-relaxed font-medium">
-                Fokus serang dan tekan lane musuh untuk <strong>meruntuhkan tower dan barricade</strong> pertahanan lawan.
-              </p>
             </div>
           </div>
         </div>
 
-        {LANE_SECTIONS.map((lane) => {
-          if (activeTab !== "all" && activeTab !== lane.id) return null;
+        {/* 3 BATTLEFIELD LANE SECTIONS */}
+        <div className="space-y-8">
+          {LANE_SECTIONS.map((lane) => {
+            if (activeTab !== "all" && activeTab !== lane.id) return null;
 
-          const teamNumbers = laneGroups[lane.id] || [];
-          const stat = laneStats[lane.id];
-          const Icon = lane.icon;
+            const teamNumbers = laneGroups[lane.id] || [];
+            const stat = laneStats[lane.id];
+            const Icon = lane.icon;
 
-          return (
-            <section
-              key={lane.id}
-              id={`lane-${lane.id}`}
-              className="space-y-4 animate-in fade-in duration-200"
-            >
-              {/* LANE SECTION HEADER BANNER */}
-              <div
-                className={`flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between rounded-2xl border p-5 ${lane.headerBg}`}
+            return (
+              <section
+                key={lane.id}
+                id={`lane-${lane.id}`}
+                className="space-y-4 animate-in fade-in duration-200"
               >
-                <div className="flex items-center gap-3.5">
-                  <div
-                    className={`flex size-11 shrink-0 items-center justify-center rounded-xl bg-white shadow-xs border ${lane.badgeBg}`}
-                  >
-                    <Icon className="size-5" />
-                  </div>
-                  <div>
+                {/* CLEAN, MINIMALIST LANE HEADER */}
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between rounded-2xl border border-zinc-200 bg-zinc-50/70 p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-white shadow-xs border border-zinc-200 text-zinc-800">
+                      <Icon className="size-4" />
+                    </div>
                     <div className="flex items-center gap-2">
-                      <h2 className="text-lg font-black text-zinc-900 sm:text-xl tracking-tight">
+                      <h2 className="text-base font-bold text-zinc-900">
                         {lane.name}
                       </h2>
-                      <span
-                        className={`rounded-full px-2.5 py-0.5 text-xs font-bold border uppercase tracking-wider ${lane.badgeBg}`}
-                      >
-                        {teamNumbers.length} Teams
+                      <span className="rounded-md border border-zinc-200 bg-white px-2 py-0.5 text-[11px] font-bold text-zinc-600">
+                        {teamNumbers.length} {teamNumbers.length === 1 ? "Team" : "Teams"}
                       </span>
                     </div>
-                    <p className="text-xs text-zinc-600 mt-0.5">
-                      {lane.tagline}
-                    </p>
+                  </div>
+
+                  {/* FORMATION STATS */}
+                  <div className="flex items-center gap-2 text-xs">
+                    <div className="rounded-xl border border-zinc-200 bg-white px-3 py-1 text-zinc-600 shadow-2xs font-medium">
+                      <span>Formation: </span>
+                      <strong className="text-zinc-900 font-bold">{stat?.assignedCount || 0} / {stat?.capacity || 0} Players</strong>
+                    </div>
+                    {stat?.avgGS > 0 && (
+                      <div className="rounded-xl border border-zinc-200 bg-white px-3 py-1 text-zinc-600 shadow-2xs font-medium">
+                        <span>Avg GS: </span>
+                        <strong className="text-zinc-900 font-bold font-mono">{formatNumber(stat.avgGS)}</strong>
+                      </div>
+                    )}
                   </div>
                 </div>
 
-                {/* LANE STATS PILLS */}
-                <div className="flex flex-wrap items-center gap-2 text-xs">
-                  <div className="rounded-xl border border-zinc-200/80 bg-white/90 px-3 py-1.5 shadow-2xs">
-                    <span className="text-zinc-500">Formation: </span>
-                    <span className="font-bold text-zinc-900">
-                      {stat?.assignedCount || 0} / {stat?.capacity || 0} Players
-                    </span>
+                {/* TEAMS GRID */}
+                {teamNumbers.length === 0 ? (
+                  <div className="rounded-2xl border border-dashed border-zinc-300 bg-white p-8 text-center text-xs text-zinc-500">
+                    No teams currently assigned to {lane.name}.
                   </div>
-                  {stat?.avgGS > 0 && (
-                    <div className="rounded-xl border border-zinc-200/80 bg-white/90 px-3 py-1.5 shadow-2xs">
-                      <span className="text-zinc-500">Lane Avg GS: </span>
-                      <span className="font-bold text-zinc-900 font-mono">
-                        {formatNumber(stat.avgGS)}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </div>
+                ) : (
+                  <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+                    {teamNumbers.map((teamNumber) => {
+                      const team = teams.find(
+                        (t) => Number(t.teamNumber) === teamNumber
+                      );
 
-              {/* TEAMS GRID FOR THIS LANE */}
-              {teamNumbers.length === 0 ? (
-                <div className="rounded-2xl border border-dashed border-zinc-300 bg-white p-8 text-center text-xs text-zinc-500">
-                  No teams currently assigned to {lane.name}.
+                      return (
+                        <PublicTeamCard
+                          key={teamNumber}
+                          teamNumber={teamNumber}
+                          team={team}
+                          rosterMembers={roster}
+                          membersPerTeam={membersPerTeam}
+                        />
+                      );
+                    })}
+                  </div>
+                )}
+              </section>
+            );
+          })}
+
+          {/* UNASSIGNED TEAMS SECTION IF ANY */}
+          {(activeTab === "all" || activeTab === "unassigned") &&
+            laneGroups.unassigned.length > 0 && (
+              <section className="space-y-4 border-t border-zinc-200 pt-6">
+                <div className="flex items-center justify-between rounded-2xl border border-zinc-200 bg-zinc-50/70 p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="flex size-9 items-center justify-center rounded-xl bg-white border border-zinc-200 text-zinc-700">
+                      <Layers className="size-4" />
+                    </div>
+                    <div>
+                      <h2 className="text-sm font-bold text-zinc-900">
+                        Reserve / Unassigned Formations
+                      </h2>
+                    </div>
+                  </div>
+                  <span className="rounded-md border border-zinc-200 bg-white px-2 py-0.5 text-[11px] font-bold text-zinc-600">
+                    {laneGroups.unassigned.length} Teams
+                  </span>
                 </div>
-              ) : (
-                <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-                  {teamNumbers.map((teamNumber) => {
+
+                <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+                  {laneGroups.unassigned.map((teamNumber) => {
                     const team = teams.find(
                       (t) => Number(t.teamNumber) === teamNumber
                     );
@@ -650,65 +658,14 @@ export default function PublicRosterPage() {
                         team={team}
                         rosterMembers={roster}
                         membersPerTeam={membersPerTeam}
-                        laneInfo={lane}
                       />
                     );
                   })}
                 </div>
-              )}
-            </section>
-          );
-        })}
-
-        {/* UNASSIGNED TEAMS SECTION IF ANY */}
-        {(activeTab === "all" || activeTab === "unassigned") &&
-          laneGroups.unassigned.length > 0 && (
-            <section className="space-y-4 border-t border-zinc-200 pt-8">
-              <div className="flex items-center justify-between rounded-2xl border border-zinc-200 bg-zinc-100/70 p-5">
-                <div className="flex items-center gap-3">
-                  <div className="flex size-10 items-center justify-center rounded-xl bg-white border border-zinc-300 text-zinc-700">
-                    <Layers className="size-5" />
-                  </div>
-                  <div>
-                    <h2 className="text-base font-bold text-zinc-900">
-                      Reserve / Unassigned Formations
-                    </h2>
-                    <p className="text-xs text-zinc-500">
-                      Teams awaiting battlefield lane assignment
-                    </p>
-                  </div>
-                </div>
-
-                <div className="text-xs font-bold text-zinc-700">
-                  {laneGroups.unassigned.length} Teams
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-                {laneGroups.unassigned.map((teamNumber) => {
-                  const team = teams.find(
-                    (t) => Number(t.teamNumber) === teamNumber
-                  );
-
-                  return (
-                    <PublicTeamCard
-                      key={teamNumber}
-                      teamNumber={teamNumber}
-                      team={team}
-                      rosterMembers={roster}
-                      membersPerTeam={membersPerTeam}
-                    />
-                  );
-                })}
-              </div>
-            </section>
-          )}
+              </section>
+            )}
+        </div>
       </main>
-
-      {/* FOOTER */}
-      <footer className="border-t border-zinc-200 bg-white py-6 text-center text-xs text-zinc-500">
-        <p>© {new Date().getFullYear()} Legend Army Guild Hub. All rights reserved.</p>
-      </footer>
     </div>
   );
 }
