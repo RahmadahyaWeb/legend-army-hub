@@ -1,6 +1,12 @@
 const DISCORD_WORKER_URL = "https://legend-army-discord.legendarmy.workers.dev";
 
-const PUBLIC_ROSTER_BASE_URL = "https://legendarmyhub.web.app/roster";
+export function getPublicRosterUrl(guildLeagueId) {
+  if (typeof window !== "undefined" && window.location?.origin) {
+    return `${window.location.origin}/roster/${guildLeagueId}`;
+  }
+  const fallbackUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://legend-army-hub.vercel.app";
+  return `${fallbackUrl.replace(/\/$/, "")}/roster/${guildLeagueId}`;
+}
 
 function getTeamMembers(rosterMembers, teamNumber) {
   return rosterMembers
@@ -30,7 +36,7 @@ export async function sendGuildLeagueToDiscord({
     throw new Error("Guild League data is required.");
   }
 
-  const rosterUrl = `${PUBLIC_ROSTER_BASE_URL}/${guildLeagueId}`;
+  const rosterUrl = getPublicRosterUrl(guildLeagueId);
 
   const discordTeams = Array.from(
     {
@@ -38,18 +44,17 @@ export async function sendGuildLeagueToDiscord({
     },
     (_, index) => {
       const teamNumber = index + 1;
-
-      const teamData = teams.find(
+      const teamData = teams?.find(
         (team) => Number(team.teamNumber) === teamNumber,
       );
 
-      const members = getTeamMembers(rosterMembers, teamNumber);
+      const members = getTeamMembers(rosterMembers || [], teamNumber);
 
       return {
         teamNumber,
         name: teamData?.name || `Team ${teamNumber}`,
         lane: teamData?.lane || "",
-
+        memberCount: members.length,
         members: members.map((member) => ({
           id: member.id,
           memberId: member.memberId || member.id,
@@ -65,46 +70,26 @@ export async function sendGuildLeagueToDiscord({
 
   const payload = {
     guildLeagueId,
-
-    name: guildLeague.name || "Guild League",
-
-    opponent: guildLeague.opponent || guildLeague.notes || "TBA",
-
+    name: guildLeague.name || "Guild League Match",
+    opponent: guildLeague.opponent || "",
     notes: guildLeague.notes || "",
-
-    date: formattedDate,
-
+    date: formattedDate || "TBA",
     status: guildLeague.status || "draft",
-
     rosterUrl,
-
-    assignedPlayers: rosterCount,
-
-    maxPlayers: maxRoster,
-
-    activeTeams: teamCount,
-
-    maxTeams,
-
-    membersPerTeam,
-
+    assignedPlayers: Number(rosterCount) || (rosterMembers ? rosterMembers.length : 0),
+    maxPlayers: Number(maxRoster) || 60,
+    activeTeams: Number(teamCount) || maxTeams,
+    maxTeams: Number(maxTeams) || 12,
+    membersPerTeam: Number(membersPerTeam) || 5,
     teams: discordTeams,
-
-    roster: rosterMembers.map((member) => ({
+    roster: (rosterMembers || []).map((member) => ({
       id: member.id,
-
       memberId: member.memberId || member.id,
-
       nickname: member.nickname || "Unknown",
-
       className: member.className || "",
-
       level: Number(member.level) || 0,
-
       gearScore: Number(member.gearScore) || 0,
-
       teamNumber: Number(member.teamNumber) || 0,
-
       slotNumber: Number(member.slotNumber) || 0,
     })),
   };

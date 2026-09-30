@@ -209,7 +209,20 @@ async function handleStrategy(request, env, corsHeaders) {
 async function handleGuildLeague(request, env, corsHeaders) {
 	const body = await request.json();
 
-	const { guildLeagueId, name, notes, date, status, rosterUrl, assignedPlayers, maxPlayers, activeTeams, maxTeams } = body;
+	const {
+		guildLeagueId,
+		name,
+		opponent,
+		notes,
+		date,
+		status,
+		rosterUrl,
+		assignedPlayers,
+		maxPlayers,
+		activeTeams,
+		maxTeams,
+		teams,
+	} = body;
 
 	if (!guildLeagueId || !name || !date || !rosterUrl) {
 		return Response.json(
@@ -228,48 +241,78 @@ async function handleGuildLeague(request, env, corsHeaders) {
 
 	const statusLabels = {
 		draft: 'Draft',
-		open: 'Open',
+		open: 'Open / Preparing',
 		published: 'Published',
 		completed: 'Completed',
 		cancelled: 'Cancelled',
 	};
 
 	const statusLabel = statusLabels[normalizedStatus] || normalizedStatus.charAt(0).toUpperCase() + normalizedStatus.slice(1);
+	const totalAssigned = Number(assignedPlayers) || 0;
+	const totalCapacity = Number(maxPlayers) || 60;
+	const fillPercentage = Math.round((totalAssigned / (totalCapacity || 1)) * 100);
 
 	const fields = [
 		{
-			name: '📅 Date',
-			value: date,
-			inline: false,
+			name: '📅 Match Date',
+			value: `**${date}**`,
+			inline: true,
 		},
 		{
-			name: '📌 Status',
-			value: statusLabel,
-			inline: false,
+			name: '⚔️ Opponent',
+			value: opponent ? `**${opponent}**` : '*TBA*',
+			inline: true,
 		},
 		{
-			name: '👥 Roster',
-			value: `${Number(assignedPlayers) || 0} / ${Number(maxPlayers) || 60} Players`,
-			inline: false,
+			name: '📌 Match Status',
+			value: `**${statusLabel}**`,
+			inline: true,
 		},
 		{
-			name: '🛡️ Teams',
+			name: '👥 Roster Capacity',
+			value: `${totalAssigned} / ${totalCapacity} Players (${fillPercentage}%)`,
+			inline: true,
+		},
+		{
+			name: '🛡️ Team Formations',
 			value: `${Number(activeTeams) || 0} / ${Number(maxTeams) || 12} Teams`,
-			inline: false,
+			inline: true,
 		},
 	];
 
-	if (notes) {
+	if (notes && String(notes).trim()) {
 		fields.push({
-			name: '📝 Notes',
+			name: '📝 Tactical Notes / Briefing',
 			value: String(notes).slice(0, 1024),
 			inline: false,
 		});
 	}
 
+	// Add team overview if teams data is available
+	if (Array.isArray(teams) && teams.length > 0) {
+		const activeTeamsList = teams.filter((t) => (t.members && t.members.length > 0) || t.memberCount > 0);
+		if (activeTeamsList.length > 0) {
+			const teamLines = activeTeamsList.slice(0, 8).map((t) => {
+				const count = t.members ? t.members.length : (t.memberCount || 0);
+				const laneText = t.lane ? ` • *Lane: ${t.lane}*` : '';
+				return `• **${t.name || `Team ${t.teamNumber}`}** (${count} players)${laneText}`;
+			});
+
+			if (activeTeamsList.length > 8) {
+				teamLines.push(`*...and ${activeTeamsList.length - 8} more teams*`);
+			}
+
+			fields.push({
+				name: '📋 Deployed Teams Breakdown',
+				value: teamLines.join('\n').slice(0, 1024),
+				inline: false,
+			});
+		}
+	}
+
 	fields.push({
-		name: '🔗 GUILD LEAGUE ROSTER',
-		value: `**[VIEW GUILD LEAGUE ROSTER](${rosterUrl})**`,
+		name: '🌐 Public Roster Portal',
+		value: `👉 **[Click Here to Open Public Roster](${rosterUrl})**\n*Interactive view with live class composition, gear scores, and lane assignments.*`,
 		inline: false,
 	});
 
@@ -284,17 +327,17 @@ async function handleGuildLeague(request, env, corsHeaders) {
 
 		embeds: [
 			{
-				title: `⚔️ ${name}`,
+				title: `⚔️ Guild League Roster: ${name}`,
 
 				url: rosterUrl,
 
 				description: [
-					`🔗 **[VIEW GUILD LEAGUE ROSTER](${rosterUrl})**`,
+					'📢 **Attention Guild Members!**',
+					`The lineup for **${name}** has been updated on our guild hub.`,
 					'',
-					'**GUILD LEAGUE ROSTER**',
+					`🔗 **[👉 View Live Public Roster & Strategy](${rosterUrl})**`,
 					'',
-					'The roster has been updated.',
-					'Please check your team and battlefield assignment.',
+					'Please check your team slot, lane assignment, and gear requirements before match time.',
 				].join('\n'),
 
 				color: 15158332,
@@ -317,7 +360,7 @@ async function handleGuildLeague(request, env, corsHeaders) {
 					{
 						type: 2,
 						style: 5,
-						label: 'View GUILD LEAGUE Roster',
+						label: 'View Public Roster 🛡️',
 						url: rosterUrl,
 					},
 				],
