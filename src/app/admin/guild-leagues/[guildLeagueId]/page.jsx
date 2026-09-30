@@ -30,6 +30,7 @@ import ManageRosterMemberModal from "@/components/guild-league/ManageRosterMembe
 import CopyRosterModal from "@/components/guild-league/CopyRosterModal";
 import { sendGuildLeagueToDiscord } from "@/services/guild-league/guildLeagueDiscordService";
 import { RosterDetailSkeleton } from "@/components/ui/LoadingState";
+import { ClassBadge, getClassColor } from "@/utils/classColors";
 
 const LANES = [
   { id: "top", label: "Top Lane" },
@@ -608,26 +609,29 @@ export default function GuildLeagueDetailPage() {
                         setToast(null);
                         setSelectedMember(member);
                       }}
-                      className="flex cursor-pointer items-center justify-between px-5 py-2.5 transition hover:bg-zinc-50"
+                      className="group flex cursor-pointer items-center justify-between px-5 py-2.5 transition hover:bg-zinc-50"
                     >
                       <div className="flex min-w-0 items-center gap-3 text-xs">
-                        <span className="w-5 font-mono font-bold text-zinc-400">
+                        <span className="w-5 font-mono font-bold text-zinc-400 group-hover:text-zinc-700">
                           #{slotNumber}
                         </span>
-                        <div className="min-w-0">
-                          <div className="font-bold text-zinc-900 truncate">
+                        <div className="min-w-0 pr-2">
+                          <div className="font-bold text-zinc-900 truncate group-hover:text-red-700 transition">
                             {member.nickname}
                           </div>
-                          <div className="text-[11px] text-zinc-500 flex items-center gap-2">
-                            <span>{member.className || "Unknown Class"}</span>
-                            <span>•</span>
-                            <span>Lv. {member.level || "—"}</span>
+                          <div className="mt-0.5 flex flex-wrap items-center gap-1.5">
+                            <ClassBadge className={member.className} size="xs" />
+                            {Number(member.level) > 0 && (
+                              <span className="text-[10px] text-zinc-400 font-medium">
+                                Lv. {member.level}
+                              </span>
+                            )}
                           </div>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-3">
-                        <span className="text-xs font-bold text-zinc-900">
+                      <div className="flex shrink-0 items-center gap-3">
+                        <span className="text-xs font-bold text-zinc-900 font-mono">
                           {formatNumber(member.gearScore)} GS
                         </span>
                       </div>

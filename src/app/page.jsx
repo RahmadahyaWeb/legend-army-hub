@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { fetchMembers, fetchGuildLeagues } from "@/lib/api";
 import { PublicDashboardSkeleton } from "@/components/ui/LoadingState";
+import { ClassBadge } from "@/utils/classColors";
 
 function formatNumber(value) {
   const number = Number(value);
@@ -285,8 +286,10 @@ function GearLeaderboard({ members }) {
                 <div className="truncate text-sm font-bold text-zinc-900">
                   {member.nickname}
                 </div>
-                <div className="mt-0.5 truncate text-xs text-zinc-500">
-                  {member.className || "Unknown Class"} • Lv. {member.level || "—"}
+                <div className="mt-1 flex flex-wrap items-center gap-1.5 text-xs text-zinc-500">
+                  <ClassBadge className={member.className} size="xs" />
+                  <span>•</span>
+                  <span>Lv. {member.level || "—"}</span>
                 </div>
               </div>
 

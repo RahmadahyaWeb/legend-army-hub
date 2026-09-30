@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { ArrowRightLeft, Check, Loader2, Trash2, Users, X } from "lucide-react";
 import { assignRosterMember, removeRosterMember } from "@/lib/api";
+import { ClassBadge } from "@/utils/classColors";
 
 export default function ManageRosterMemberModal({
   open,
@@ -129,9 +130,13 @@ export default function ManageRosterMemberModal({
             <h3 className="text-base font-bold text-zinc-900">
               Manage {member.nickname}
             </h3>
-            <p className="mt-0.5 text-xs text-zinc-500">
-              Current: Team {member.teamNumber} • Slot #{member.slotNumber} ({member.className || "Unknown"} • {Number(member.gearScore || 0).toLocaleString()} GS)
-            </p>
+            <div className="mt-1 flex flex-wrap items-center gap-1.5 text-xs text-zinc-500">
+              <span>Team {member.teamNumber} • Slot #{member.slotNumber}</span>
+              <span>•</span>
+              <ClassBadge className={member.className} size="xs" />
+              <span>•</span>
+              <span className="font-semibold text-zinc-700">{Number(member.gearScore || 0).toLocaleString()} GS</span>
+            </div>
           </div>
           <button
             type="button"
@@ -192,15 +197,19 @@ export default function ManageRosterMemberModal({
               Currently in this slot (No change).
             </div>
           ) : targetOccupant ? (
-            <div className="rounded-xl border border-amber-200 bg-amber-50/80 p-3.5 text-xs text-amber-900 space-y-1.5">
+            <div className="rounded-xl border border-amber-200 bg-amber-50/80 p-3.5 text-xs text-amber-900 space-y-2">
               <div className="flex items-center gap-1.5 font-bold text-amber-900">
                 <ArrowRightLeft className="size-3.5 text-amber-700" />
                 <span>Slot Occupied • Mutual Swap</span>
               </div>
-              <p className="text-zinc-700 leading-relaxed">
-                Currently occupied by <strong className="text-zinc-900 font-bold">{targetOccupant.nickname}</strong> ({targetOccupant.className || "Unknown"} • {Number(targetOccupant.gearScore || 0).toLocaleString()} GS).
-              </p>
-              <div className="rounded-lg bg-white/70 p-2 text-[11px] text-amber-950 border border-amber-200/60">
+              <div className="flex flex-wrap items-center gap-1.5 text-zinc-700">
+                <span>Occupied by <strong className="text-zinc-900 font-bold">{targetOccupant.nickname}</strong></span>
+                <span>•</span>
+                <ClassBadge className={targetOccupant.className} size="xs" />
+                <span>•</span>
+                <span className="font-semibold text-zinc-800">{Number(targetOccupant.gearScore || 0).toLocaleString()} GS</span>
+              </div>
+              <div className="rounded-lg bg-white/70 p-2 text-[11px] text-amber-950 border border-amber-200/60 leading-relaxed">
                 🔄 <strong>{member.nickname}</strong> will move to Team {targetTeam} #{targetSlot}, and <strong>{targetOccupant.nickname}</strong> will move to Team {member.teamNumber} #{member.slotNumber}.
               </div>
             </div>

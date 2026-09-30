@@ -22,6 +22,7 @@ import EmptyState from "@/components/ui/EmptyState";
 import ImportMembersModal from "@/components/members/ImportMembersModal";
 import EditMemberModal from "@/components/members/EditMemberModal";
 import DeleteMemberModal from "@/components/members/DeleteMemberModal";
+import { ClassBadge } from "@/utils/classColors";
 
 const PAGE_SIZE_OPTIONS = [25, 50, 100];
 
@@ -324,8 +325,12 @@ export default function MembersPage() {
                     <td className="px-4 py-3 font-bold text-zinc-900">
                       {m.nickname}
                     </td>
-                    <td className="px-4 py-3 text-zinc-600">
-                      {m.className || "—"}
+                    <td className="px-4 py-3">
+                      {m.className ? (
+                        <ClassBadge className={m.className} size="xs" />
+                      ) : (
+                        <span className="text-zinc-400">—</span>
+                      )}
                     </td>
                     <td className="px-4 py-3 text-zinc-600">
                       {m.level ? `Lv. ${m.level}` : "—"}

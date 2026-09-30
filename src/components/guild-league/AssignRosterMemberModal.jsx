@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Check, Loader2, Search, UserPlus, Users, X } from "lucide-react";
 import { fetchMembers, assignRosterMember } from "@/lib/api";
+import { ClassBadge } from "@/utils/classColors";
 
 let cachedMembersList = null;
 
@@ -164,12 +165,11 @@ export default function AssignRosterMemberModal({
                   <div className="text-xs font-bold text-zinc-900 group-hover:text-red-700 transition truncate">
                     {m.nickname}
                   </div>
-                  <div className="mt-0.5 text-[11px] text-zinc-500 flex items-center gap-2">
-                    <span className="font-medium text-zinc-700">{m.className || "Unknown Class"}</span>
+                  <div className="mt-1 flex flex-wrap items-center gap-1.5 text-[11px] text-zinc-500">
+                    <ClassBadge className={m.className} size="xs" />
+                    {Number(m.level) > 0 && <span>Lv. {m.level}</span>}
                     <span>•</span>
-                    <span>Lv. {m.level || "—"}</span>
-                    <span>•</span>
-                    <span className="font-semibold text-zinc-900">
+                    <span className="font-semibold text-zinc-900 font-mono">
                       {m.gearScore ? `${Number(m.gearScore).toLocaleString()} GS` : "—"}
                     </span>
                   </div>

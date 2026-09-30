@@ -22,6 +22,7 @@ import {
   saveAttendance,
 } from "@/lib/api";
 import { SkeletonTable } from "@/components/ui/LoadingState";
+import { ClassBadge } from "@/utils/classColors";
 
 function formatDate(timestamp) {
   if (!timestamp) return "—";
@@ -457,7 +458,13 @@ export default function AttendancePage() {
                       <td className="px-4 py-3 font-bold text-zinc-900">
                         {m.nickname}
                       </td>
-                      <td className="px-4 py-3 text-zinc-600">{m.className || "—"}</td>
+                      <td className="px-4 py-3">
+                        {m.className ? (
+                          <ClassBadge className={m.className} size="xs" />
+                        ) : (
+                          <span className="text-zinc-400">—</span>
+                        )}
+                      </td>
                       <td className="px-4 py-3 font-bold text-zinc-900">
                         {m.gearScore ? `${formatNumber(m.gearScore)} GS` : "—"}
                       </td>

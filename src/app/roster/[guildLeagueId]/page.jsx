@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { fetchGuildLeagueDetail } from "@/lib/api";
 import { RosterDetailSkeleton } from "@/components/ui/LoadingState";
+import { ClassBadge } from "@/utils/classColors";
 
 const LANE_SECTIONS = [
   {
@@ -160,18 +161,18 @@ function PublicTeamCard({ teamNumber, team, rosterMembers, membersPerTeam = 10, 
                   <div className="truncate font-bold text-zinc-900">
                     {member.nickname}
                   </div>
-                  <div className="truncate text-[11px] text-zinc-500">
-                    {member.className || "Unknown Class"}
+                  <div className="mt-0.5 flex flex-wrap items-center gap-1.5">
+                    <ClassBadge className={member.className} size="xs" />
+                    {Number(member.level) > 0 && (
+                      <span className="text-[10px] text-zinc-400 font-medium">
+                        Lv. {member.level}
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
 
               <div className="flex shrink-0 items-center gap-3 text-right">
-                {Number(member.level) > 0 && (
-                  <span className="text-[11px] text-zinc-400 font-medium">
-                    Lv. {member.level}
-                  </span>
-                )}
                 {Number(member.gearScore) > 0 && (
                   <span className="font-bold text-zinc-900 font-mono text-xs">
                     {formatNumber(member.gearScore)} GS

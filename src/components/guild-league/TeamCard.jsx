@@ -6,6 +6,7 @@ import {
   getTeamMembers,
   LANE_CONFIG,
 } from "../../utils/guildLeague";
+import { ClassBadge } from "@/utils/classColors";
 
 export default function TeamCard({
   teamNumber,
@@ -184,8 +185,8 @@ export default function TeamCard({
                       {member.nickname}
                     </div>
 
-                    <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-content-muted">
-                      <span>{member.className || "Unknown class"}</span>
+                    <div className="mt-0.5 flex flex-wrap items-center gap-1.5 text-xs text-content-muted">
+                      <ClassBadge className={member.className} size="xs" />
 
                       <span className="text-content-subtle">·</span>
 
