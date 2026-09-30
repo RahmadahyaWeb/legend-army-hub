@@ -64,23 +64,27 @@ export default function GuildLeagueDetailPage() {
   const [sendingDiscord, setSendingDiscord] = useState(false);
   const [discordMsg, setDiscordMsg] = useState("");
 
-  const loadDetail = async () => {
+  const loadDetail = async (silent = false) => {
     if (!guildLeagueId) return;
     try {
-      setLoading(true);
+      if (!silent && !data) {
+        setLoading(true);
+      }
       const res = await fetchGuildLeagueDetail(guildLeagueId);
       setData(res);
       setError("");
     } catch (err) {
       console.error("Detail error:", err);
-      setError(err.message || "Failed to load guild league detail.");
+      if (!data) {
+        setError(err.message || "Failed to load guild league detail.");
+      }
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    loadDetail();
+    loadDetail(false);
   }, [guildLeagueId]);
 
   const guildLeague = data?.guildLeague;
@@ -93,22 +97,51 @@ export default function GuildLeagueDetailPage() {
   const assignedMemberIds = roster.map((r) => r.memberId).filter(Boolean);
 
   const handleStatusChange = async (newStatus) => {
+    // Optimistic status update
+    setData((prev) =>
+      prev
+        ? {
+            ...prev,
+            guildLeague: { ...prev.guildLeague, status: newStatus },
+          }
+        : prev
+    );
+
     try {
       await updateGuildLeague(guildLeagueId, { status: newStatus });
-      loadDetail();
+      loadDetail(true);
     } catch (err) {
       console.error("Status update error:", err);
-      alert("Failed to update status: " + err.message);
+      loadDetail(true);
     }
   };
 
   const handleLaneChange = async (teamNumber, newLane) => {
+    // Optimistic lane update
+    setData((prev) => {
+      if (!prev) return prev;
+      const updatedTeams = (prev.teams || []).map((t) =>
+        Number(t.teamNumber) === Number(teamNumber)
+          ? { ...t, lane: newLane }
+          : t
+      );
+      return { ...prev, teams: updatedTeams };
+    });
+
     try {
-      const currentTeam = teams.find((t) => Number(t.teamNumber) === Number(teamNumber));
-      await updateTeamInfo(guildLeagueId, teamNumber, currentTeam?.name || `Team ${teamNumber}`, newLane);
-      loadDetail();
+      const currentTeam = teams.find(
+        (t) => Number(t.teamNumber) === Number(teamNumber)
+      );
+      await updateTeamInfo(
+        guildLeagueId,
+        teamNumber,
+        currentTeam?.name || `Team ${teamNumber}`,
+        newLane
+      );
+      loadDetail(true);
     } catch (err) {
       console.error("Lane change error:", err);
+      loadDetail(true);
     }
   };
 
@@ -139,7 +172,8 @@ export default function GuildLeagueDetailPage() {
     }
   };
 
-  if (loading) {
+  // Only show full loading spinner on initial page visit before any data is loaded
+  if (loading && !data) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <div className="size-6 animate-spin rounded-full border-2 border-zinc-300 border-t-red-700" />
@@ -183,7 +217,8 @@ export default function GuildLeagueDetailPage() {
               </span>
             </div>
             <p className="mt-0.5 text-xs text-zinc-500">
-              {formatDate(guildLeague.matchDate || guildLeague.date)} • VS: {guildLeague.opponent || "TBA"}
+              {formatDate(guildLeague.matchDate || guildLeague.date)} • VS:{" "}
+              {guildLeague.opponent || "TBA"}
             </p>
           </div>
         </div>
@@ -256,8 +291,10 @@ export default function GuildLeagueDetailPage() {
             {roster.length > 0
               ? formatNumber(
                   Math.round(
-                    roster.reduce((s, r) => s + (Number(r.gearScore) || 0), 0) /
-                      roster.length
+                    roster.reduce(
+                      (s, r) => s + (Number(r.gearScore) || 0),
+                      0
+                    ) / roster.length
                   )
                 )
               : "—"}
@@ -298,7 +335,9 @@ export default function GuildLeagueDetailPage() {
                 <div className="flex items-center gap-2">
                   <select
                     value={team?.lane?.toLowerCase() || ""}
-                    onChange={(e) => handleLaneChange(teamNumber, e.target.value)}
+                    onChange={(e) =>
+                      handleLaneChange(teamNumber, e.target.value)
+                    }
                     className="h-8 rounded-lg border border-zinc-300 bg-white px-2.5 text-xs font-semibold text-zinc-700"
                   >
                     <option value="">Select Lane</option>
@@ -332,7 +371,9 @@ export default function GuildLeagueDetailPage() {
 
                         <button
                           type="button"
-                          onClick={() => setAssignSlot({ teamNumber, slotNumber })}
+                          onClick={() =>
+                            setAssignSlot({ teamNumber, slotNumber })
+                          }
                           className="inline-flex items-center gap-1 rounded-lg border border-zinc-200 bg-white px-2.5 py-1 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 hover:text-red-600 shadow-sm"
                         >
                           <UserPlus className="size-3" />
@@ -386,7 +427,7 @@ export default function GuildLeagueDetailPage() {
         slotNumber={assignSlot?.slotNumber}
         assignedMemberIds={assignedMemberIds}
         onClose={() => setAssignSlot(null)}
-        onSuccess={loadDetail}
+        onSuccess={() => loadDetail(true)}
       />
 
       <ManageRosterMemberModal
@@ -397,14 +438,14 @@ export default function GuildLeagueDetailPage() {
         membersPerTeam={membersPerTeam}
         rosterMembers={roster}
         onClose={() => setSelectedMember(null)}
-        onSuccess={loadDetail}
+        onSuccess={() => loadDetail(true)}
       />
 
       <CopyRosterModal
         open={copyModalOpen}
         targetLeagueId={guildLeagueId}
         onClose={() => setCopyModalOpen(false)}
-        onSuccess={loadDetail}
+        onSuccess={() => loadDetail(true)}
       />
     </div>
   );
