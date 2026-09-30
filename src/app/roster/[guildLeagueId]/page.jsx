@@ -24,7 +24,7 @@ const LANE_SECTIONS = [
   {
     id: "top",
     name: "Top Lane",
-    tagline: "Assault & Frontline Engagements",
+    tagline: "Top Lane Force • Tim MVP & Tim Defend Lane",
     icon: Swords,
     badgeBg: "bg-orange-50 border-orange-200 text-orange-800",
     headerBg: "bg-gradient-to-r from-orange-500/10 via-amber-500/5 to-transparent border-orange-200",
@@ -35,7 +35,7 @@ const LANE_SECTIONS = [
   {
     id: "mid",
     name: "Mid Lane",
-    tagline: "Core Battlefield & Objective Control",
+    tagline: "Mid Lane Force • Tim MVP & Tim Defend Lane",
     icon: Shield,
     badgeBg: "bg-blue-50 border-blue-200 text-blue-800",
     headerBg: "bg-gradient-to-r from-blue-500/10 via-indigo-500/5 to-transparent border-blue-200",
@@ -46,7 +46,7 @@ const LANE_SECTIONS = [
   {
     id: "bot",
     name: "Bottom Lane",
-    tagline: "Tactical Flank & Strategic Support",
+    tagline: "Bottom Lane Force • Tim MVP & Tim Defend Lane",
     icon: Zap,
     badgeBg: "bg-emerald-50 border-emerald-200 text-emerald-800",
     headerBg: "bg-gradient-to-r from-emerald-500/10 via-teal-500/5 to-transparent border-emerald-200",
@@ -136,6 +136,37 @@ function PublicTeamCard({ teamNumber, team, rosterMembers, membersPerTeam = 10, 
           )}
         </div>
       </div>
+
+      {/* TACTICAL DUTY BANNER */}
+      {laneConfig?.tacticalType === "mvp" && (
+        <div className="flex items-start gap-2.5 border-b border-amber-200/80 bg-amber-50/90 px-5 py-2.5 text-xs text-amber-950">
+          <span className="shrink-0 text-base">👑</span>
+          <div className="min-w-0 leading-snug">
+            <span className="font-bold text-amber-900">Tugas MVP: </span>
+            <span>Wajib fokus regroup di area MVP pada menit <strong>18:00</strong> & <strong>08:00</strong>.</span>
+          </div>
+        </div>
+      )}
+
+      {laneConfig?.tacticalType === "defend" && (
+        <div className="flex items-start gap-2.5 border-b border-orange-200/80 bg-orange-50/90 px-5 py-2.5 text-xs text-orange-950">
+          <span className="shrink-0 text-base">🛡️</span>
+          <div className="min-w-0 leading-snug">
+            <span className="font-bold text-orange-900">Tugas Defend: </span>
+            <span>Fokus defend lane (<strong>TIDAK ikut MVP</strong>) & delay pergerakan musuh di portal ke MVP.</span>
+          </div>
+        </div>
+      )}
+
+      {laneConfig?.tacticalType === "attack" && (
+        <div className="flex items-start gap-2.5 border-b border-red-200/80 bg-red-50/90 px-5 py-2.5 text-xs text-red-950">
+          <span className="shrink-0 text-base">⚔️</span>
+          <div className="min-w-0 leading-snug">
+            <span className="font-bold text-red-900">Tugas Attack: </span>
+            <span>Fokus push pertahanan dan hancurkan tower/barricade musuh di lane ini.</span>
+          </div>
+        </div>
+      )}
 
       {/* PLAYER SLOTS */}
       <div className="flex-1 divide-y divide-zinc-100">
@@ -476,6 +507,71 @@ export default function PublicRosterPage() {
 
       {/* 3 BATTLEFIELD LANE SECTIONS */}
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 space-y-10">
+        {/* TACTICAL DIRECTIVES OVERVIEW */}
+        <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-xs space-y-3.5">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-zinc-100 pb-3">
+            <div className="flex items-center gap-2.5">
+              <span className="flex size-8 items-center justify-center rounded-xl bg-red-600 text-white font-bold text-xs shadow-xs">
+                🎯
+              </span>
+              <div>
+                <h3 className="text-sm font-bold text-zinc-900">Instruksi & Tugas Taktis Tim</h3>
+                <p className="text-[11px] text-zinc-500">Pedoman pergerakan wajib seluruh tim selama Guild League</p>
+              </div>
+            </div>
+            <div className="text-[11px] font-semibold text-zinc-400">
+              Legend Army Battlefield Directive
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+            <div className="rounded-xl border border-amber-200 bg-amber-50/70 p-4 space-y-1.5">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-amber-950">
+                  <span>👑</span>
+                  <span>TIM MVP</span>
+                </div>
+                <span className="rounded-md bg-amber-200/70 px-2 py-0.5 text-[10px] font-mono font-bold text-amber-900">
+                  18:00 & 08:00
+                </span>
+              </div>
+              <p className="text-xs text-amber-900 leading-relaxed font-medium">
+                Wajib fokus <strong>regroup dan standby di area MVP</strong> tepat pada menit <strong>18:00</strong> dan <strong>08:00</strong> untuk mengamankan kill boss monster.
+              </p>
+            </div>
+
+            <div className="rounded-xl border border-orange-200 bg-orange-50/70 p-4 space-y-1.5">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-orange-950">
+                  <span>🛡️</span>
+                  <span>TIM DEFEND</span>
+                </div>
+                <span className="rounded-md bg-orange-200/70 px-2 py-0.5 text-[10px] font-bold text-orange-900 uppercase">
+                  Delay Portal
+                </span>
+              </div>
+              <p className="text-xs text-orange-900 leading-relaxed font-medium">
+                Fokus <strong>defend lane (TIDAK IKUT MVP)</strong>. Bertugas menahan dan <strong>delay pergerakan musuh di portal</strong> menuju area MVP agar tim MVP leluasa.
+              </p>
+            </div>
+
+            <div className="rounded-xl border border-red-200 bg-red-50/70 p-4 space-y-1.5">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-red-950">
+                  <span>⚔️</span>
+                  <span>TIM ATTACK</span>
+                </div>
+                <span className="rounded-md bg-red-200/70 px-2 py-0.5 text-[10px] font-bold text-red-900 uppercase">
+                  Push Tower
+                </span>
+              </div>
+              <p className="text-xs text-red-900 leading-relaxed font-medium">
+                Fokus serang dan tekan lane musuh untuk <strong>meruntuhkan tower dan barricade</strong> pertahanan lawan.
+              </p>
+            </div>
+          </div>
+        </div>
+
         {LANE_SECTIONS.map((lane) => {
           if (activeTab !== "all" && activeTab !== lane.id) return null;
 
