@@ -1,79 +1,61 @@
+"use client";
+
 import { useEffect, useState } from "react";
-import { doc, serverTimestamp, updateDoc } from "firebase/firestore";
 import { X } from "lucide-react";
+import { saveMember } from "@/lib/api";
 
-import { db } from "../../lib/firebase";
-import { useToast } from "../ui/ToastProvider";
-
-export default function EditMemberModal({ open, member, onClose }) {
-  const toast = useToast();
-
+export default function EditMemberModal({ open, member, onClose, onSuccess }) {
   const [form, setForm] = useState({
     nickname: "",
     level: "",
     gearScore: "",
     className: "",
-    title: "",
-    gender: "",
-    position: "",
+    role: "Member",
+    isActive: true,
+    notes: "",
   });
 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!open || !member) {
-      return;
-    }
+    if (!open || !member) return;
 
     setForm({
       nickname: member.nickname ?? "",
       level: member.level ?? "",
       gearScore: member.gearScore ?? "",
-      className: member.className ?? "",
-      title: member.title ?? "",
-      gender: member.gender ?? "",
-      position: member.position ?? "",
+      className: member.className ?? member.class ?? "",
+      role: member.role ?? "Member",
+      isActive: typeof member.isActive === "boolean" ? member.isActive : true,
+      notes: member.notes ?? "",
     });
 
     setError("");
   }, [open, member]);
 
-  if (!open || !member) {
-    return null;
-  }
+  if (!open || !member) return null;
 
   const handleChange = (event) => {
-    const { name, value } = event.target;
-
+    const { name, value, type, checked } = event.target;
     setForm((current) => ({
       ...current,
-      [name]: value,
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
   const handleClose = () => {
-    if (saving) {
-      return;
-    }
-
+    if (saving) return;
     setError("");
     onClose();
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
-    if (saving) {
-      return;
-    }
+    if (saving) return;
 
     const nickname = form.nickname.trim();
     const className = form.className.trim();
-    const title = form.title.trim();
-    const position = form.position.trim();
-    const gender = form.gender.trim().toUpperCase();
-
     const level = Number(form.level);
     const gearScore = Number(form.gearScore);
 
@@ -87,70 +69,45 @@ export default function EditMemberModal({ open, member, onClose }) {
       return;
     }
 
-    if (form.level === "" || Number.isNaN(level) || level < 1) {
-      setError("Please enter a valid level.");
-      return;
-    }
-
-    if (form.gearScore === "" || Number.isNaN(gearScore) || gearScore < 0) {
-      setError("Please enter a valid gear score.");
-      return;
-    }
-
-    if (gender && gender !== "M" && gender !== "F") {
-      setError("Gender must be M or F.");
-      return;
-    }
-
     setSaving(true);
     setError("");
 
     try {
-      await updateDoc(doc(db, "members", member.id), {
+      await saveMember({
+        id: member.id,
         nickname,
-        nicknameNormalized: nickname.toLowerCase(),
-        level,
-        gearScore,
         className,
-        title,
-        gender,
-        position,
-        updatedAt: serverTimestamp(),
+        level: Number.isNaN(level) ? 0 : level,
+        gearScore: Number.isNaN(gearScore) ? 0 : gearScore,
+        role: form.role,
+        isActive: form.isActive,
+        notes: form.notes,
       });
 
+      if (onSuccess) onSuccess();
       onClose();
-
-      toast.success(
-        "Member updated",
-        `${nickname}'s information has been updated.`,
-      );
     } catch (updateError) {
       console.error("Failed to update member:", updateError);
-
-      setError("Failed to update member. Please try again.");
-
-      toast.error("Update failed", "Member information could not be updated.");
+      setError(updateError.message || "Failed to update member.");
     } finally {
       setSaving(false);
     }
   };
 
   const inputClass =
-    "mt-1.5 h-10 w-full rounded-lg border border-line-strong bg-white px-3 text-sm text-content-strong outline-none transition placeholder:text-content-subtle focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10";
-
-  const labelClass = "text-xs font-medium text-content-muted";
+    "mt-1.5 h-10 w-full rounded-lg border border-zinc-300 bg-white px-3 text-sm text-zinc-900 outline-none transition placeholder:text-zinc-400 focus:border-red-600 focus:ring-1 focus:ring-red-600";
+  const labelClass = "text-xs font-semibold text-zinc-700";
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/30 sm:items-center sm:p-4">
-      <div className="flex max-h-[92vh] w-full flex-col overflow-hidden bg-white shadow-xl sm:max-w-lg sm:rounded-xl">
-        <div className="flex shrink-0 items-start justify-between border-b border-line px-5 py-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+      <div className="flex max-h-[92vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
+        <div className="flex shrink-0 items-start justify-between border-b border-zinc-200 px-6 py-4">
           <div>
-            <h2 className="text-base font-semibold text-content-strong">
-              Edit member
+            <h2 className="text-base font-bold text-zinc-900">
+              Edit Guild Member
             </h2>
-
-            <p className="mt-0.5 text-sm text-content-muted">
-              Update character information.
+            <p className="mt-0.5 text-xs text-zinc-500">
+              Update character details and combat attributes.
             </p>
           </div>
 
@@ -158,28 +115,26 @@ export default function EditMemberModal({ open, member, onClose }) {
             type="button"
             onClick={handleClose}
             disabled={saving}
-            className="flex size-9 items-center justify-center rounded-lg text-content-muted transition hover:bg-surface-200 hover:text-content-strong disabled:cursor-not-allowed disabled:opacity-50"
-            aria-label="Close"
+            className="flex size-8 items-center justify-center rounded-lg text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700 disabled:opacity-50"
           >
-            <X className="size-5" />
+            <X className="size-4" />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col">
-          <div className="min-h-0 flex-1 space-y-5 overflow-y-auto p-5">
+          <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-6">
             <div>
               <label htmlFor="edit-nickname" className={labelClass}>
-                Nickname
+                Character Nickname
               </label>
-
               <input
                 id="edit-nickname"
                 name="nickname"
                 type="text"
+                required
                 value={form.nickname}
                 onChange={handleChange}
                 className={inputClass}
-                autoComplete="off"
               />
             </div>
 
@@ -188,7 +143,6 @@ export default function EditMemberModal({ open, member, onClose }) {
                 <label htmlFor="edit-level" className={labelClass}>
                   Level
                 </label>
-
                 <input
                   id="edit-level"
                   name="level"
@@ -204,7 +158,6 @@ export default function EditMemberModal({ open, member, onClose }) {
                 <label htmlFor="edit-gear-score" className={labelClass}>
                   Gear Score
                 </label>
-
                 <input
                   id="edit-gear-score"
                   name="gearScore"
@@ -217,95 +170,73 @@ export default function EditMemberModal({ open, member, onClose }) {
               </div>
             </div>
 
-            <div>
-              <label htmlFor="edit-class" className={labelClass}>
-                Class
-              </label>
-
-              <input
-                id="edit-class"
-                name="className"
-                type="text"
-                value={form.className}
-                onChange={handleChange}
-                className={inputClass}
-                autoComplete="off"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="edit-title" className={labelClass}>
-                Title
-              </label>
-
-              <input
-                id="edit-title"
-                name="title"
-                type="text"
-                value={form.title}
-                onChange={handleChange}
-                className={inputClass}
-                autoComplete="off"
-              />
-            </div>
-
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label htmlFor="edit-gender" className={labelClass}>
-                  Gender
+                <label htmlFor="edit-class" className={labelClass}>
+                  Class / Job
                 </label>
-
-                <select
-                  id="edit-gender"
-                  name="gender"
-                  value={form.gender}
+                <input
+                  id="edit-class"
+                  name="className"
+                  type="text"
+                  required
+                  value={form.className}
                   onChange={handleChange}
                   className={inputClass}
-                >
-                  <option value="">Not specified</option>
-                  <option value="M">Male</option>
-                  <option value="F">Female</option>
-                </select>
+                />
               </div>
 
               <div>
-                <label htmlFor="edit-position" className={labelClass}>
-                  Position
+                <label htmlFor="edit-role" className={labelClass}>
+                  Guild Role
                 </label>
-
                 <input
-                  id="edit-position"
-                  name="position"
+                  id="edit-role"
+                  name="role"
                   type="text"
-                  value={form.position}
+                  value={form.role}
                   onChange={handleChange}
                   className={inputClass}
-                  autoComplete="off"
+                  placeholder="Member / Officer / Leader"
                 />
               </div>
             </div>
 
+            <div>
+              <label className="flex items-center gap-2 cursor-pointer pt-2">
+                <input
+                  type="checkbox"
+                  name="isActive"
+                  checked={form.isActive}
+                  onChange={handleChange}
+                  className="size-4 rounded text-red-600 focus:ring-red-500"
+                />
+                <span className="text-xs font-semibold text-zinc-700">
+                  Active Member (Include in average stats and guild roster)
+                </span>
+              </label>
+            </div>
+
             {error && (
-              <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-xs font-medium text-red-700">
                 {error}
               </div>
             )}
           </div>
 
-          <div className="flex shrink-0 justify-end gap-3 border-t border-line px-5 py-4">
+          <div className="flex shrink-0 justify-end gap-3 border-t border-zinc-200 px-6 py-4">
             <button
               type="button"
               onClick={handleClose}
               disabled={saving}
-              className="h-10 rounded-lg border border-line-strong bg-white px-4 text-sm font-medium text-content transition hover:bg-surface-100 disabled:cursor-not-allowed disabled:opacity-50"
+              className="rounded-xl border border-zinc-300 bg-white px-4 py-2 text-xs font-semibold text-zinc-700 hover:bg-zinc-50"
             >
               Cancel
             </button>
-
             <button
               type="submit"
               disabled={saving}
-              className="h-10 min-w-28 rounded-lg bg-brand-600 px-4 text-sm font-medium text-white transition hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-50"
+              className="rounded-xl bg-red-600 px-5 py-2 text-xs font-bold text-white shadow hover:bg-red-500 disabled:opacity-50"
             >
               {saving ? "Saving..." : "Save changes"}
             </button>
