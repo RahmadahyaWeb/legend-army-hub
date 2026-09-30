@@ -5,6 +5,8 @@ import {
   formatNumber,
   getTeamMembers,
   LANE_CONFIG,
+  LANE_SELECT_GROUPS,
+  getLaneConfig,
 } from "../../utils/guildLeague";
 import { ClassBadge } from "@/utils/classColors";
 
@@ -48,7 +50,7 @@ export default function TeamCard({
     return Math.round(total / teamMembers.length);
   }, [teamMembers]);
 
-  const laneConfig = LANE_CONFIG[teamLane] ?? null;
+  const laneConfig = getLaneConfig(teamLane);
 
   const changingLane = changingLaneTeam === teamNumber;
 
@@ -77,11 +79,12 @@ export default function TeamCard({
                 {laneConfig && (
                   <span
                     className={[
-                      "rounded-md border px-1.5 py-0.5 text-[10px] font-bold tracking-wider",
+                      "inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[10px] font-bold tracking-wider",
                       laneConfig.badgeClassName,
                     ].join(" ")}
                   >
-                    {laneConfig.shortLabel}
+                    {laneConfig.icon && <span>{laneConfig.icon}</span>}
+                    <span>{laneConfig.shortLabel}</span>
                   </span>
                 )}
               </div>
@@ -109,16 +112,22 @@ export default function TeamCard({
             onChange={(event) => onLaneChange(teamNumber, event.target.value)}
             disabled={changingLane}
             className={[
-              "h-9 w-full appearance-none rounded-lg border px-3 pr-9 text-xs font-medium outline-none transition focus:ring-2 focus:ring-brand-500/10 disabled:cursor-wait disabled:opacity-60",
+              "h-9 w-full appearance-none rounded-lg border px-3 pr-9 text-xs font-semibold outline-none transition focus:ring-2 focus:ring-red-500/10 disabled:cursor-wait disabled:opacity-60",
               laneConfig
                 ? laneConfig.badgeClassName
                 : "border-line-strong bg-white text-content-muted",
             ].join(" ")}
           >
             <option value="">Unassigned</option>
-            <option value="top">Top Lane</option>
-            <option value="mid">Mid Lane</option>
-            <option value="bot">Bot Lane</option>
+            {LANE_SELECT_GROUPS.map((grp) => (
+              <optgroup key={grp.group} label={grp.group}>
+                {grp.options.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </optgroup>
+            ))}
           </select>
 
           <ChevronDown className="pointer-events-none absolute right-3 top-1/2 size-3.5 -translate-y-1/2 text-content-subtle" />

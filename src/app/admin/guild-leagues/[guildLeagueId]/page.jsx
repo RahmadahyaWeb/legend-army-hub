@@ -31,12 +31,7 @@ import CopyRosterModal from "@/components/guild-league/CopyRosterModal";
 import { sendGuildLeagueToDiscord } from "@/services/guild-league/guildLeagueDiscordService";
 import { RosterDetailSkeleton } from "@/components/ui/LoadingState";
 import { ClassBadge, getClassColor } from "@/utils/classColors";
-
-const LANES = [
-  { id: "top", label: "Top Lane" },
-  { id: "mid", label: "Mid Lane" },
-  { id: "bot", label: "Bot Lane" },
-];
+import { getLaneConfig, LANE_SELECT_GROUPS } from "@/utils/guildLeague";
 
 function formatDate(timestamp) {
   if (!timestamp) return "—";
@@ -525,6 +520,7 @@ export default function GuildLeagueDetailPage() {
         {Array.from({ length: maxTeams }, (_, index) => {
           const teamNumber = index + 1;
           const team = teams.find((t) => Number(t.teamNumber) === teamNumber);
+          const laneConfig = getLaneConfig(team?.lane);
           const teamMembers = roster
             .filter((r) => Number(r.teamNumber) === teamNumber)
             .sort((a, b) => Number(a.slotNumber) - Number(b.slotNumber));
@@ -541,9 +537,19 @@ export default function GuildLeagueDetailPage() {
                     T{teamNumber}
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold text-zinc-900">
-                      {team?.name || `Team ${teamNumber}`}
-                    </h3>
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-sm font-bold text-zinc-900">
+                        {team?.name || `Team ${teamNumber}`}
+                      </h3>
+                      {laneConfig && (
+                        <span
+                          className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[10px] font-bold ${laneConfig.badgeClassName}`}
+                        >
+                          {laneConfig.icon && <span>{laneConfig.icon}</span>}
+                          <span>{laneConfig.shortLabel}</span>
+                        </span>
+                      )}
+                    </div>
                     <span className="text-[11px] text-zinc-500">
                       {teamMembers.length} / {membersPerTeam} players assigned
                     </span>
@@ -556,13 +562,21 @@ export default function GuildLeagueDetailPage() {
                     onChange={(e) =>
                       handleLaneChange(teamNumber, e.target.value)
                     }
-                    className="h-8 rounded-lg border border-zinc-300 bg-white px-2.5 text-xs font-semibold text-zinc-700"
+                    className={`h-8 rounded-lg border px-2.5 text-xs font-bold ${
+                      laneConfig
+                        ? laneConfig.badgeClassName
+                        : "border-zinc-300 bg-white text-zinc-700"
+                    }`}
                   >
-                    <option value="">Select Lane</option>
-                    {LANES.map((l) => (
-                      <option key={l.id} value={l.id}>
-                        {l.label}
-                      </option>
+                    <option value="">Unassigned Lane</option>
+                    {LANE_SELECT_GROUPS.map((grp) => (
+                      <optgroup key={grp.group} label={grp.group}>
+                        {grp.options.map((opt) => (
+                          <option key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </option>
+                        ))}
+                      </optgroup>
                     ))}
                   </select>
                 </div>

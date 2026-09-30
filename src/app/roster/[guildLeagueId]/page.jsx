@@ -18,6 +18,7 @@ import {
 import { fetchGuildLeagueDetail } from "@/lib/api";
 import { RosterDetailSkeleton } from "@/components/ui/LoadingState";
 import { ClassBadge } from "@/utils/classColors";
+import { getBaseLane, getLaneConfig } from "@/utils/guildLeague";
 
 const LANE_SECTIONS = [
   {
@@ -92,6 +93,7 @@ function PublicTeamCard({ teamNumber, team, rosterMembers, membersPerTeam = 10, 
   }, [members]);
 
   const fillPercent = Math.round((members.length / (membersPerTeam || 1)) * 100);
+  const laneConfig = getLaneConfig(team?.lane);
 
   return (
     <div className="flex flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-xs hover:shadow-md transition">
@@ -102,9 +104,19 @@ function PublicTeamCard({ teamNumber, team, rosterMembers, membersPerTeam = 10, 
             T{teamNumber}
           </div>
           <div className="min-w-0">
-            <h3 className="text-sm font-bold text-zinc-900 truncate">
-              {team?.name || `Team ${teamNumber}`}
-            </h3>
+            <div className="flex items-center gap-2">
+              <h3 className="text-sm font-bold text-zinc-900 truncate">
+                {team?.name || `Team ${teamNumber}`}
+              </h3>
+              {laneConfig && (
+                <span
+                  className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[10px] font-bold shrink-0 ${laneConfig.badgeClassName}`}
+                >
+                  {laneConfig.icon && <span>{laneConfig.icon}</span>}
+                  <span>{laneConfig.shortLabel}</span>
+                </span>
+              )}
+            </div>
             <div className="flex items-center gap-2 text-[11px] text-zinc-500">
               <span className="font-semibold text-zinc-700">
                 {members.length}/{membersPerTeam} players
@@ -245,9 +257,8 @@ export default function PublicRosterPage() {
     allTeamNumbers.forEach((tNum) => {
       const team = teams.find((t) => Number(t.teamNumber) === tNum);
       const laneKey = String(team?.lane || "").toLowerCase().trim();
-      if (laneKey === "top") map.top.push(tNum);
-      else if (laneKey === "mid") map.mid.push(tNum);
-      else if (laneKey === "bot") map.bot.push(tNum);
+      const base = getBaseLane(laneKey);
+      if (base && map[base]) map[base].push(tNum);
       else map.unassigned.push(tNum);
     });
 
