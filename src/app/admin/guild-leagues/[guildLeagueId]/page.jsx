@@ -4,8 +4,10 @@ import { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import {
+  AlertCircle,
   ArrowLeft,
   CalendarDays,
+  CheckCircle2,
   Copy,
   ExternalLink,
   MapPin,
@@ -14,11 +16,14 @@ import {
   Swords,
   UserPlus,
   Users,
+  X,
 } from "lucide-react";
 import {
   fetchGuildLeagueDetail,
   updateGuildLeague,
   updateTeamInfo,
+  assignRosterMember,
+  removeRosterMember,
 } from "@/lib/api";
 import AssignRosterMemberModal from "@/components/guild-league/AssignRosterMemberModal";
 import ManageRosterMemberModal from "@/components/guild-league/ManageRosterMemberModal";
@@ -64,6 +69,21 @@ export default function GuildLeagueDetailPage() {
   const [sendingDiscord, setSendingDiscord] = useState(false);
   const [discordMsg, setDiscordMsg] = useState("");
 
+  // Toast feedback state
+  const [toast, setToast] = useState(null);
+
+  const showToast = (message, type = "success") => {
+    setToast({ message, type, id: Date.now() });
+  };
+
+  useEffect(() => {
+    if (!toast) return;
+    const timer = setTimeout(() => {
+      setToast(null);
+    }, 3200);
+    return () => clearTimeout(timer);
+  }, [toast]);
+
   const loadDetail = async (silent = false) => {
     if (!guildLeagueId) return;
     try {
@@ -94,7 +114,7 @@ export default function GuildLeagueDetailPage() {
   const maxTeams = guildLeague?.maxTeams || 2;
   const membersPerTeam = guildLeague?.membersPerTeam || 10;
   const maxRoster = guildLeague?.maxRoster || maxTeams * membersPerTeam;
-  const assignedMemberIds = roster.map((r) => r.memberId).filter(Boolean);
+  const assignedMemberIds = roster.map((r) => r.memberId || r.id).filter(Boolean);
 
   const handleStatusChange = async (newStatus) => {
     // Optimistic status update
@@ -109,9 +129,11 @@ export default function GuildLeagueDetailPage() {
 
     try {
       await updateGuildLeague(guildLeagueId, { status: newStatus });
+      showToast(`Match status updated to ${newStatus}`);
       loadDetail(true);
     } catch (err) {
       console.error("Status update error:", err);
+      showToast(err.message || "Failed to update status.", "error");
       loadDetail(true);
     }
   };
@@ -138,10 +160,135 @@ export default function GuildLeagueDetailPage() {
         currentTeam?.name || `Team ${teamNumber}`,
         newLane
       );
+      showToast(`Team ${teamNumber} lane set to ${newLane ? newLane.toUpperCase() : "None"}`);
       loadDetail(true);
     } catch (err) {
       console.error("Lane change error:", err);
+      showToast(err.message || "Failed to update team lane.", "error");
       loadDetail(true);
+    }
+  };
+
+  const handleAssignMember = async (member) => {
+    if (!assignSlot || !member) return;
+    const targetTeam = assignSlot.teamNumber;
+    const targetSlot = assignSlot.slotNumber;
+
+    // Save previous roster snapshot
+    const prevRoster = [...roster];
+
+    // Optimistically create new roster entry
+    const newEntry = {
+      id: member.id,
+      memberId: member.id,
+      nickname: member.nickname,
+      className: member.className,
+      level: Number(member.level) || 0,
+      gearScore: Number(member.gearScore) || 0,
+      teamNumber: Number(targetTeam),
+      slotNumber: Number(targetSlot),
+    };
+
+    // Filter out any previous occupant of this slot or same player elsewhere
+    const filteredRoster = prevRoster.filter(
+      (r) =>
+        !(
+          Number(r.teamNumber) === Number(targetTeam) &&
+          Number(r.slotNumber) === Number(targetSlot)
+        ) && String(r.memberId || r.id) !== String(member.id)
+    );
+
+    // Instant UI update
+    setData((prev) =>
+      prev ? { ...prev, roster: [...filteredRoster, newEntry] } : prev
+    );
+    setAssignSlot(null);
+    showToast(`Assigned ${member.nickname} to Team ${targetTeam} (Slot #${targetSlot})`);
+
+    // Async server persistence
+    try {
+      await assignRosterMember(guildLeagueId, {
+        memberId: member.id,
+        nickname: member.nickname,
+        className: member.className,
+        level: member.level,
+        gearScore: member.gearScore,
+        teamNumber: Number(targetTeam),
+        slotNumber: Number(targetSlot),
+      });
+      loadDetail(true);
+    } catch (err) {
+      console.error("Assign error:", err);
+      setData((prev) => (prev ? { ...prev, roster: prevRoster } : prev));
+      showToast(err.message || "Failed to assign member.", "error");
+    }
+  };
+
+  const handleMoveMember = async (member, targetTeam, targetSlot) => {
+    if (!member) return;
+    const prevRoster = [...roster];
+
+    // Optimistically update roster
+    const updatedRoster = prevRoster.map((r) => {
+      if (
+        Number(r.teamNumber) === Number(member.teamNumber) &&
+        Number(r.slotNumber) === Number(member.slotNumber)
+      ) {
+        return {
+          ...r,
+          teamNumber: Number(targetTeam),
+          slotNumber: Number(targetSlot),
+        };
+      }
+      return r;
+    });
+
+    setData((prev) => (prev ? { ...prev, roster: updatedRoster } : prev));
+    setSelectedMember(null);
+    showToast(`Moved ${member.nickname} to Team ${targetTeam} (Slot #${targetSlot})`);
+
+    try {
+      await removeRosterMember(guildLeagueId, member.teamNumber, member.slotNumber);
+      await assignRosterMember(guildLeagueId, {
+        memberId: member.memberId || member.id,
+        nickname: member.nickname,
+        className: member.className,
+        level: member.level,
+        gearScore: member.gearScore,
+        teamNumber: Number(targetTeam),
+        slotNumber: Number(targetSlot),
+      });
+      loadDetail(true);
+    } catch (err) {
+      console.error("Move error:", err);
+      setData((prev) => (prev ? { ...prev, roster: prevRoster } : prev));
+      showToast(err.message || "Failed to move member.", "error");
+    }
+  };
+
+  const handleRemoveMember = async (member) => {
+    if (!member) return;
+    const prevRoster = [...roster];
+
+    const updatedRoster = prevRoster.filter(
+      (r) =>
+        !(
+          Number(r.teamNumber) === Number(member.teamNumber) &&
+          Number(r.slotNumber) === Number(member.slotNumber)
+        )
+    );
+
+    setData((prev) => (prev ? { ...prev, roster: updatedRoster } : prev));
+    setSelectedMember(null);
+    showToast(`Removed ${member.nickname} from roster`);
+
+    try {
+      await removeRosterMember(guildLeagueId, member.teamNumber, member.slotNumber);
+      loadDetail(true);
+    } catch (err) {
+      console.error("Remove error:", err);
+      setData((prev) => (prev ? { ...prev, roster: prevRoster } : prev));
+      showToast(err.message || "Failed to remove member.", "error");
     }
   };
 
@@ -163,9 +310,11 @@ export default function GuildLeagueDetailPage() {
         teamCount: maxTeams,
         formattedDate: formatDate(guildLeague.matchDate || guildLeague.date),
       });
+      showToast("Successfully broadcasted roster to Discord channel!");
       setDiscordMsg("Successfully pushed roster to Discord channel!");
     } catch (err) {
       console.error("Discord error:", err);
+      showToast("Discord broadcast failed: " + err.message, "error");
       setDiscordMsg("Discord push error: " + err.message);
     } finally {
       setSendingDiscord(false);
@@ -428,6 +577,7 @@ export default function GuildLeagueDetailPage() {
         assignedMemberIds={assignedMemberIds}
         onClose={() => setAssignSlot(null)}
         onSuccess={() => loadDetail(true)}
+        onAssign={handleAssignMember}
       />
 
       <ManageRosterMemberModal
@@ -439,6 +589,8 @@ export default function GuildLeagueDetailPage() {
         rosterMembers={roster}
         onClose={() => setSelectedMember(null)}
         onSuccess={() => loadDetail(true)}
+        onMove={handleMoveMember}
+        onRemove={handleRemoveMember}
       />
 
       <CopyRosterModal
@@ -447,6 +599,25 @@ export default function GuildLeagueDetailPage() {
         onClose={() => setCopyModalOpen(false)}
         onSuccess={() => loadDetail(true)}
       />
+
+      {/* FLOATING TOAST FEEDBACK */}
+      {toast && (
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 rounded-2xl border border-zinc-900/10 bg-zinc-900 px-4 py-3 text-xs font-semibold text-white shadow-xl backdrop-blur-sm animate-in slide-in-from-bottom-5 duration-200">
+          {toast.type === "error" ? (
+            <AlertCircle className="size-4 text-red-400 shrink-0" />
+          ) : (
+            <CheckCircle2 className="size-4 text-emerald-400 shrink-0" />
+          )}
+          <span>{toast.message}</span>
+          <button
+            type="button"
+            onClick={() => setToast(null)}
+            className="ml-2 rounded-lg p-0.5 text-zinc-400 hover:text-white"
+          >
+            <X className="size-3.5" />
+          </button>
+        </div>
+      )}
     </div>
   );
 }

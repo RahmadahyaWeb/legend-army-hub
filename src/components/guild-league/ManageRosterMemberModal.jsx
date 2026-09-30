@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowRightLeft, Trash2, X } from "lucide-react";
+import { ArrowRightLeft, Loader2, Trash2, X } from "lucide-react";
 import { assignRosterMember, removeRosterMember } from "@/lib/api";
 
 export default function ManageRosterMemberModal({
@@ -13,6 +13,8 @@ export default function ManageRosterMemberModal({
   rosterMembers = [],
   onClose,
   onSuccess,
+  onMove,
+  onRemove,
 }) {
   const [targetTeam, setTargetTeam] = useState(member?.teamNumber || 1);
   const [targetSlot, setTargetSlot] = useState(member?.slotNumber || 1);
@@ -27,6 +29,12 @@ export default function ManageRosterMemberModal({
       Number(targetSlot) === Number(member.slotNumber)
     ) {
       onClose();
+      return;
+    }
+
+    if (onMove) {
+      // Instant optimistic execution
+      onMove(member, Number(targetTeam), Number(targetSlot));
       return;
     }
 
@@ -53,12 +61,17 @@ export default function ManageRosterMemberModal({
     } catch (err) {
       console.error("Move error:", err);
       setError(err.message || "Failed to move member.");
-    } finally {
       setSaving(false);
     }
   };
 
   const handleRemove = async () => {
+    if (onRemove) {
+      // Instant optimistic execution
+      onRemove(member);
+      return;
+    }
+
     setSaving(true);
     setError("");
 
@@ -69,27 +82,26 @@ export default function ManageRosterMemberModal({
     } catch (err) {
       console.error("Remove error:", err);
       setError(err.message || "Failed to remove member.");
-    } finally {
       setSaving(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-      <div className="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl">
-        <div className="flex items-start justify-between border-b border-zinc-200 px-6 py-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4 animate-in fade-in duration-150">
+      <div className="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl border border-zinc-200">
+        <div className="flex items-start justify-between border-b border-zinc-200 px-6 py-4 bg-zinc-50/50">
           <div>
             <h3 className="text-base font-bold text-zinc-900">
               Manage {member.nickname}
             </h3>
-            <p className="text-xs text-zinc-500">
-              Current: Team {member.teamNumber} - Slot #{member.slotNumber}
+            <p className="mt-0.5 text-xs text-zinc-500">
+              Current: Team {member.teamNumber} • Slot #{member.slotNumber}
             </p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="flex size-8 items-center justify-center rounded-lg text-zinc-400 hover:bg-zinc-100"
+            className="flex size-8 items-center justify-center rounded-lg text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 transition"
           >
             <X className="size-4" />
           </button>
@@ -104,7 +116,7 @@ export default function ManageRosterMemberModal({
 
           <div>
             <label className="text-xs font-semibold text-zinc-700">
-              Move to Team & Slot
+              Reassign to Team & Slot
             </label>
             <div className="mt-2 grid grid-cols-2 gap-3">
               <div>
@@ -112,7 +124,7 @@ export default function ManageRosterMemberModal({
                 <select
                   value={targetTeam}
                   onChange={(e) => setTargetTeam(Number(e.target.value))}
-                  className="mt-1 h-9 w-full rounded-xl border border-zinc-300 bg-white px-3 text-xs"
+                  className="mt-1 h-9 w-full rounded-xl border border-zinc-300 bg-white px-3 text-xs focus:border-red-600 focus:outline-none"
                 >
                   {Array.from({ length: maxTeams }, (_, i) => (
                     <option key={i + 1} value={i + 1}>
@@ -127,7 +139,7 @@ export default function ManageRosterMemberModal({
                 <select
                   value={targetSlot}
                   onChange={(e) => setTargetSlot(Number(e.target.value))}
-                  className="mt-1 h-9 w-full rounded-xl border border-zinc-300 bg-white px-3 text-xs"
+                  className="mt-1 h-9 w-full rounded-xl border border-zinc-300 bg-white px-3 text-xs focus:border-red-600 focus:outline-none"
                 >
                   {Array.from({ length: membersPerTeam }, (_, i) => (
                     <option key={i + 1} value={i + 1}>
@@ -145,10 +157,10 @@ export default function ManageRosterMemberModal({
             type="button"
             disabled={saving}
             onClick={handleRemove}
-            className="inline-flex items-center gap-1.5 rounded-xl border border-red-200 bg-white px-3.5 py-2 text-xs font-semibold text-red-600 hover:bg-red-50"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-red-200 bg-white px-3.5 py-2 text-xs font-semibold text-red-600 hover:bg-red-50 active:scale-95 transition disabled:opacity-50"
           >
             <Trash2 className="size-3.5" />
-            <span>Remove from Roster</span>
+            <span>Remove</span>
           </button>
 
           <div className="flex items-center gap-2">
@@ -156,7 +168,7 @@ export default function ManageRosterMemberModal({
               type="button"
               onClick={onClose}
               disabled={saving}
-              className="rounded-xl border border-zinc-300 bg-white px-3.5 py-2 text-xs font-semibold text-zinc-700 hover:bg-zinc-50"
+              className="rounded-xl border border-zinc-300 bg-white px-3.5 py-2 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 transition"
             >
               Cancel
             </button>
@@ -164,9 +176,13 @@ export default function ManageRosterMemberModal({
               type="button"
               disabled={saving}
               onClick={handleMove}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-red-600 px-4 py-2 text-xs font-bold text-white shadow hover:bg-red-500 disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-red-600 px-4 py-2 text-xs font-bold text-white shadow hover:bg-red-500 active:scale-95 transition disabled:opacity-50"
             >
-              <ArrowRightLeft className="size-3.5" />
+              {saving ? (
+                <Loader2 className="size-3.5 animate-spin" />
+              ) : (
+                <ArrowRightLeft className="size-3.5" />
+              )}
               <span>{saving ? "Saving..." : "Move Slot"}</span>
             </button>
           </div>
