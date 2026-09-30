@@ -23,30 +23,21 @@ const LANE_SECTIONS = [
     name: "Top Lane",
     icon: Swords,
     badgeBg: "bg-orange-50 border-orange-200 text-orange-800",
-    headerBg: "bg-zinc-50/80 border-zinc-200",
     pillActive: "bg-orange-600 text-white shadow-orange-600/25",
-    accentColor: "text-orange-600",
-    dotColor: "bg-orange-500",
   },
   {
     id: "mid",
     name: "Mid Lane",
     icon: Shield,
     badgeBg: "bg-blue-50 border-blue-200 text-blue-800",
-    headerBg: "bg-zinc-50/80 border-zinc-200",
     pillActive: "bg-blue-600 text-white shadow-blue-600/25",
-    accentColor: "text-blue-600",
-    dotColor: "bg-blue-500",
   },
   {
     id: "bot",
     name: "Bottom Lane",
     icon: Zap,
     badgeBg: "bg-emerald-50 border-emerald-200 text-emerald-800",
-    headerBg: "bg-zinc-50/80 border-zinc-200",
     pillActive: "bg-emerald-600 text-white shadow-emerald-600/25",
-    accentColor: "text-emerald-600",
-    dotColor: "bg-emerald-500",
   },
 ];
 
@@ -92,7 +83,7 @@ function PublicTeamCard({ teamNumber, team, rosterMembers, membersPerTeam = 10 }
   return (
     <div className="flex flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-xs hover:shadow-md transition">
       {/* TEAM HEADER */}
-      <div className="flex items-center justify-between gap-4 border-b border-zinc-200 bg-zinc-50/60 px-5 py-4">
+      <div className="flex items-center justify-between gap-4 border-b border-zinc-200 bg-zinc-50/70 px-5 py-4">
         <div className="flex min-w-0 items-center gap-3">
           <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-zinc-900 text-xs font-black text-white shadow-xs">
             T{teamNumber}
@@ -131,13 +122,13 @@ function PublicTeamCard({ teamNumber, team, rosterMembers, membersPerTeam = 10 }
         </div>
       </div>
 
-      {/* TACTICAL DUTY BANNER (MINIMALIST SINGLE STRIPE) */}
+      {/* TACTICAL DUTY BANNER */}
       {laneConfig?.tacticalType === "mvp" && (
         <div className="flex items-center gap-2 border-b border-amber-200/70 bg-amber-50/80 px-5 py-2 text-xs text-amber-950 font-medium">
           <span className="shrink-0 text-sm">👑</span>
           <div className="min-w-0 truncate">
             <span className="font-bold text-amber-900">MVP Directive: </span>
-            <span>Regroup at MVP area at <strong>18:00</strong> & <strong>08:00</strong></span>
+            <span>Regroup at MVP spawn at <strong>18:00</strong> & <strong>08:00</strong></span>
           </div>
         </div>
       )}
@@ -147,7 +138,7 @@ function PublicTeamCard({ teamNumber, team, rosterMembers, membersPerTeam = 10 }
           <span className="shrink-0 text-sm">🛡️</span>
           <div className="min-w-0 truncate">
             <span className="font-bold text-orange-900">Defend Directive: </span>
-            <span>Hold lane (Skip MVP) & delay enemy at portal</span>
+            <span>Hold lane defense (Skip MVP) & delay enemy at portal</span>
           </div>
         </div>
       )}
@@ -318,7 +309,7 @@ export default function PublicRosterPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#fafafa]">
-        <div className="h-16 border-b border-zinc-200 bg-white" />
+        <div className="h-14 border-b border-zinc-200 bg-white" />
         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
           <RosterDetailSkeleton isPublic={true} />
         </div>
@@ -348,9 +339,9 @@ export default function PublicRosterPage() {
 
   return (
     <div className="min-h-screen bg-[#fafafa]">
-      {/* HEADER */}
+      {/* NAVBAR */}
       <header className="sticky top-0 z-40 border-b border-zinc-200 bg-white/95 backdrop-blur">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link
             href="/"
             className="inline-flex items-center gap-2 text-xs font-semibold text-zinc-600 transition hover:text-zinc-900"
@@ -367,9 +358,10 @@ export default function PublicRosterPage() {
         </div>
       </header>
 
-      {/* HERO / EVENT OVERVIEW */}
-      <section className="border-b border-zinc-200 bg-white px-4 py-8 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
+      {/* UNIFIED PAGE CONTAINER - PERFECT PIXEL ALIGNMENT */}
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 space-y-6">
+        {/* HERO CARD */}
+        <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-xs">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <div className="flex items-center gap-2 text-xs font-bold text-red-700 uppercase tracking-widest">
@@ -433,13 +425,13 @@ export default function PublicRosterPage() {
           </div>
 
           {guildLeague.notes && (
-            <div className="mt-5 rounded-2xl bg-zinc-50 p-4 text-xs text-zinc-700 border border-zinc-200 leading-relaxed">
-              <span className="font-bold text-zinc-900">Tactical Strategy / Briefing: </span>
+            <div className="mt-5 rounded-xl bg-zinc-50 p-4 text-xs text-zinc-700 border border-zinc-200 leading-relaxed">
+              <strong className="text-zinc-900">Tactical Strategy / Briefing: </strong>
               {guildLeague.notes}
             </div>
           )}
 
-          {/* LANE FILTER / JUMP TABS */}
+          {/* LANE FILTER TABS */}
           <div className="mt-6 flex flex-wrap items-center gap-2 border-t border-zinc-100 pt-5">
             <button
               type="button"
@@ -497,13 +489,10 @@ export default function PublicRosterPage() {
             )}
           </div>
         </div>
-      </section>
 
-      {/* MAIN CONTENT AREA */}
-      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 space-y-8">
-        {/* SLEEK TACTICAL DIRECTIVES BAR */}
+        {/* MINIMALIST TACTICAL DIRECTIVES BAR - SAME EXACT WIDTH */}
         <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-xs">
-          <div className="grid grid-cols-1 divide-y divide-zinc-100 sm:grid-cols-3 sm:divide-x sm:divide-y-0 text-xs">
+          <div className="grid grid-cols-1 divide-y divide-zinc-100 md:grid-cols-3 md:divide-x md:divide-y-0 text-xs">
             <div className="flex items-center gap-3 p-3.5 sm:px-5">
               <span className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-800 text-sm border border-amber-200">
                 👑
@@ -513,7 +502,7 @@ export default function PublicRosterPage() {
                   <span>MVP Strike</span>
                   <span className="font-mono text-[10px] text-amber-700 bg-amber-50 px-1.5 py-0.2 rounded border border-amber-200">18:00 & 08:00</span>
                 </div>
-                <p className="text-[11px] text-zinc-500 leading-snug">
+                <p className="text-[11px] text-zinc-500 leading-snug mt-0.5">
                   Regroup at MVP spawn at 18:00 & 08:00 to secure boss kill.
                 </p>
               </div>
@@ -528,7 +517,7 @@ export default function PublicRosterPage() {
                   <span>Lane Defense</span>
                   <span className="text-[10px] text-orange-700 bg-orange-50 px-1.5 py-0.2 rounded border border-orange-200 uppercase font-bold">Skip MVP</span>
                 </div>
-                <p className="text-[11px] text-zinc-500 leading-snug">
+                <p className="text-[11px] text-zinc-500 leading-snug mt-0.5">
                   Hold lane defense & delay enemy advance at the MVP portal.
                 </p>
               </div>
@@ -543,7 +532,7 @@ export default function PublicRosterPage() {
                   <span>Lane Assault</span>
                   <span className="text-[10px] text-red-700 bg-red-50 px-1.5 py-0.2 rounded border border-red-200 uppercase font-bold">Siege</span>
                 </div>
-                <p className="text-[11px] text-zinc-500 leading-snug">
+                <p className="text-[11px] text-zinc-500 leading-snug mt-0.5">
                   Push enemy lane and breach defensive barricades.
                 </p>
               </div>
@@ -552,7 +541,7 @@ export default function PublicRosterPage() {
         </div>
 
         {/* 3 BATTLEFIELD LANE SECTIONS */}
-        <div className="space-y-8">
+        <div className="space-y-6">
           {LANE_SECTIONS.map((lane) => {
             if (activeTab !== "all" && activeTab !== lane.id) return null;
 
@@ -566,17 +555,17 @@ export default function PublicRosterPage() {
                 id={`lane-${lane.id}`}
                 className="space-y-4 animate-in fade-in duration-200"
               >
-                {/* CLEAN, MINIMALIST LANE HEADER */}
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between rounded-2xl border border-zinc-200 bg-zinc-50/70 p-4">
+                {/* CLEAN LANE HEADER */}
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between rounded-2xl border border-zinc-200 bg-white p-4 shadow-xs">
                   <div className="flex items-center gap-3">
-                    <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-white shadow-xs border border-zinc-200 text-zinc-800">
+                    <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-zinc-50 border border-zinc-200 text-zinc-800">
                       <Icon className="size-4" />
                     </div>
                     <div className="flex items-center gap-2">
                       <h2 className="text-base font-bold text-zinc-900">
                         {lane.name}
                       </h2>
-                      <span className="rounded-md border border-zinc-200 bg-white px-2 py-0.5 text-[11px] font-bold text-zinc-600">
+                      <span className="rounded-md border border-zinc-200 bg-zinc-50 px-2 py-0.5 text-[11px] font-bold text-zinc-600">
                         {teamNumbers.length} {teamNumbers.length === 1 ? "Team" : "Teams"}
                       </span>
                     </div>
@@ -584,12 +573,12 @@ export default function PublicRosterPage() {
 
                   {/* FORMATION STATS */}
                   <div className="flex items-center gap-2 text-xs">
-                    <div className="rounded-xl border border-zinc-200 bg-white px-3 py-1 text-zinc-600 shadow-2xs font-medium">
+                    <div className="rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-1 text-zinc-600 font-medium">
                       <span>Formation: </span>
                       <strong className="text-zinc-900 font-bold">{stat?.assignedCount || 0} / {stat?.capacity || 0} Players</strong>
                     </div>
                     {stat?.avgGS > 0 && (
-                      <div className="rounded-xl border border-zinc-200 bg-white px-3 py-1 text-zinc-600 shadow-2xs font-medium">
+                      <div className="rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-1 text-zinc-600 font-medium">
                         <span>Avg GS: </span>
                         <strong className="text-zinc-900 font-bold font-mono">{formatNumber(stat.avgGS)}</strong>
                       </div>
@@ -629,9 +618,9 @@ export default function PublicRosterPage() {
           {(activeTab === "all" || activeTab === "unassigned") &&
             laneGroups.unassigned.length > 0 && (
               <section className="space-y-4 border-t border-zinc-200 pt-6">
-                <div className="flex items-center justify-between rounded-2xl border border-zinc-200 bg-zinc-50/70 p-4">
+                <div className="flex items-center justify-between rounded-2xl border border-zinc-200 bg-white p-4 shadow-xs">
                   <div className="flex items-center gap-3">
-                    <div className="flex size-9 items-center justify-center rounded-xl bg-white border border-zinc-200 text-zinc-700">
+                    <div className="flex size-9 items-center justify-center rounded-xl bg-zinc-50 border border-zinc-200 text-zinc-700">
                       <Layers className="size-4" />
                     </div>
                     <div>
@@ -640,7 +629,7 @@ export default function PublicRosterPage() {
                       </h2>
                     </div>
                   </div>
-                  <span className="rounded-md border border-zinc-200 bg-white px-2 py-0.5 text-[11px] font-bold text-zinc-600">
+                  <span className="rounded-md border border-zinc-200 bg-zinc-50 px-2 py-0.5 text-[11px] font-bold text-zinc-600">
                     {laneGroups.unassigned.length} Teams
                   </span>
                 </div>
@@ -665,7 +654,7 @@ export default function PublicRosterPage() {
               </section>
             )}
         </div>
-      </main>
+      </div>
     </div>
   );
 }
