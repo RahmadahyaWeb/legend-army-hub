@@ -83,7 +83,7 @@ export default function CreateGuildLeagueModal({ open, onClose, onSuccess }) {
                 Create Guild League Match
               </h2>
               <p className="mt-0.5 text-xs text-zinc-500">
-                Initialize new match event and team slots in Neon Database
+                Setup match schedule and team roster slots
               </p>
             </div>
           </div>

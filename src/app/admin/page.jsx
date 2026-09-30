@@ -138,7 +138,7 @@ export default function AdminDashboardPage() {
           Guild Hub Dashboard
         </h1>
         <p className="mt-1 text-sm text-content-muted">
-          Manage guild members, events, rosters, and activities with Neon PostgreSQL.
+          Manage guild members, events, rosters, and guild activities.
         </p>
       </div>
 

@@ -136,7 +136,7 @@ export default function MembersPage() {
             Guild Members
           </h1>
           <p className="mt-1 text-xs text-zinc-500">
-            Total {members.length} registered members in Neon PostgreSQL
+            Total {members.length} registered guild members
           </p>
         </div>
 

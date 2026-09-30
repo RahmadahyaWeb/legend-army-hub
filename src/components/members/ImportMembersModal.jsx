@@ -150,7 +150,7 @@ export default function ImportMembersModal({ open, onClose, onSuccess }) {
                 Import Members from CSV
               </h3>
               <p className="text-xs text-zinc-500">
-                Batch upload guild roster data into Neon PostgreSQL
+                Batch upload and update guild roster data
               </p>
             </div>
           </div>
@@ -275,7 +275,7 @@ export default function ImportMembersModal({ open, onClose, onSuccess }) {
                 Members Imported Successfully!
               </h4>
               <p className="text-xs text-zinc-500">
-                {validMembers.length} member profiles have been saved into Neon PostgreSQL.
+                {validMembers.length} member profiles have been saved to the guild roster.
               </p>
             </div>
           )}

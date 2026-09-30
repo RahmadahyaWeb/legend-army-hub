@@ -114,7 +114,7 @@ export default function AdminUsersPage() {
             Admin Accounts
           </h1>
           <p className="mt-1 text-xs text-zinc-500">
-            Manage admin users with access to Guild Hub dashboard & settings in Neon Database
+            Manage admin accounts with access to Guild Hub dashboard & settings
           </p>
         </div>
 
@@ -143,7 +143,7 @@ export default function AdminUsersPage() {
             </div>
           ) : users.length === 0 ? (
             <div className="p-8 text-center text-xs text-zinc-500">
-              No database admin users yet. Default environment credentials are active.
+              No custom admin accounts registered yet.
             </div>
           ) : (
             users.map((u) => (
@@ -196,7 +196,7 @@ export default function AdminUsersPage() {
                     Add New Admin User
                   </h3>
                   <p className="text-xs text-zinc-500">
-                    Store login credentials securely in Neon Database
+                    Create login credentials for guild leadership
                   </p>
                 </div>
               </div>

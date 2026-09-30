@@ -93,7 +93,7 @@ export default function LoginPage() {
 
               <p className="mt-6 max-w-lg text-base leading-7 text-zinc-400">
                 Manage members, Guild League rosters, strategies, and guild
-                operations with real-time PostgreSQL database support.
+                operations from one central place.
               </p>
             </div>
 
