@@ -384,7 +384,10 @@ export default function GuildLeagueDetailPage() {
 
           <button
             type="button"
-            onClick={() => setCopyModalOpen(true)}
+            onClick={() => {
+              setToast(null);
+              setCopyModalOpen(true);
+            }}
             className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-zinc-200 bg-white px-3 text-xs font-semibold text-zinc-700 hover:bg-zinc-50"
           >
             <Copy className="size-3.5" />
@@ -520,9 +523,10 @@ export default function GuildLeagueDetailPage() {
 
                         <button
                           type="button"
-                          onClick={() =>
-                            setAssignSlot({ teamNumber, slotNumber })
-                          }
+                          onClick={() => {
+                            setToast(null);
+                            setAssignSlot({ teamNumber, slotNumber });
+                          }}
                           className="inline-flex items-center gap-1 rounded-lg border border-zinc-200 bg-white px-2.5 py-1 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 hover:text-red-600 shadow-sm"
                         >
                           <UserPlus className="size-3" />
@@ -535,7 +539,10 @@ export default function GuildLeagueDetailPage() {
                   return (
                     <div
                       key={slotNumber}
-                      onClick={() => setSelectedMember(member)}
+                      onClick={() => {
+                        setToast(null);
+                        setSelectedMember(member);
+                      }}
                       className="flex cursor-pointer items-center justify-between px-5 py-2.5 transition hover:bg-zinc-50"
                     >
                       <div className="flex min-w-0 items-center gap-3 text-xs">
@@ -601,8 +608,8 @@ export default function GuildLeagueDetailPage() {
       />
 
       {/* FLOATING TOAST FEEDBACK */}
-      {toast && (
-        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 rounded-2xl border border-zinc-900/10 bg-zinc-900 px-4 py-3 text-xs font-semibold text-white shadow-xl backdrop-blur-sm animate-in slide-in-from-bottom-5 duration-200">
+      {toast && !assignSlot && !selectedMember && !copyModalOpen && (
+        <div className="fixed bottom-6 right-6 z-40 flex items-center gap-2.5 rounded-2xl border border-zinc-900/10 bg-zinc-900 px-4 py-3 text-xs font-semibold text-white shadow-xl backdrop-blur-sm animate-in slide-in-from-bottom-5 duration-200">
           {toast.type === "error" ? (
             <AlertCircle className="size-4 text-red-400 shrink-0" />
           ) : (
