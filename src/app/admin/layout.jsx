@@ -9,6 +9,7 @@ import {
   LogOut,
   Menu,
   ScrollText,
+  ShieldCheck,
   Swords,
   UserCheck,
   Users,
@@ -41,6 +42,11 @@ const navigation = [
     name: "Attendance",
     href: "/admin/attendance",
     icon: UserCheck,
+  },
+  {
+    name: "Admins",
+    href: "/admin/users",
+    icon: ShieldCheck,
   },
 ];
 
