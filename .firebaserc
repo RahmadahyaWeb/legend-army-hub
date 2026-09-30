@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "guild-league-la"
+  },
+  "targets": {
+    "guild-league-la": {
+      "hosting": {
+        "legendarmyhub": [
+          "legendarmyhub"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}
