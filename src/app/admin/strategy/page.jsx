@@ -2,32 +2,16 @@
 
 import { useEffect, useState } from "react";
 import {
-  Bold,
-  Code,
   FileText,
-  Heading1,
-  Heading2,
-  Italic,
-  List,
-  Pencil,
   Plus,
   Save,
   ScrollText,
   Trash2,
-  X,
 } from "lucide-react";
 import { fetchStrategies, saveStrategy, deleteStrategy } from "@/lib/api";
-
-function formatDate(timestamp) {
-  if (!timestamp) return "—";
-  const date = new Date(timestamp);
-  if (Number.isNaN(date.getTime())) return "—";
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  }).format(date);
-}
+import { formatDate } from "@/utils/formatters";
+import { PageLoading } from "@/components/ui/LoadingState";
+import EmptyState from "@/components/ui/EmptyState";
 
 export default function StrategyPage() {
   const [strategies, setStrategies] = useState([]);
@@ -41,27 +25,6 @@ export default function StrategyPage() {
   const [content, setContent] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-
-  const loadStrategies = async () => {
-    try {
-      setLoading(true);
-      const data = await fetchStrategies();
-      setStrategies(data);
-      if (data.length > 0 && !selectedId) {
-        selectStrategy(data[0]);
-      }
-      setError("");
-    } catch (err) {
-      console.error("Strategy load error:", err);
-      setError(err.message || "Failed to load strategies.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadStrategies();
-  }, []);
 
   const selectStrategy = (strat) => {
     setSelectedId(strat.id);
@@ -78,6 +41,27 @@ export default function StrategyPage() {
     setMapName("");
     setContent("");
   };
+
+  const loadStrategies = async (silent = false) => {
+    try {
+      if (!silent) setLoading(true);
+      const data = await fetchStrategies(silent);
+      setStrategies(data);
+      if (data.length > 0 && !selectedId) {
+        selectStrategy(data[0]);
+      }
+      setError("");
+    } catch (err) {
+      console.error("Strategy load error:", err);
+      setError("Failed to load strategies.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadStrategies(false);
+  }, []);
 
   const handleSave = async (e) => {
     e.preventDefault();
@@ -96,7 +80,7 @@ export default function StrategyPage() {
         content,
       });
 
-      await loadStrategies();
+      await loadStrategies(true);
       if (res.strategy) selectStrategy(res.strategy);
     } catch (err) {
       console.error("Save strategy error:", err);
@@ -109,13 +93,17 @@ export default function StrategyPage() {
   const handleDelete = async (id, titleText) => {
     if (!confirm(`Delete strategy "${titleText}"?`)) return;
 
+    // Optimistic removal
+    setStrategies((prev) => prev.filter((s) => s.id !== id));
+    handleNew();
+
     try {
       await deleteStrategy(id);
-      handleNew();
-      loadStrategies();
+      loadStrategies(true);
     } catch (err) {
       console.error("Delete strategy error:", err);
       alert("Failed to delete: " + err.message);
+      loadStrategies(true);
     }
   };
 
@@ -157,14 +145,16 @@ export default function StrategyPage() {
           </h3>
 
           <div className="space-y-2 max-h-[75vh] overflow-y-auto pr-1">
-            {loading ? (
-              <div className="rounded-2xl border border-zinc-200 bg-white p-6 text-center text-xs text-zinc-500">
-                Loading strategies...
+            {loading && strategies.length === 0 ? (
+              <div className="rounded-2xl border border-zinc-200 bg-white p-8 text-center text-xs text-zinc-400 animate-pulse">
+                Loading saved documents...
               </div>
             ) : strategies.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-zinc-300 bg-white p-8 text-center text-xs text-zinc-500">
-                No strategy documents found. Click "New Strategy" to create one.
-              </div>
+              <EmptyState
+                icon={ScrollText}
+                title="No strategies saved"
+                description="Click 'New Strategy' to write match tactics."
+              />
             ) : (
               strategies.map((s) => (
                 <div
@@ -185,7 +175,9 @@ export default function StrategyPage() {
                         {s.title}
                       </h4>
                       {s.mapName && (
-                        <p className="text-[11px] text-zinc-500">Map: {s.mapName}</p>
+                        <p className="text-[11px] text-zinc-500">
+                          Map: {s.mapName}
+                        </p>
                       )}
                     </div>
 
@@ -228,7 +220,9 @@ export default function StrategyPage() {
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-zinc-700">Title</label>
+              <label className="text-xs font-semibold text-zinc-700">
+                Title
+              </label>
               <input
                 type="text"
                 required
@@ -241,7 +235,9 @@ export default function StrategyPage() {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-xs font-semibold text-zinc-700">Category</label>
+                <label className="text-xs font-semibold text-zinc-700">
+                  Category
+                </label>
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}

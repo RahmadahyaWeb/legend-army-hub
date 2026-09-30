@@ -16,6 +16,9 @@ import {
   Users,
 } from "lucide-react";
 import { fetchMembers, saveMember } from "@/lib/api";
+import { formatNumber, formatDate } from "@/utils/formatters";
+import { PageLoading, SkeletonTable } from "@/components/ui/LoadingState";
+import EmptyState from "@/components/ui/EmptyState";
 import ImportMembersModal from "@/components/members/ImportMembersModal";
 import EditMemberModal from "@/components/members/EditMemberModal";
 import DeleteMemberModal from "@/components/members/DeleteMemberModal";
@@ -39,22 +42,22 @@ export default function MembersPage() {
   const [editingMember, setEditingMember] = useState(null);
   const [deletingMember, setDeletingMember] = useState(null);
 
-  const loadMembers = async () => {
+  const loadMembers = async (silent = false) => {
     try {
-      setLoading(true);
-      const data = await fetchMembers();
+      if (!silent) setLoading(true);
+      const data = await fetchMembers(silent);
       setMembers(data);
       setError("");
     } catch (err) {
       console.error("Failed to load members:", err);
-      setError(err.message || "Failed to load members.");
+      setError("Failed to load members.");
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    loadMembers();
+    loadMembers(false);
   }, []);
 
   const handleSort = (field) => {
@@ -67,17 +70,21 @@ export default function MembersPage() {
   };
 
   const handleToggleActive = async (member) => {
+    const updatedStatus = !member.isActive;
+    // Optimistic toggle
+    setMembers((prev) =>
+      prev.map((m) => (m.id === member.id ? { ...m, isActive: updatedStatus } : m))
+    );
+
     try {
-      const updatedStatus = !member.isActive;
       await saveMember({
         id: member.id,
         isActive: updatedStatus,
       });
-      setMembers((prev) =>
-        prev.map((m) => (m.id === member.id ? { ...m, isActive: updatedStatus } : m))
-      );
+      loadMembers(true);
     } catch (err) {
       console.error("Toggle active error:", err);
+      loadMembers(true);
     }
   };
 
@@ -240,7 +247,11 @@ export default function MembersPage() {
                   <div className="flex items-center gap-1.5">
                     <span>Player</span>
                     {sortField === "nickname" && (
-                      sortDirection === "asc" ? <ArrowUp className="size-3 text-red-600" /> : <ArrowDown className="size-3 text-red-600" />
+                      sortDirection === "asc" ? (
+                        <ArrowUp className="size-3 text-red-600" />
+                      ) : (
+                        <ArrowDown className="size-3 text-red-600" />
+                      )
                     )}
                   </div>
                 </th>
@@ -251,7 +262,11 @@ export default function MembersPage() {
                   <div className="flex items-center gap-1.5">
                     <span>Class</span>
                     {sortField === "className" && (
-                      sortDirection === "asc" ? <ArrowUp className="size-3 text-red-600" /> : <ArrowDown className="size-3 text-red-600" />
+                      sortDirection === "asc" ? (
+                        <ArrowUp className="size-3 text-red-600" />
+                      ) : (
+                        <ArrowDown className="size-3 text-red-600" />
+                      )
                     )}
                   </div>
                 </th>
@@ -262,7 +277,11 @@ export default function MembersPage() {
                   <div className="flex items-center gap-1.5">
                     <span>Level</span>
                     {sortField === "level" && (
-                      sortDirection === "asc" ? <ArrowUp className="size-3 text-red-600" /> : <ArrowDown className="size-3 text-red-600" />
+                      sortDirection === "asc" ? (
+                        <ArrowUp className="size-3 text-red-600" />
+                      ) : (
+                        <ArrowDown className="size-3 text-red-600" />
+                      )
                     )}
                   </div>
                 </th>
@@ -273,7 +292,11 @@ export default function MembersPage() {
                   <div className="flex items-center gap-1.5">
                     <span>Gear Score</span>
                     {sortField === "gearScore" && (
-                      sortDirection === "asc" ? <ArrowUp className="size-3 text-red-600" /> : <ArrowDown className="size-3 text-red-600" />
+                      sortDirection === "asc" ? (
+                        <ArrowUp className="size-3 text-red-600" />
+                      ) : (
+                        <ArrowDown className="size-3 text-red-600" />
+                      )
                     )}
                   </div>
                 </th>
@@ -283,10 +306,10 @@ export default function MembersPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-100">
-              {loading ? (
+              {loading && members.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="p-8 text-center text-zinc-500">
-                    Loading members...
+                  <td colSpan={7} className="p-0">
+                    <SkeletonTable rows={6} cols={7} />
                   </td>
                 </tr>
               ) : paginatedMembers.length === 0 ? (
@@ -301,12 +324,16 @@ export default function MembersPage() {
                     <td className="px-4 py-3 font-bold text-zinc-900">
                       {m.nickname}
                     </td>
-                    <td className="px-4 py-3 text-zinc-600">{m.className || "—"}</td>
+                    <td className="px-4 py-3 text-zinc-600">
+                      {m.className || "—"}
+                    </td>
                     <td className="px-4 py-3 text-zinc-600">
                       {m.level ? `Lv. ${m.level}` : "—"}
                     </td>
                     <td className="px-4 py-3 font-bold text-zinc-900">
-                      {m.gearScore ? `${Number(m.gearScore).toLocaleString()} GS` : "—"}
+                      {m.gearScore
+                        ? `${formatNumber(m.gearScore)} GS`
+                        : "—"}
                     </td>
                     <td className="px-4 py-3 text-zinc-600">{m.role || "Member"}</td>
                     <td className="px-4 py-3">
@@ -321,7 +348,9 @@ export default function MembersPage() {
                       >
                         <span
                           className={`size-1.5 rounded-full ${
-                            m.isActive !== false ? "bg-emerald-500" : "bg-zinc-400"
+                            m.isActive !== false
+                              ? "bg-emerald-500"
+                              : "bg-zinc-400"
                           }`}
                         />
                         {m.isActive !== false ? "Active" : "Inactive"}
@@ -400,21 +429,21 @@ export default function MembersPage() {
       <ImportMembersModal
         open={importModalOpen}
         onClose={() => setImportModalOpen(false)}
-        onSuccess={loadMembers}
+        onSuccess={() => loadMembers(true)}
       />
 
       <EditMemberModal
         open={Boolean(editingMember)}
         member={editingMember}
         onClose={() => setEditingMember(null)}
-        onSuccess={loadMembers}
+        onSuccess={() => loadMembers(true)}
       />
 
       <DeleteMemberModal
         open={Boolean(deletingMember)}
         member={deletingMember}
         onClose={() => setDeletingMember(null)}
-        onSuccess={loadMembers}
+        onSuccess={() => loadMembers(true)}
       />
     </div>
   );

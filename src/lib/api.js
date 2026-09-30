@@ -1,10 +1,48 @@
-// API Client Helper for Neon Database endpoints
+// Lightweight, high-performance API Client with in-memory caching and auto-invalidation
 
-export async function fetchMembers() {
+const cache = new Map();
+const CACHE_TTL_MS = 20_000; // 20 seconds cache TTL
+
+function getCached(key) {
+  const item = cache.get(key);
+  if (!item) return null;
+  if (Date.now() - item.timestamp > CACHE_TTL_MS) {
+    cache.delete(key);
+    return null;
+  }
+  return item.data;
+}
+
+function setCached(key, data) {
+  cache.set(key, { data, timestamp: Date.now() });
+}
+
+export function clearCache(pattern = null) {
+  if (!pattern) {
+    cache.clear();
+    return;
+  }
+  for (const key of cache.keys()) {
+    if (key.includes(pattern)) {
+      cache.delete(key);
+    }
+  }
+}
+
+// MEMBERS
+export async function fetchMembers(force = false) {
+  const cacheKey = "members_list";
+  if (!force) {
+    const cached = getCached(cacheKey);
+    if (cached) return cached;
+  }
+
   const res = await fetch("/api/members", { cache: "no-store" });
   if (!res.ok) throw new Error("Failed to fetch members");
   const data = await res.json();
-  return data.members || [];
+  const members = data.members || [];
+  setCached(cacheKey, members);
+  return members;
 }
 
 export async function saveMember(member) {
@@ -19,6 +57,7 @@ export async function saveMember(member) {
     const err = await res.json().catch(() => ({}));
     throw new Error(err.error || "Failed to save member");
   }
+  clearCache("members");
   return await res.json();
 }
 
@@ -27,6 +66,7 @@ export async function deleteMember(id) {
     method: "DELETE",
   });
   if (!res.ok) throw new Error("Failed to delete member");
+  clearCache("members");
   return await res.json();
 }
 
@@ -40,14 +80,24 @@ export async function importMembers(membersList) {
     const err = await res.json().catch(() => ({}));
     throw new Error(err.error || "Failed to import members");
   }
+  clearCache("members");
   return await res.json();
 }
 
-export async function fetchGuildLeagues() {
+// GUILD LEAGUES
+export async function fetchGuildLeagues(force = false) {
+  const cacheKey = "guild_leagues_list";
+  if (!force) {
+    const cached = getCached(cacheKey);
+    if (cached) return cached;
+  }
+
   const res = await fetch("/api/guild-leagues", { cache: "no-store" });
   if (!res.ok) throw new Error("Failed to fetch guild leagues");
   const data = await res.json();
-  return data.guildLeagues || [];
+  const leagues = data.guildLeagues || [];
+  setCached(cacheKey, leagues);
+  return leagues;
 }
 
 export async function createGuildLeague(payload) {
@@ -60,13 +110,22 @@ export async function createGuildLeague(payload) {
     const err = await res.json().catch(() => ({}));
     throw new Error(err.error || "Failed to create guild league");
   }
+  clearCache("guild_leagues");
   return await res.json();
 }
 
-export async function fetchGuildLeagueDetail(id) {
+export async function fetchGuildLeagueDetail(id, force = false) {
+  const cacheKey = `guild_league_detail_${id}`;
+  if (!force) {
+    const cached = getCached(cacheKey);
+    if (cached) return cached;
+  }
+
   const res = await fetch(`/api/guild-leagues/${id}`, { cache: "no-store" });
   if (!res.ok) throw new Error("Failed to fetch guild league detail");
-  return await res.json();
+  const data = await res.json();
+  setCached(cacheKey, data);
+  return data;
 }
 
 export async function updateGuildLeague(id, payload) {
@@ -76,6 +135,8 @@ export async function updateGuildLeague(id, payload) {
     body: JSON.stringify(payload),
   });
   if (!res.ok) throw new Error("Failed to update guild league");
+  clearCache(`guild_league_detail_${id}`);
+  clearCache("guild_leagues");
   return await res.json();
 }
 
@@ -84,6 +145,7 @@ export async function deleteGuildLeague(id) {
     method: "DELETE",
   });
   if (!res.ok) throw new Error("Failed to delete guild league");
+  clearCache("guild_leagues");
   return await res.json();
 }
 
@@ -94,6 +156,8 @@ export async function assignRosterMember(guildLeagueId, payload) {
     body: JSON.stringify(payload),
   });
   if (!res.ok) throw new Error("Failed to assign roster member");
+  clearCache(`guild_league_detail_${guildLeagueId}`);
+  clearCache("guild_leagues");
   return await res.json();
 }
 
@@ -103,6 +167,8 @@ export async function removeRosterMember(guildLeagueId, teamNumber, slotNumber) 
     { method: "DELETE" }
   );
   if (!res.ok) throw new Error("Failed to remove roster member");
+  clearCache(`guild_league_detail_${guildLeagueId}`);
+  clearCache("guild_leagues");
   return await res.json();
 }
 
@@ -113,6 +179,7 @@ export async function updateTeamInfo(guildLeagueId, teamNumber, name, lane) {
     body: JSON.stringify({ teamNumber, name, lane }),
   });
   if (!res.ok) throw new Error("Failed to update team info");
+  clearCache(`guild_league_detail_${guildLeagueId}`);
   return await res.json();
 }
 
@@ -123,14 +190,25 @@ export async function copyRoster(targetLeagueId, sourceLeagueId, overwrite = tru
     body: JSON.stringify({ sourceLeagueId, overwrite }),
   });
   if (!res.ok) throw new Error("Failed to copy roster");
+  clearCache(`guild_league_detail_${targetLeagueId}`);
+  clearCache("guild_leagues");
   return await res.json();
 }
 
-export async function fetchStrategies() {
+// STRATEGIES
+export async function fetchStrategies(force = false) {
+  const cacheKey = "strategies_list";
+  if (!force) {
+    const cached = getCached(cacheKey);
+    if (cached) return cached;
+  }
+
   const res = await fetch("/api/strategies", { cache: "no-store" });
   if (!res.ok) throw new Error("Failed to fetch strategies");
   const data = await res.json();
-  return data.strategies || [];
+  const strategies = data.strategies || [];
+  setCached(cacheKey, strategies);
+  return strategies;
 }
 
 export async function saveStrategy(strategy) {
@@ -142,6 +220,7 @@ export async function saveStrategy(strategy) {
     body: JSON.stringify(strategy),
   });
   if (!res.ok) throw new Error("Failed to save strategy");
+  clearCache("strategies");
   return await res.json();
 }
 
@@ -150,17 +229,27 @@ export async function deleteStrategy(id) {
     method: "DELETE",
   });
   if (!res.ok) throw new Error("Failed to delete strategy");
+  clearCache("strategies");
   return await res.json();
 }
 
-export async function fetchAttendance(guildLeagueId) {
+// ATTENDANCE
+export async function fetchAttendance(guildLeagueId, force = false) {
+  const cacheKey = `attendance_${guildLeagueId || "all"}`;
+  if (!force) {
+    const cached = getCached(cacheKey);
+    if (cached) return cached;
+  }
+
   const url = guildLeagueId
     ? `/api/attendance?guildLeagueId=${encodeURIComponent(guildLeagueId)}`
     : "/api/attendance";
   const res = await fetch(url, { cache: "no-store" });
   if (!res.ok) throw new Error("Failed to fetch attendance");
   const data = await res.json();
-  return data.attendances || [];
+  const list = data.attendances || [];
+  setCached(cacheKey, list);
+  return list;
 }
 
 export async function saveAttendance(payload) {
@@ -170,5 +259,6 @@ export async function saveAttendance(payload) {
     body: JSON.stringify(payload),
   });
   if (!res.ok) throw new Error("Failed to save attendance");
+  clearCache("attendance");
   return await res.json();
 }

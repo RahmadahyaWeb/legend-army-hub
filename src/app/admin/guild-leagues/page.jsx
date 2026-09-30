@@ -12,19 +12,10 @@ import {
   Users,
 } from "lucide-react";
 import { fetchGuildLeagues, deleteGuildLeague } from "@/lib/api";
+import { formatDate } from "@/utils/formatters";
+import { SkeletonGrid } from "@/components/ui/LoadingState";
+import EmptyState from "@/components/ui/EmptyState";
 import CreateGuildLeagueModal from "@/components/guild-league/CreateGuildLeagueModal";
-
-function formatDate(timestamp) {
-  if (!timestamp) return "—";
-  const date = new Date(timestamp);
-  if (Number.isNaN(date.getTime())) return "—";
-  return new Intl.DateTimeFormat("en-US", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).format(date);
-}
 
 export default function GuildLeaguesPage() {
   const [guildLeagues, setGuildLeagues] = useState([]);
@@ -33,22 +24,22 @@ export default function GuildLeaguesPage() {
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState("all");
 
-  const loadMatches = async () => {
+  const loadMatches = async (silent = false) => {
     try {
-      setLoading(true);
-      const data = await fetchGuildLeagues();
+      if (!silent) setLoading(true);
+      const data = await fetchGuildLeagues(silent);
       setGuildLeagues(data);
       setError("");
     } catch (err) {
       console.error("Guild Leagues error:", err);
-      setError(err.message || "Failed to load guild leagues.");
+      setError("Failed to load guild leagues.");
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    loadMatches();
+    loadMatches(false);
   }, []);
 
   const handleDelete = async (id, name, e) => {
@@ -56,12 +47,16 @@ export default function GuildLeaguesPage() {
     e.stopPropagation();
     if (!confirm(`Are you sure you want to delete "${name}"?`)) return;
 
+    // Optimistic removal
+    setGuildLeagues((prev) => prev.filter((m) => m.id !== id));
+
     try {
       await deleteGuildLeague(id);
-      loadMatches();
+      loadMatches(true);
     } catch (err) {
       console.error("Delete error:", err);
       alert("Failed to delete: " + err.message);
+      loadMatches(true);
     }
   };
 
@@ -113,30 +108,24 @@ export default function GuildLeaguesPage() {
       )}
 
       {/* MATCHES LIST */}
-      {loading ? (
-        <div className="rounded-2xl border border-zinc-200 bg-white p-12 text-center text-xs text-zinc-500">
-          Loading matches...
-        </div>
+      {loading && guildLeagues.length === 0 ? (
+        <SkeletonGrid count={6} />
       ) : filteredMatches.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-zinc-300 bg-white p-12 text-center">
-          <div className="mx-auto flex size-12 items-center justify-center rounded-2xl bg-red-50 text-red-700">
-            <Swords className="size-6" />
-          </div>
-          <h3 className="mt-4 text-sm font-bold text-zinc-900">
-            No Guild League matches found
-          </h3>
-          <p className="mt-1 text-xs text-zinc-500">
-            Create your first guild league event to start organizing teams.
-          </p>
-          <button
-            type="button"
-            onClick={() => setCreateModalOpen(true)}
-            className="mt-4 inline-flex items-center gap-2 rounded-xl bg-red-600 px-4 py-2 text-xs font-bold text-white shadow hover:bg-red-500"
-          >
-            <Plus className="size-3.5" />
-            <span>Create Match</span>
-          </button>
-        </div>
+        <EmptyState
+          icon={Swords}
+          title="No Guild League matches found"
+          description="Create your first guild league event to start organizing teams and assigning rosters."
+          action={
+            <button
+              type="button"
+              onClick={() => setCreateModalOpen(true)}
+              className="inline-flex items-center gap-2 rounded-xl bg-red-600 px-4 py-2 text-xs font-bold text-white shadow hover:bg-red-500"
+            >
+              <Plus className="size-3.5" />
+              <span>Create Match</span>
+            </button>
+          }
+        />
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {filteredMatches.map((gl) => {
@@ -214,7 +203,7 @@ export default function GuildLeaguesPage() {
       <CreateGuildLeagueModal
         open={createModalOpen}
         onClose={() => setCreateModalOpen(false)}
-        onSuccess={loadMatches}
+        onSuccess={() => loadMatches(true)}
       />
     </div>
   );

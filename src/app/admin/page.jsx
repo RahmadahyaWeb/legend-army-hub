@@ -6,58 +6,30 @@ import {
   ArrowRight,
   CalendarDays,
   ChevronRight,
-  ShieldCheck,
+  Shield,
+  Swords,
   Users,
 } from "lucide-react";
 import { fetchMembers, fetchGuildLeagues } from "@/lib/api";
+import {
+  formatNumber,
+  formatGearScore,
+  formatDate,
+  normalizeClassName,
+  isMemberActive,
+} from "@/utils/formatters";
+import { PageLoading, SkeletonCard } from "@/components/ui/LoadingState";
+import EmptyState from "@/components/ui/EmptyState";
 
 function Stat({ value, label }) {
   return (
     <div className="min-w-0">
-      <div className="text-2xl font-semibold tracking-tight text-content-strong sm:text-3xl">
+      <div className="text-2xl font-bold tracking-tight text-content-strong sm:text-3xl">
         {value}
       </div>
       <div className="mt-1 text-xs text-content-muted sm:text-sm">{label}</div>
     </div>
   );
-}
-
-function formatNumber(value) {
-  const number = Number(value);
-  if (Number.isNaN(number)) return "0";
-  return number.toLocaleString();
-}
-
-function formatGearScore(value) {
-  const number = Number(value);
-  if (!number || Number.isNaN(number)) return "0";
-  if (number >= 1000) {
-    return `${(number / 1000).toFixed(1).replace(".0", "")}K`;
-  }
-  return formatNumber(number);
-}
-
-function formatDate(timestamp) {
-  if (!timestamp) return "Date not available";
-  const date = new Date(timestamp);
-  if (Number.isNaN(date.getTime())) return "Date not available";
-  return new Intl.DateTimeFormat("en-US", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).format(date);
-}
-
-function normalizeClassName(member) {
-  return member.className || member.class || member.job || "Unknown";
-}
-
-function isMemberActive(member) {
-  if (typeof member.isActive === "boolean") return member.isActive;
-  if (typeof member.active === "boolean") return member.active;
-  if (typeof member.status === "string") return member.status.toLowerCase() === "active";
-  return true;
 }
 
 export default function AdminDashboardPage() {
@@ -66,9 +38,9 @@ export default function AdminDashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const loadData = async () => {
+  const loadData = async (silent = false) => {
     try {
-      setLoading(true);
+      if (!silent) setLoading(true);
       const [membersData, leaguesData] = await Promise.all([
         fetchMembers(),
         fetchGuildLeagues(),
@@ -78,14 +50,14 @@ export default function AdminDashboardPage() {
       setError("");
     } catch (err) {
       console.error("Dashboard error:", err);
-      setError(err.message || "Failed to load dashboard data.");
+      setError("Failed to load dashboard data.");
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    loadData();
+    loadData(false);
   }, []);
 
   const activeMembers = useMemo(() => members.filter(isMemberActive), [members]);
@@ -94,7 +66,10 @@ export default function AdminDashboardPage() {
     if (activeMembers.length === 0) return 0;
     const validMembers = activeMembers.filter((m) => Number(m.gearScore) > 0);
     if (validMembers.length === 0) return 0;
-    const total = validMembers.reduce((sum, m) => sum + Number(m.gearScore || 0), 0);
+    const total = validMembers.reduce(
+      (sum, m) => sum + Number(m.gearScore || 0),
+      0
+    );
     return Math.round(total / validMembers.length);
   }, [activeMembers]);
 
@@ -122,12 +97,8 @@ export default function AdminDashboardPage() {
     return upcoming[0] || null;
   }, [guildLeagues]);
 
-  if (loading) {
-    return (
-      <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="size-6 animate-spin rounded-full border-2 border-zinc-300 border-t-red-700" />
-      </div>
-    );
+  if (loading && members.length === 0 && guildLeagues.length === 0) {
+    return <PageLoading message="Loading dashboard..." />;
   }
 
   return (
@@ -188,7 +159,9 @@ export default function AdminDashboardPage() {
                 <div className="mt-2 space-y-1 text-xs text-content-muted">
                   <div className="flex items-center gap-2">
                     <CalendarDays className="size-3.5 text-content-subtle" />
-                    <span>{formatDate(nextGuildLeague.matchDate || nextGuildLeague.date)}</span>
+                    <span>
+                      {formatDate(nextGuildLeague.matchDate || nextGuildLeague.date)}
+                    </span>
                   </div>
                   {nextGuildLeague.opponent && (
                     <div className="font-semibold text-content-strong">
@@ -198,8 +171,11 @@ export default function AdminDashboardPage() {
                   <div className="flex items-center gap-2 pt-2">
                     <Users className="size-3.5 text-content-subtle" />
                     <span>
-                      Roster: {nextGuildLeague.assignedPlayers || nextGuildLeague.rosterCount || 0} /{" "}
-                      {nextGuildLeague.maxRoster || 20} players
+                      Roster:{" "}
+                      {nextGuildLeague.assignedPlayers ||
+                        nextGuildLeague.rosterCount ||
+                        0}{" "}
+                      / {nextGuildLeague.maxRoster || 20} players
                     </span>
                   </div>
                 </div>
@@ -244,12 +220,19 @@ export default function AdminDashboardPage() {
           </div>
 
           {classComposition.length === 0 ? (
-            <p className="mt-4 text-xs text-content-muted">No member classes recorded yet.</p>
+            <p className="mt-4 text-xs text-content-muted">
+              No member classes recorded yet.
+            </p>
           ) : (
             <div className="mt-4 space-y-2.5 max-h-64 overflow-y-auto pr-2">
               {classComposition.map((item) => (
-                <div key={item.name} className="flex items-center justify-between text-xs">
-                  <span className="font-semibold text-content-strong">{item.name}</span>
+                <div
+                  key={item.name}
+                  className="flex items-center justify-between text-xs"
+                >
+                  <span className="font-semibold text-content-strong">
+                    {item.name}
+                  </span>
                   <div className="flex items-center gap-2">
                     <span className="font-bold text-brand-700">{item.count}</span>
                     <span className="text-content-subtle text-[11px]">
@@ -270,8 +253,12 @@ export default function AdminDashboardPage() {
           className="flex items-center justify-between rounded-xl border border-line bg-white p-4 shadow-sm transition hover:border-brand-300"
         >
           <div>
-            <h4 className="text-sm font-bold text-content-strong">Manage Members</h4>
-            <p className="mt-0.5 text-xs text-content-muted">Add, edit, or import members</p>
+            <h4 className="text-sm font-bold text-content-strong">
+              Manage Members
+            </h4>
+            <p className="mt-0.5 text-xs text-content-muted">
+              Add, edit, or import members
+            </p>
           </div>
           <ChevronRight className="size-4 text-content-subtle" />
         </Link>
@@ -280,8 +267,12 @@ export default function AdminDashboardPage() {
           className="flex items-center justify-between rounded-xl border border-line bg-white p-4 shadow-sm transition hover:border-brand-300"
         >
           <div>
-            <h4 className="text-sm font-bold text-content-strong">Guild Leagues</h4>
-            <p className="mt-0.5 text-xs text-content-muted">Matches & team assignments</p>
+            <h4 className="text-sm font-bold text-content-strong">
+              Guild Leagues
+            </h4>
+            <p className="mt-0.5 text-xs text-content-muted">
+              Matches & team assignments
+            </p>
           </div>
           <ChevronRight className="size-4 text-content-subtle" />
         </Link>
@@ -290,8 +281,12 @@ export default function AdminDashboardPage() {
           className="flex items-center justify-between rounded-xl border border-line bg-white p-4 shadow-sm transition hover:border-brand-300"
         >
           <div>
-            <h4 className="text-sm font-bold text-content-strong">Strategy & Guides</h4>
-            <p className="mt-0.5 text-xs text-content-muted">Tactic plans & map setups</p>
+            <h4 className="text-sm font-bold text-content-strong">
+              Strategy & Guides
+            </h4>
+            <p className="mt-0.5 text-xs text-content-muted">
+              Tactic plans & map setups
+            </p>
           </div>
           <ChevronRight className="size-4 text-content-subtle" />
         </Link>
