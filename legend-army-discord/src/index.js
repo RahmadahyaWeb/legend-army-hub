@@ -132,6 +132,25 @@ async function handleStrategy(request, env, corsHeaders) {
 		);
 	}
 
+	const category = String(body.category || '').trim();
+	const mapName = String(body.mapName || '').trim();
+
+	const fields = [];
+	if (category) {
+		fields.push({
+			name: '📁 Category',
+			value: `**${category}**`,
+			inline: true,
+		});
+	}
+	if (mapName) {
+		fields.push({
+			name: '🗺️ Map / Arena',
+			value: `**${mapName}**`,
+			inline: true,
+		});
+	}
+
 	const discordPayload = {
 		username: 'XKGBOT',
 
@@ -144,6 +163,8 @@ async function handleStrategy(request, env, corsHeaders) {
 				title: `⚔️ ${title}`,
 
 				description: content,
+
+				fields: fields.length > 0 ? fields : undefined,
 
 				color: 15158332,
 

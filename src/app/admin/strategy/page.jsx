@@ -2,13 +2,18 @@
 
 import { useEffect, useState } from "react";
 import {
+  AlertCircle,
+  CheckCircle2,
   FileText,
   Plus,
   Save,
   ScrollText,
+  Send,
   Trash2,
+  X,
 } from "lucide-react";
 import { fetchStrategies, saveStrategy, deleteStrategy } from "@/lib/api";
+import { sendStrategyToDiscord } from "@/services/strategy/strategyDiscordService";
 import { formatDate } from "@/utils/formatters";
 import { PageLoading } from "@/components/ui/LoadingState";
 import EmptyState from "@/components/ui/EmptyState";
@@ -24,7 +29,23 @@ export default function StrategyPage() {
   const [mapName, setMapName] = useState("");
   const [content, setContent] = useState("");
   const [saving, setSaving] = useState(false);
+  const [sendingDiscord, setSendingDiscord] = useState(false);
   const [error, setError] = useState("");
+
+  // Toast feedback state
+  const [toast, setToast] = useState(null);
+
+  const showToast = (message, type = "success") => {
+    setToast({ message, type, id: Date.now() });
+  };
+
+  useEffect(() => {
+    if (!toast) return;
+    const timer = setTimeout(() => {
+      setToast(null);
+    }, 4000);
+    return () => clearTimeout(timer);
+  }, [toast]);
 
   const selectStrategy = (strat) => {
     setSelectedId(strat.id);
@@ -64,10 +85,10 @@ export default function StrategyPage() {
   }, []);
 
   const handleSave = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     if (!title.trim()) {
-      alert("Title is required");
-      return;
+      showToast("Judul strategi wajib diisi.", "error");
+      return null;
     }
 
     setSaving(true);
@@ -82,11 +103,47 @@ export default function StrategyPage() {
 
       await loadStrategies(true);
       if (res.strategy) selectStrategy(res.strategy);
+      showToast("Strategi berhasil disimpan!");
+      return res.strategy;
     } catch (err) {
       console.error("Save strategy error:", err);
-      alert("Failed to save: " + err.message);
+      showToast("Gagal menyimpan: " + err.message, "error");
+      return null;
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleSendDiscord = async (stratToSend = null) => {
+    const targetTitle = stratToSend ? stratToSend.title : title;
+    const targetContent = stratToSend ? stratToSend.content : content;
+    const targetCategory = stratToSend ? stratToSend.category : category;
+    const targetMapName = stratToSend ? stratToSend.mapName : mapName;
+
+    if (!targetTitle?.trim()) {
+      showToast("Judul strategi wajib diisi sebelum mengirim ke Discord.", "error");
+      return;
+    }
+
+    if (!targetContent?.trim()) {
+      showToast("Konten strategi wajib diisi sebelum mengirim ke Discord.", "error");
+      return;
+    }
+
+    setSendingDiscord(true);
+    try {
+      await sendStrategyToDiscord({
+        title: targetTitle.trim(),
+        category: targetCategory,
+        mapName: targetMapName,
+        content: targetContent.trim(),
+      });
+      showToast(`Strategi "${targetTitle.trim()}" berhasil dikirim ke Discord!`);
+    } catch (err) {
+      console.error("Discord strategy send error:", err);
+      showToast("Gagal mengirim ke Discord: " + err.message, "error");
+    } finally {
+      setSendingDiscord(false);
     }
   };
 
@@ -100,9 +157,10 @@ export default function StrategyPage() {
     try {
       await deleteStrategy(id);
       loadStrategies(true);
+      showToast(`Strategi "${titleText}" berhasil dihapus.`);
     } catch (err) {
       console.error("Delete strategy error:", err);
-      alert("Failed to delete: " + err.message);
+      showToast("Failed to delete: " + err.message, "error");
       loadStrategies(true);
     }
   };
@@ -190,16 +248,32 @@ export default function StrategyPage() {
                       )}
                     </div>
 
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDelete(s.id, s.title);
-                      }}
-                      className="text-zinc-400 hover:text-red-600"
-                    >
-                      <Trash2 className="size-3.5" />
-                    </button>
+                    <div className="flex items-center gap-1 shrink-0">
+                      <button
+                        type="button"
+                        title="Send to Discord"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleSendDiscord(s);
+                        }}
+                        disabled={sendingDiscord}
+                        className="p-1 rounded-lg text-zinc-400 hover:bg-indigo-50 hover:text-indigo-600 transition"
+                      >
+                        <Send className="size-3.5" />
+                      </button>
+
+                      <button
+                        type="button"
+                        title="Delete Strategy"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(s.id, s.title);
+                        }}
+                        className="p-1 rounded-lg text-zinc-400 hover:bg-red-50 hover:text-red-600 transition"
+                      >
+                        <Trash2 className="size-3.5" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))
@@ -213,19 +287,31 @@ export default function StrategyPage() {
             onSubmit={handleSave}
             className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm space-y-4"
           >
-            <div className="flex items-center justify-between border-b border-zinc-100 pb-4">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-100 pb-4">
               <h3 className="text-base font-bold text-zinc-900">
                 {selectedId ? "Edit Strategy Document" : "Create New Strategy"}
               </h3>
 
-              <button
-                type="submit"
-                disabled={saving}
-                className="inline-flex items-center gap-2 rounded-xl bg-red-600 px-4 py-2 text-xs font-bold text-white shadow hover:bg-red-500 disabled:opacity-50"
-              >
-                <Save className="size-3.5" />
-                <span>{saving ? "Saving..." : "Save Document"}</span>
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  disabled={sendingDiscord || (!title.trim() && !content.trim())}
+                  onClick={() => handleSendDiscord()}
+                  className="inline-flex items-center gap-1.5 rounded-xl bg-indigo-600 px-3.5 py-2 text-xs font-bold text-white shadow hover:bg-indigo-500 disabled:opacity-50 transition"
+                >
+                  <Send className="size-3.5" />
+                  <span>{sendingDiscord ? "Sending..." : "Push to Discord"}</span>
+                </button>
+
+                <button
+                  type="submit"
+                  disabled={saving}
+                  className="inline-flex items-center gap-2 rounded-xl bg-red-600 px-4 py-2 text-xs font-bold text-white shadow hover:bg-red-500 disabled:opacity-50 transition"
+                >
+                  <Save className="size-3.5" />
+                  <span>{saving ? "Saving..." : "Save Document"}</span>
+                </button>
+              </div>
             </div>
 
             <div>
@@ -289,6 +375,25 @@ export default function StrategyPage() {
           </form>
         </div>
       </div>
+
+      {/* FLOATING TOAST FEEDBACK */}
+      {toast && (
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 rounded-2xl border border-zinc-900/10 bg-zinc-900 px-4 py-3 text-xs font-semibold text-white shadow-xl backdrop-blur-sm animate-in slide-in-from-bottom-5 duration-200">
+          {toast.type === "error" ? (
+            <AlertCircle className="size-4 text-red-400 shrink-0" />
+          ) : (
+            <CheckCircle2 className="size-4 text-emerald-400 shrink-0" />
+          )}
+          <span>{toast.message}</span>
+          <button
+            type="button"
+            onClick={() => setToast(null)}
+            className="ml-2 rounded-lg p-0.5 text-zinc-400 hover:text-white"
+          >
+            <X className="size-3.5" />
+          </button>
+        </div>
+      )}
     </div>
   );
 }
