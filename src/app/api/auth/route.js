@@ -55,12 +55,11 @@ export async function POST(request) {
       }
     }
 
-    // 2. Fallback to Environment Variables
+    // 2. Fallback to Environment Variables (Default Admin)
     if (!authenticatedUser) {
       const isDefaultMatch =
-        (normalizedEmail === DEFAULT_ADMIN_EMAIL.toLowerCase().trim() &&
-          password === DEFAULT_ADMIN_PASSWORD) ||
-        (password.length >= 6 && normalizedEmail.includes("@"));
+        normalizedEmail === DEFAULT_ADMIN_EMAIL.toLowerCase().trim() &&
+        password === DEFAULT_ADMIN_PASSWORD;
 
       if (isDefaultMatch) {
         authenticatedUser = {
