@@ -10,6 +10,37 @@ function hashPassword(password) {
   return crypto.createHash("sha256").update(password).digest("hex");
 }
 
+function verifyPassword(inputPassword, storedHash) {
+  if (!inputPassword || !storedHash || typeof storedHash !== "string") {
+    return false;
+  }
+
+  // Normalize hash: lowercase and strip PostgreSQL bytea '\x' or '0x' prefix if present
+  let cleanStored = storedHash.trim().toLowerCase();
+  if (cleanStored.startsWith("\\x") || cleanStored.startsWith("0x")) {
+    cleanStored = cleanStored.slice(2);
+  }
+
+  // Hash input password with SHA-256
+  const inputHashHex = hashPassword(inputPassword).toLowerCase();
+
+  // Must strictly be valid 64-char SHA-256 hex string (reject plaintext like 'kageism')
+  if (cleanStored.length !== 64 || inputHashHex.length !== 64) {
+    return false;
+  }
+
+  try {
+    const storedBuf = Buffer.from(cleanStored, "hex");
+    const inputBuf = Buffer.from(inputHashHex, "hex");
+    if (storedBuf.length !== 32 || inputBuf.length !== 32) {
+      return false;
+    }
+    return crypto.timingSafeEqual(storedBuf, inputBuf);
+  } catch {
+    return false;
+  }
+}
+
 export async function POST(request) {
   try {
     const body = await request.json();
@@ -38,8 +69,7 @@ export async function POST(request) {
 
         if (rows.length > 0) {
           const dbUser = rows[0];
-          const incomingHash = hashPassword(password);
-          if (dbUser.passwordHash === incomingHash || dbUser.passwordHash === password) {
+          if (verifyPassword(password, dbUser.passwordHash)) {
             authenticatedUser = {
               id: dbUser.id,
               email: dbUser.email,
