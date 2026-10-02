@@ -21,6 +21,16 @@ export async function POST(request, { params }) {
 
     const rosterId = `${guildLeagueId}_t${teamNumber}_s${slotNumber}`;
 
+    // If memberId is provided, remove them from any existing slot in this guild league to prevent duplicates
+    if (memberId) {
+      await sql`
+        DELETE FROM guild_league_rosters 
+        WHERE guild_league_id = ${guildLeagueId} 
+          AND member_id = ${memberId}
+          AND NOT (team_number = ${Number(teamNumber)} AND slot_number = ${Number(slotNumber)});
+      `;
+    }
+
     // Upsert into slot
     const [saved] = await sql`
       INSERT INTO guild_league_rosters (
