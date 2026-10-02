@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import {
@@ -98,6 +98,9 @@ export default function GuildLeagueDetailPage() {
   const [sendingDiscord, setSendingDiscord] = useState(false);
   const [discordMsg, setDiscordMsg] = useState("");
 
+  // In-flight mutations counter to prevent race conditions during rapid actions
+  const inFlightOpsRef = useRef(0);
+
   // Toast feedback state
   const [toast, setToast] = useState(null);
 
@@ -120,7 +123,10 @@ export default function GuildLeagueDetailPage() {
         setLoading(true);
       }
       const res = await fetchGuildLeagueDetail(guildLeagueId);
-      setData(res);
+      // Only set full state if no rapid mutations are currently in flight
+      if (inFlightOpsRef.current === 0) {
+        setData(res);
+      }
       setError("");
     } catch (err) {
       console.error("Detail error:", err);
@@ -217,7 +223,6 @@ export default function GuildLeagueDetailPage() {
     try {
       await updateGuildLeague(guildLeagueId, { status: newStatus });
       showToast(`Match status updated to ${newStatus.toUpperCase()}`);
-      loadDetail(true);
     } catch (err) {
       console.error("Status update error:", err);
       showToast(err.message || "Failed to update status.", "error");
@@ -250,7 +255,6 @@ export default function GuildLeagueDetailPage() {
       showToast(
         `Team ${teamNumber} assigned to ${cfg ? cfg.label : "Unassigned"}`
       );
-      loadDetail(true);
     } catch (err) {
       console.error("Lane change error:", err);
       showToast(err.message || "Failed to update team lane.", "error");
@@ -258,39 +262,45 @@ export default function GuildLeagueDetailPage() {
     }
   };
 
-  const handleAssignMember = async (member) => {
-    if (!assignSlot || !member) return;
-    const targetTeam = assignSlot.teamNumber;
-    const targetSlot = assignSlot.slotNumber;
+  // RAPID-SAFE ROBUST ASSIGN HANDLER
+  const handleAssignMember = async (member, targetTeamArg, targetSlotArg) => {
+    if (!member) return;
+    const targetTeam = Number(targetTeamArg ?? assignSlot?.teamNumber);
+    const targetSlot = Number(targetSlotArg ?? assignSlot?.slotNumber);
+    if (!targetTeam || !targetSlot) return;
 
-    const prevRoster = [...roster];
+    // 1. Instant functional state update (never suffers from stale closure!)
+    setData((prev) => {
+      if (!prev) return prev;
+      const currentRoster = prev.roster || [];
+      const newEntry = {
+        id: member.id,
+        memberId: member.id,
+        nickname: member.nickname,
+        className: member.className,
+        level: Number(member.level) || 0,
+        gearScore: Number(member.gearScore) || 0,
+        teamNumber: targetTeam,
+        slotNumber: targetSlot,
+      };
 
-    const newEntry = {
-      id: member.id,
-      memberId: member.id,
-      nickname: member.nickname,
-      className: member.className,
-      level: Number(member.level) || 0,
-      gearScore: Number(member.gearScore) || 0,
-      teamNumber: Number(targetTeam),
-      slotNumber: Number(targetSlot),
-    };
+      // Remove previous occupant of this slot OR this member anywhere else
+      const updatedRoster = currentRoster.filter(
+        (r) =>
+          !(Number(r.teamNumber) === targetTeam && Number(r.slotNumber) === targetSlot) &&
+          String(r.memberId || r.id) !== String(member.id)
+      );
 
-    // Filter out previous occupant of this slot or same player elsewhere in roster
-    const filteredRoster = prevRoster.filter(
-      (r) =>
-        !(
-          Number(r.teamNumber) === Number(targetTeam) &&
-          Number(r.slotNumber) === Number(targetSlot)
-        ) && String(r.memberId || r.id) !== String(member.id)
-    );
+      return {
+        ...prev,
+        roster: [...updatedRoster, newEntry],
+      };
+    });
 
-    // Instant optimistic update
-    setData((prev) =>
-      prev ? { ...prev, roster: [...filteredRoster, newEntry] } : prev
-    );
     showToast(`Assigned ${member.nickname} to Team ${targetTeam} (#${targetSlot})`);
 
+    // 2. Async backend persistence without wiping newer in-flight states
+    inFlightOpsRef.current += 1;
     try {
       await assignRosterMember(guildLeagueId, {
         memberId: member.id,
@@ -298,61 +308,68 @@ export default function GuildLeagueDetailPage() {
         className: member.className,
         level: member.level,
         gearScore: member.gearScore,
-        teamNumber: Number(targetTeam),
-        slotNumber: Number(targetSlot),
+        teamNumber: targetTeam,
+        slotNumber: targetSlot,
       });
-      loadDetail(true);
     } catch (err) {
       console.error("Assign error:", err);
-      setData((prev) => (prev ? { ...prev, roster: prevRoster } : prev));
       showToast(err.message || "Failed to assign member.", "error");
+      loadDetail(true);
+    } finally {
+      inFlightOpsRef.current = Math.max(0, inFlightOpsRef.current - 1);
     }
   };
 
+  // RAPID-SAFE ROBUST MOVE/SWAP HANDLER
   const handleMoveMember = async (member, targetTeam, targetSlot) => {
     if (!member) return;
-    const prevRoster = [...roster];
+    const tTeam = Number(targetTeam);
+    const tSlot = Number(targetSlot);
+    const sTeam = Number(member.teamNumber);
+    const sSlot = Number(member.slotNumber);
 
-    const targetOccupant = prevRoster.find(
-      (r) =>
-        Number(r.teamNumber) === Number(targetTeam) &&
-        Number(r.slotNumber) === Number(targetSlot) &&
-        String(r.memberId || r.id) !== String(member.memberId || member.id)
-    );
+    let targetOccupant = null;
 
-    if (targetOccupant) {
-      // SWAP POSITIONS
-      const updatedRoster = prevRoster.map((r) => {
-        if (
-          Number(r.teamNumber) === Number(member.teamNumber) &&
-          Number(r.slotNumber) === Number(member.slotNumber)
-        ) {
-          return {
-            ...r,
-            teamNumber: Number(targetTeam),
-            slotNumber: Number(targetSlot),
-          };
-        }
-        if (
-          Number(r.teamNumber) === Number(targetTeam) &&
-          Number(r.slotNumber) === Number(targetSlot)
-        ) {
-          return {
-            ...r,
-            teamNumber: Number(member.teamNumber),
-            slotNumber: Number(member.slotNumber),
-          };
-        }
-        return r;
-      });
-
-      setData((prev) => (prev ? { ...prev, roster: updatedRoster } : prev));
-      setSelectedMember(null);
-      showToast(
-        `Swapped ${member.nickname} with ${targetOccupant.nickname}`
+    setData((prev) => {
+      if (!prev) return prev;
+      const currentRoster = prev.roster || [];
+      targetOccupant = currentRoster.find(
+        (r) =>
+          Number(r.teamNumber) === tTeam &&
+          Number(r.slotNumber) === tSlot &&
+          String(r.memberId || r.id) !== String(member.memberId || member.id)
       );
 
-      try {
+      if (targetOccupant) {
+        // Swap positions
+        const updated = currentRoster.map((r) => {
+          if (Number(r.teamNumber) === sTeam && Number(r.slotNumber) === sSlot) {
+            return { ...r, teamNumber: tTeam, slotNumber: tSlot };
+          }
+          if (Number(r.teamNumber) === tTeam && Number(r.slotNumber) === tSlot) {
+            return { ...r, teamNumber: sTeam, slotNumber: sSlot };
+          }
+          return r;
+        });
+        return { ...prev, roster: updated };
+      } else {
+        // Move to empty
+        const updated = currentRoster.map((r) => {
+          if (Number(r.teamNumber) === sTeam && Number(r.slotNumber) === sSlot) {
+            return { ...r, teamNumber: tTeam, slotNumber: tSlot };
+          }
+          return r;
+        });
+        return { ...prev, roster: updated };
+      }
+    });
+
+    setSelectedMember(null);
+    showToast(`Relocated ${member.nickname} to Team ${tTeam} (#${tSlot})`);
+
+    inFlightOpsRef.current += 1;
+    try {
+      if (targetOccupant) {
         await Promise.all([
           assignRosterMember(guildLeagueId, {
             memberId: member.memberId || member.id,
@@ -360,8 +377,8 @@ export default function GuildLeagueDetailPage() {
             className: member.className,
             level: member.level,
             gearScore: member.gearScore,
-            teamNumber: Number(targetTeam),
-            slotNumber: Number(targetSlot),
+            teamNumber: tTeam,
+            slotNumber: tSlot,
           }),
           assignRosterMember(guildLeagueId, {
             memberId: targetOccupant.memberId || targetOccupant.id,
@@ -369,79 +386,58 @@ export default function GuildLeagueDetailPage() {
             className: targetOccupant.className,
             level: targetOccupant.level,
             gearScore: targetOccupant.gearScore,
-            teamNumber: Number(member.teamNumber),
-            slotNumber: Number(member.slotNumber),
+            teamNumber: sTeam,
+            slotNumber: sSlot,
           }),
         ]);
-        loadDetail(true);
-      } catch (err) {
-        console.error("Swap error:", err);
-        setData((prev) => (prev ? { ...prev, roster: prevRoster } : prev));
-        showToast(err.message || "Failed to swap members.", "error");
-      }
-    } else {
-      // MOVE TO EMPTY SLOT
-      const updatedRoster = prevRoster.map((r) => {
-        if (
-          Number(r.teamNumber) === Number(member.teamNumber) &&
-          Number(r.slotNumber) === Number(member.slotNumber)
-        ) {
-          return {
-            ...r,
-            teamNumber: Number(targetTeam),
-            slotNumber: Number(targetSlot),
-          };
-        }
-        return r;
-      });
-
-      setData((prev) => (prev ? { ...prev, roster: updatedRoster } : prev));
-      setSelectedMember(null);
-      showToast(`Moved ${member.nickname} to Team ${targetTeam} (#${targetSlot})`);
-
-      try {
-        await removeRosterMember(guildLeagueId, member.teamNumber, member.slotNumber);
+      } else {
+        await removeRosterMember(guildLeagueId, sTeam, sSlot);
         await assignRosterMember(guildLeagueId, {
           memberId: member.memberId || member.id,
           nickname: member.nickname,
           className: member.className,
           level: member.level,
           gearScore: member.gearScore,
-          teamNumber: Number(targetTeam),
-          slotNumber: Number(targetSlot),
+          teamNumber: tTeam,
+          slotNumber: tSlot,
         });
-        loadDetail(true);
-      } catch (err) {
-        console.error("Move error:", err);
-        setData((prev) => (prev ? { ...prev, roster: prevRoster } : prev));
-        showToast(err.message || "Failed to move member.", "error");
       }
+    } catch (err) {
+      console.error("Move error:", err);
+      showToast(err.message || "Failed to relocate member.", "error");
+      loadDetail(true);
+    } finally {
+      inFlightOpsRef.current = Math.max(0, inFlightOpsRef.current - 1);
     }
   };
 
+  // RAPID-SAFE REMOVE HANDLER
   const handleRemoveMember = async (member) => {
     if (!member) return;
-    const prevRoster = [...roster];
+    const tTeam = Number(member.teamNumber);
+    const tSlot = Number(member.slotNumber);
 
-    const updatedRoster = prevRoster.filter(
-      (r) =>
-        !(
-          Number(r.teamNumber) === Number(member.teamNumber) &&
-          Number(r.slotNumber) === Number(member.slotNumber)
-        )
-    );
+    setData((prev) => {
+      if (!prev) return prev;
+      const currentRoster = prev.roster || [];
+      const updated = currentRoster.filter(
+        (r) => !(Number(r.teamNumber) === tTeam && Number(r.slotNumber) === tSlot)
+      );
+      return { ...prev, roster: updated };
+    });
 
-    setData((prev) => (prev ? { ...prev, roster: updatedRoster } : prev));
     setSelectedMember(null);
-    showToast(`Removed ${member.nickname} from Team ${member.teamNumber} (#${member.slotNumber})`);
+    showToast(`Removed ${member.nickname} from roster`);
 
+    inFlightOpsRef.current += 1;
     try {
-      await removeRosterMember(guildLeagueId, member.teamNumber, member.slotNumber);
-      loadDetail(true);
+      await removeRosterMember(guildLeagueId, tTeam, tSlot);
     } catch (err) {
       console.error("Remove error:", err);
-      setData((prev) => (prev ? { ...prev, roster: prevRoster } : prev));
       showToast(err.message || "Failed to remove member.", "error");
+      loadDetail(true);
+    } finally {
+      inFlightOpsRef.current = Math.max(0, inFlightOpsRef.current - 1);
     }
   };
 

@@ -39,13 +39,19 @@ export default function AssignRosterMemberModal({
   const [sortBy, setSortBy] = useState("gs_desc"); // "gs_desc", "name_asc", "level_desc"
   const [autoAdvance, setAutoAdvance] = useState(true);
   const [loading, setLoading] = useState(() => !cachedMembersList);
-  const [assigningId, setAssigningId] = useState(null);
   const [error, setError] = useState("");
 
+  // Local optimistic tracking during rapid fire clicks in this modal session
+  const [sessionAssignedIds, setSessionAssignedIds] = useState(() => new Set());
+  const [sessionOccupiedSlots, setSessionOccupiedSlots] = useState(() => new Set());
+
   useEffect(() => {
-    if (!open) return;
+    if (!open) {
+      setSessionAssignedIds(new Set());
+      setSessionOccupiedSlots(new Set());
+      return;
+    }
     setError("");
-    setAssigningId(null);
     setSearch("");
 
     let isMounted = true;
@@ -72,16 +78,17 @@ export default function AssignRosterMemberModal({
     };
   }, [open]);
 
-  // Track assigned member IDs dynamically
-  const assignedSet = useMemo(() => {
+  // Combined assigned member IDs (from props + this rapid session)
+  const allAssignedIds = useMemo(() => {
     const ids = new Set(assignedMemberIds.filter(Boolean).map(String));
     rosterMembers.forEach((r) => {
       if (r.memberId || r.id) {
         ids.add(String(r.memberId || r.id));
       }
     });
+    sessionAssignedIds.forEach((id) => ids.add(String(id)));
     return ids;
-  }, [assignedMemberIds, rosterMembers]);
+  }, [assignedMemberIds, rosterMembers, sessionAssignedIds]);
 
   // Extract unique classes for quick filter tags
   const uniqueClasses = useMemo(() => {
@@ -98,8 +105,8 @@ export default function AssignRosterMemberModal({
 
     return members
       .filter((m) => {
-        // Exclude members already deployed in roster
-        if (assignedSet.has(String(m.id))) return false;
+        // Exclude members already assigned
+        if (allAssignedIds.has(String(m.id))) return false;
 
         // Class filter
         if (classFilter !== "all" && m.className !== classFilter) {
@@ -124,24 +131,30 @@ export default function AssignRosterMemberModal({
         }
         return 0;
       });
-  }, [members, assignedSet, search, classFilter, sortBy]);
+  }, [members, allAssignedIds, search, classFilter, sortBy]);
 
-  // Find next empty slot for auto-advance
+  // Find next empty slot for auto-advance considering session state
   const findNextEmptySlot = (currentTeam, currentSlot) => {
+    const isSlotOccupied = (t, s) => {
+      const slotKey = `t${t}_s${s}`;
+      if (sessionOccupiedSlots.has(slotKey)) return true;
+      return rosterMembers.some(
+        (r) => Number(r.teamNumber) === t && Number(r.slotNumber) === s
+      );
+    };
+
     // 1. Check remaining slots in current team
     for (let s = currentSlot + 1; s <= membersPerTeam; s++) {
-      const occupied = rosterMembers.some(
-        (r) => Number(r.teamNumber) === Number(currentTeam) && Number(r.slotNumber) === s
-      );
-      if (!occupied) return { teamNumber: Number(currentTeam), slotNumber: s };
+      if (!isSlotOccupied(Number(currentTeam), s)) {
+        return { teamNumber: Number(currentTeam), slotNumber: s };
+      }
     }
     // 2. Check next teams
     for (let t = 1; t <= maxTeams; t++) {
       for (let s = 1; s <= membersPerTeam; s++) {
-        const occupied = rosterMembers.some(
-          (r) => Number(r.teamNumber) === t && Number(r.slotNumber) === s
-        );
-        if (!occupied) return { teamNumber: t, slotNumber: s };
+        if (!isSlotOccupied(t, s)) {
+          return { teamNumber: t, slotNumber: s };
+        }
       }
     }
     return null;
@@ -149,15 +162,18 @@ export default function AssignRosterMemberModal({
 
   if (!open) return null;
 
-  const handleSelectMember = async (member) => {
-    setAssigningId(member.id);
+  const handleSelectMember = (member) => {
+    const currentTeam = Number(teamNumber);
+    const currentSlot = Number(slotNumber);
 
-    const currentTeam = teamNumber;
-    const currentSlot = slotNumber;
+    // 1. Instant local session update to prevent double-click or race condition
+    const slotKey = `t${currentTeam}_s${currentSlot}`;
+    setSessionAssignedIds((prev) => new Set([...prev, String(member.id)]));
+    setSessionOccupiedSlots((prev) => new Set([...prev, slotKey]));
 
+    // 2. Fire assign handler with explicit coordinates
     if (onAssign) {
-      onAssign(member);
-      setAssigningId(null);
+      onAssign(member, currentTeam, currentSlot);
 
       if (autoAdvance && onSelectSlot) {
         const nextSlot = findNextEmptySlot(currentTeam, currentSlot);
@@ -171,33 +187,30 @@ export default function AssignRosterMemberModal({
     }
 
     // Direct fallback
-    try {
-      await assignRosterMember(guildLeagueId, {
-        memberId: member.id,
-        nickname: member.nickname,
-        className: member.className,
-        level: member.level,
-        gearScore: member.gearScore,
-        teamNumber: Number(currentTeam),
-        slotNumber: Number(currentSlot),
-      });
-
-      if (onSuccess) onSuccess();
-
-      if (autoAdvance && onSelectSlot) {
-        const nextSlot = findNextEmptySlot(currentTeam, currentSlot);
-        if (nextSlot) {
-          onSelectSlot(nextSlot);
-          setAssigningId(null);
-          return;
+    assignRosterMember(guildLeagueId, {
+      memberId: member.id,
+      nickname: member.nickname,
+      className: member.className,
+      level: member.level,
+      gearScore: member.gearScore,
+      teamNumber: currentTeam,
+      slotNumber: currentSlot,
+    })
+      .then(() => {
+        if (onSuccess) onSuccess();
+        if (autoAdvance && onSelectSlot) {
+          const nextSlot = findNextEmptySlot(currentTeam, currentSlot);
+          if (nextSlot) {
+            onSelectSlot(nextSlot);
+            return;
+          }
         }
-      }
-      onClose();
-    } catch (err) {
-      console.error("Assign error:", err);
-      setError(err.message || "Failed to assign member.");
-      setAssigningId(null);
-    }
+        onClose();
+      })
+      .catch((err) => {
+        console.error("Assign error:", err);
+        setError(err.message || "Failed to assign member.");
+      });
   };
 
   return (
@@ -282,12 +295,12 @@ export default function AssignRosterMemberModal({
                   : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200"
               }`}
             >
-              All Classes ({members.filter((m) => !assignedSet.has(String(m.id))).length})
+              All Classes ({members.filter((m) => !allAssignedIds.has(String(m.id))).length})
             </button>
 
             {uniqueClasses.map((cls) => {
               const count = members.filter(
-                (m) => m.className === cls && !assignedSet.has(String(m.id))
+                (m) => m.className === cls && !allAssignedIds.has(String(m.id))
               ).length;
               if (count === 0) return null;
 
@@ -348,7 +361,7 @@ export default function AssignRosterMemberModal({
               <div
                 key={m.id}
                 onClick={() => handleSelectMember(m)}
-                className="group flex cursor-pointer items-center justify-between p-2.5 hover:bg-red-50/40 rounded-xl transition"
+                className="group flex cursor-pointer items-center justify-between p-2.5 hover:bg-red-50/40 rounded-xl transition active:scale-[0.99]"
               >
                 <div className="min-w-0 pr-3">
                   <div className="flex items-center gap-2">
@@ -378,24 +391,14 @@ export default function AssignRosterMemberModal({
 
                   <button
                     type="button"
-                    disabled={assigningId === m.id}
                     onClick={(e) => {
                       e.stopPropagation();
                       handleSelectMember(m);
                     }}
-                    className="inline-flex items-center gap-1 rounded-xl bg-red-600 px-3 py-1.5 text-xs font-bold text-white shadow-xs hover:bg-red-500 active:scale-95 transition disabled:opacity-50"
+                    className="inline-flex items-center gap-1 rounded-xl bg-red-600 px-3 py-1.5 text-xs font-bold text-white shadow-xs hover:bg-red-500 active:scale-95 transition"
                   >
-                    {assigningId === m.id ? (
-                      <>
-                        <Loader2 className="size-3.5 animate-spin" />
-                        <span>Assigning...</span>
-                      </>
-                    ) : (
-                      <>
-                        <UserPlus className="size-3.5" />
-                        <span>Assign</span>
-                      </>
-                    )}
+                    <UserPlus className="size-3.5" />
+                    <span>Assign</span>
                   </button>
                 </div>
               </div>
