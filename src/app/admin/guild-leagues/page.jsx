@@ -156,9 +156,20 @@ export default function GuildLeaguesPage() {
               >
                 <div>
                   <div className="flex items-start justify-between gap-3">
-                    <Badge variant={statusVariant} size="xs" dot>
-                      {(gl.status || "DRAFT").toUpperCase()}
-                    </Badge>
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <Badge variant={statusVariant} size="xs" dot>
+                        {(gl.status || "DRAFT").toUpperCase()}
+                      </Badge>
+                      {gl.eventType === "woe" ? (
+                        <span className="rounded-md border border-amber-200 bg-amber-50 px-1.5 py-0.5 text-[10px] font-bold text-amber-800">
+                          🏰 WOE
+                        </span>
+                      ) : (
+                        <span className="rounded-md border border-zinc-200 bg-zinc-100 px-1.5 py-0.5 text-[10px] font-bold text-zinc-700">
+                          ⚔️ Guild League
+                        </span>
+                      )}
+                    </div>
 
                     <button
                       type="button"

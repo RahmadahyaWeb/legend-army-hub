@@ -21,6 +21,7 @@ export async function GET(request, { params }) {
         match_date AS "matchDate",
         match_date AS "date",
         status,
+        COALESCE(event_type, 'guild_league') AS "eventType",
         max_teams AS "maxTeams",
         members_per_team AS "membersPerTeam",
         max_roster AS "maxRoster",
@@ -86,7 +87,7 @@ export async function PUT(request, { params }) {
     }
 
     const body = await request.json();
-    const { name, opponent, notes, matchDate, status, maxTeams, membersPerTeam } = body;
+    const { name, opponent, notes, matchDate, status, eventType, maxTeams, membersPerTeam } = body;
 
     const [updated] = await sql`
       UPDATE guild_leagues SET
@@ -95,6 +96,7 @@ export async function PUT(request, { params }) {
         notes = COALESCE(${notes}, notes),
         match_date = COALESCE(${matchDate ? new Date(matchDate).toISOString() : null}, match_date),
         status = COALESCE(${status}, status),
+        event_type = COALESCE(${eventType}, event_type),
         max_teams = COALESCE(${maxTeams !== undefined ? Number(maxTeams) : null}, max_teams),
         members_per_team = COALESCE(${membersPerTeam !== undefined ? Number(membersPerTeam) : null}, members_per_team),
         max_roster = COALESCE(${maxTeams && membersPerTeam ? Number(maxTeams) * Number(membersPerTeam) : null}, max_roster),
@@ -102,7 +104,7 @@ export async function PUT(request, { params }) {
       WHERE id = ${id}
       RETURNING 
         id, name, opponent, notes, match_date AS "matchDate", match_date AS "date",
-        status, max_teams AS "maxTeams", members_per_team AS "membersPerTeam",
+        status, event_type AS "eventType", max_teams AS "maxTeams", members_per_team AS "membersPerTeam",
         max_roster AS "maxRoster", created_at AS "createdAt", updated_at AS "updatedAt";
     `;
 

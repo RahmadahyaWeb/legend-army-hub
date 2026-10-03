@@ -58,12 +58,18 @@ export async function initDatabase() {
       notes TEXT DEFAULT '',
       match_date TIMESTAMPTZ,
       status VARCHAR(32) DEFAULT 'draft',
+      event_type VARCHAR(32) DEFAULT 'guild_league',
       max_teams INT DEFAULT 2,
       members_per_team INT DEFAULT 10,
       max_roster INT DEFAULT 20,
       created_at TIMESTAMPTZ DEFAULT NOW(),
       updated_at TIMESTAMPTZ DEFAULT NOW()
     );
+  `;
+
+  // Safely ensure event_type exists on existing tables
+  await sql`
+    ALTER TABLE guild_leagues ADD COLUMN IF NOT EXISTS event_type VARCHAR(32) DEFAULT 'guild_league';
   `;
 
   await sql`

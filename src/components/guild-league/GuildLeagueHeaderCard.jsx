@@ -40,6 +40,15 @@ export default function GuildLeagueHeaderCard({
           <div className="flex items-center gap-2 text-[11px] sm:text-xs font-bold text-brand-600 uppercase tracking-widest">
             <Swords className="size-3.5 sm:size-4" />
             <span>Event Lineup & Roster</span>
+            {guildLeague.eventType === "woe" ? (
+              <span className="rounded-md bg-amber-50 border border-amber-200 px-2 py-0.5 text-[10px] font-bold text-amber-700 normal-case tracking-normal">
+                🏰 War of Emperium (WOE)
+              </span>
+            ) : (
+              <span className="rounded-md bg-zinc-100 border border-zinc-200 px-2 py-0.5 text-[10px] font-bold text-zinc-700 normal-case tracking-normal">
+                ⚔️ Guild League (3 Lanes)
+              </span>
+            )}
           </div>
 
           <h1 className="mt-1 text-xl font-black text-zinc-900 sm:text-3xl lg:text-4xl tracking-tight">
@@ -54,7 +63,7 @@ export default function GuildLeagueHeaderCard({
 
             {guildLeague.opponent && (
               <div className="flex items-center gap-1 font-bold text-zinc-900">
-                <span>Opponent: {guildLeague.opponent}</span>
+                <span>{guildLeague.eventType === "woe" ? "Target:" : "Opponent:"} {guildLeague.opponent}</span>
               </div>
             )}
           </div>

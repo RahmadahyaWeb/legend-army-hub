@@ -21,6 +21,7 @@ export async function GET() {
         gl.match_date AS "matchDate",
         gl.match_date AS "date",
         gl.status,
+        COALESCE(gl.event_type, 'guild_league') AS "eventType",
         gl.max_teams AS "maxTeams",
         gl.members_per_team AS "membersPerTeam",
         gl.max_roster AS "maxRoster",
@@ -68,19 +69,20 @@ export async function POST(request) {
     const notes = body.notes?.trim() || "";
     const matchDate = body.matchDate || body.date || new Date().toISOString();
     const status = body.status || "draft";
+    const eventType = body.eventType === "woe" ? "woe" : "guild_league";
     const maxTeams = Number(body.maxTeams) || 2;
     const membersPerTeam = Number(body.membersPerTeam) || 10;
     const maxRoster = maxTeams * membersPerTeam;
 
     const [league] = await sql`
       INSERT INTO guild_leagues (
-        id, name, opponent, notes, match_date, status, max_teams, members_per_team, max_roster, created_at, updated_at
+        id, name, opponent, notes, match_date, status, event_type, max_teams, members_per_team, max_roster, created_at, updated_at
       ) VALUES (
-        ${id}, ${name}, ${opponent}, ${notes}, ${matchDate}, ${status}, ${maxTeams}, ${membersPerTeam}, ${maxRoster}, NOW(), NOW()
+        ${id}, ${name}, ${opponent}, ${notes}, ${matchDate}, ${status}, ${eventType}, ${maxTeams}, ${membersPerTeam}, ${maxRoster}, NOW(), NOW()
       )
       RETURNING 
         id, name, opponent, notes, match_date AS "matchDate", match_date AS "date",
-        status, max_teams AS "maxTeams", members_per_team AS "membersPerTeam",
+        status, event_type AS "eventType", max_teams AS "maxTeams", members_per_team AS "membersPerTeam",
         max_roster AS "maxRoster", created_at AS "createdAt", updated_at AS "updatedAt";
     `;
 

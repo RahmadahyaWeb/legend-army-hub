@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import {
   ArrowLeft,
+  Castle,
   Layers,
   Shield,
   Swords,
@@ -15,6 +16,7 @@ import { RosterDetailSkeleton } from "@/components/ui/LoadingState";
 import GuildLeagueHeaderCard from "@/components/guild-league/GuildLeagueHeaderCard";
 import TacticalDirectivesBar from "@/components/guild-league/TacticalDirectivesBar";
 import LaneGroupSection from "@/components/guild-league/LaneGroupSection";
+import TeamCard from "@/components/guild-league/TeamCard";
 import Tabs from "@/components/ui/Tabs";
 import { getBaseLane } from "@/utils/guildLeague";
 
@@ -71,6 +73,8 @@ export default function PublicRosterPage() {
   const teams = data?.teams || [];
   const roster = data?.roster || [];
 
+  const eventType = guildLeague?.eventType || "guild_league";
+  const isWoe = eventType === "woe";
   const maxTeams = Number(guildLeague?.maxTeams) || 2;
   const membersPerTeam = Number(guildLeague?.membersPerTeam) || 10;
   const maxRoster = Number(guildLeague?.maxRoster) || maxTeams * membersPerTeam;
@@ -231,56 +235,102 @@ export default function PublicRosterPage() {
           averageGearScore={averageGearScore}
           maxTeams={maxTeams}
           actions={
-            <div className="mt-4 border-t border-zinc-100 pt-3.5">
-              <Tabs
-                tabs={tabsList}
-                activeTab={activeTab}
-                onChange={setActiveTab}
-              />
-            </div>
+            !isWoe && (
+              <div className="mt-4 border-t border-zinc-100 pt-3.5">
+                <Tabs
+                  tabs={tabsList}
+                  activeTab={activeTab}
+                  onChange={setActiveTab}
+                />
+              </div>
+            )
           }
         />
 
         {/* TACTICAL DIRECTIVES BAR */}
-        <TacticalDirectivesBar />
+        <TacticalDirectivesBar isWoe={isWoe} />
 
-        {/* BATTLEFIELD LANE SECTIONS */}
-        <div className="space-y-4 sm:space-y-6">
-          {LANE_SECTIONS.map((lane) => {
-            if (activeTab !== "all" && activeTab !== lane.id) return null;
+        {/* BATTLEFIELD TEAMS / LANE SECTIONS */}
+        {isWoe ? (
+          <div className="space-y-4 animate-in fade-in duration-200">
+            <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between rounded-2xl border border-zinc-200 bg-white p-3.5 sm:p-4 shadow-xs">
+              <div className="flex items-center gap-2.5 sm:gap-3">
+                <div className="flex size-8 sm:size-9 shrink-0 items-center justify-center rounded-xl bg-amber-50 border border-amber-200 text-amber-700">
+                  <Castle className="size-4" />
+                </div>
+                <div>
+                  <h2 className="text-sm sm:text-base font-bold text-zinc-900">
+                    WOE Battle Formations
+                  </h2>
+                  <p className="text-[11px] text-zinc-500">
+                    {maxTeams} Squad Formations • Format Kesatuan Tim (Tanpa Pembagian 3 Lane)
+                  </p>
+                </div>
+              </div>
+              <span className="rounded-md border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] sm:text-[11px] font-bold text-amber-700 self-start sm:self-center">
+                {totalAssigned}/{maxRoster} Players Deployed
+              </span>
+            </div>
 
-            return (
-              <LaneGroupSection
-                key={lane.id}
-                id={lane.id}
-                name={lane.name}
-                icon={lane.icon}
-                teamNumbers={laneGroups[lane.id] || []}
-                teams={teams}
-                roster={roster}
-                stat={laneStats[lane.id]}
-                membersPerTeam={membersPerTeam}
-                readOnly={true}
-              />
-            );
-          })}
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
+              {allTeamNumbers.map((tNum) => {
+                const team = teams.find((t) => Number(t.teamNumber) === tNum);
+                const teamMembers = roster.filter(
+                  (r) => Number(r.teamNumber) === tNum
+                );
 
-          {/* RESERVE / UNASSIGNED TEAMS SECTION */}
-          {(activeTab === "all" || activeTab === "unassigned") &&
-            laneGroups.unassigned.length > 0 && (
-              <LaneGroupSection
-                id="unassigned"
-                name="Reserve / Unassigned Formations"
-                icon={Layers}
-                teamNumbers={laneGroups.unassigned}
-                teams={teams}
-                roster={roster}
-                stat={laneStats.unassigned}
-                membersPerTeam={membersPerTeam}
-                readOnly={true}
-              />
-            )}
-        </div>
+                return (
+                  <TeamCard
+                    key={tNum}
+                    teamNumber={tNum}
+                    team={team}
+                    teamMembers={teamMembers}
+                    membersPerTeam={membersPerTeam}
+                    readOnly={true}
+                    isWoe={true}
+                  />
+                );
+              })}
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-4 sm:space-y-6">
+            {LANE_SECTIONS.map((lane) => {
+              if (activeTab !== "all" && activeTab !== lane.id) return null;
+
+              return (
+                <LaneGroupSection
+                  key={lane.id}
+                  id={lane.id}
+                  name={lane.name}
+                  icon={lane.icon}
+                  teamNumbers={laneGroups[lane.id] || []}
+                  teams={teams}
+                  roster={roster}
+                  stat={laneStats[lane.id]}
+                  membersPerTeam={membersPerTeam}
+                  readOnly={true}
+                />
+              );
+            })}
+
+            {/* RESERVE / UNASSIGNED TEAMS SECTION */}
+            {(activeTab === "all" || activeTab === "unassigned") &&
+              laneGroups.unassigned.length > 0 && (
+                <LaneGroupSection
+                  id="unassigned"
+                  name="Reserve / Unassigned Formations"
+                  icon={Layers}
+                  teamNumbers={laneGroups.unassigned}
+                  teams={teams}
+                  roster={roster}
+                  stat={laneStats.unassigned}
+                  membersPerTeam={membersPerTeam}
+                  readOnly={true}
+                />
+              )}
+          </div>
+        )}
       </main>
     </div>
   );

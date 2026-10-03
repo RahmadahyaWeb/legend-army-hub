@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Swords } from "lucide-react";
+import { Castle, Swords } from "lucide-react";
 import { createGuildLeague } from "@/lib/api";
 import Modal from "@/components/ui/Modal";
 import Input from "@/components/ui/Input";
@@ -14,6 +14,7 @@ const INITIAL_FORM = {
   opponent: "",
   matchDate: "",
   status: "draft",
+  eventType: "guild_league", // "guild_league" (default) or "woe"
   maxTeams: 2,
   membersPerTeam: 10,
   notes: "",
@@ -23,8 +24,10 @@ const INITIAL_FORM = {
  * Create Guild Event Modal
  *
  * Why this exists:
- * Setup dialog for creating a new Guild Event (Guild League, War, Siege, etc.),
- * configuring opponent, schedule, total teams (up to 30 teams), and player capacity per team.
+ * Setup dialog for creating a new Guild Event:
+ * 1. Guild League (Default: divided into 3 tactical lanes: Top, Mid, Bot)
+ * 2. WOE / War of Emperium (Unified team formation without 3-lane division)
+ * Supports up to 30 teams and custom player capacity per team.
  *
  * @param {Object} props - Component props
  * @param {boolean} props.open - Modal visibility
@@ -41,6 +44,20 @@ export default function CreateGuildLeagueModal({ open, onClose, onSuccess }) {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSelectType = (type) => {
+    setForm((prev) => ({
+      ...prev,
+      eventType: type,
+      // If user hasn't typed a custom name, auto-suggest based on type
+      name:
+        !prev.name || prev.name.startsWith("Guild League") || prev.name.startsWith("WOE")
+          ? type === "woe"
+            ? "WOE Castle War"
+            : "Guild League Match"
+          : prev.name,
+    }));
   };
 
   const handleClose = () => {
@@ -68,6 +85,7 @@ export default function CreateGuildLeagueModal({ open, onClose, onSuccess }) {
         opponent: form.opponent.trim() || "TBA",
         matchDate: form.matchDate || new Date().toISOString(),
         status: form.status,
+        eventType: form.eventType || "guild_league",
         maxTeams: Number(form.maxTeams) || 2,
         membersPerTeam: Number(form.membersPerTeam) || 10,
         notes: form.notes.trim(),
@@ -88,7 +106,7 @@ export default function CreateGuildLeagueModal({ open, onClose, onSuccess }) {
       open={open}
       onClose={handleClose}
       title="Create Guild Event"
-      description="Setup event schedule, opponent/objective details, and lineup capacity."
+      description="Setup event type, schedule, opponent/objective, and lineup capacity."
       icon={Swords}
       size="md"
       footer={
@@ -112,22 +130,66 @@ export default function CreateGuildLeagueModal({ open, onClose, onSuccess }) {
       }
     >
       <form onSubmit={handleSubmit} className="space-y-4">
+        {/* EVENT TYPE SELECTOR (GUILD LEAGUE VS WOE) */}
+        <div>
+          <label className="text-xs font-bold text-zinc-900 mb-1.5 block">
+            Event Type <span className="text-red-500">*</span>
+          </label>
+          <div className="grid grid-cols-2 gap-2.5">
+            <button
+              type="button"
+              onClick={() => handleSelectType("guild_league")}
+              className={`flex flex-col text-left p-3 rounded-xl border transition cursor-pointer ${
+                form.eventType === "guild_league"
+                  ? "border-red-600 bg-red-50/50 ring-1 ring-red-600 text-red-950"
+                  : "border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-700"
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <Swords className={`size-4 ${form.eventType === "guild_league" ? "text-red-600" : "text-zinc-500"}`} />
+                <span className="text-xs font-bold">Guild League (Default)</span>
+              </div>
+              <p className="text-[11px] text-zinc-500 mt-1">
+                Format 3 Lane taktis (Top, Mid, Bot)
+              </p>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handleSelectType("woe")}
+              className={`flex flex-col text-left p-3 rounded-xl border transition cursor-pointer ${
+                form.eventType === "woe"
+                  ? "border-red-600 bg-red-50/50 ring-1 ring-red-600 text-red-950"
+                  : "border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-700"
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <Castle className={`size-4 ${form.eventType === "woe" ? "text-red-600" : "text-zinc-500"}`} />
+                <span className="text-xs font-bold">WOE (War of Emperium)</span>
+              </div>
+              <p className="text-[11px] text-zinc-500 mt-1">
+                Format kesatuan tim (Tanpa pembagian lane)
+              </p>
+            </button>
+          </div>
+        </div>
+
         <Input
           label="Event / Match Title"
           name="name"
           required
           value={form.name}
           onChange={handleChange}
-          placeholder="e.g. Guild League Season 4 / Node War / Siege"
+          placeholder={form.eventType === "woe" ? "e.g. WOE Castle Defense - Saturday" : "e.g. Guild League Season 4 - Match 1"}
         />
 
         <div className="grid grid-cols-2 gap-4">
           <Input
-            label="Opponent / Objective (Optional)"
+            label={form.eventType === "woe" ? "Target Castle / Objective" : "Opponent Guild"}
             name="opponent"
             value={form.opponent}
             onChange={handleChange}
-            placeholder="e.g. Invictus / Castle Defense / TBA"
+            placeholder={form.eventType === "woe" ? "e.g. Prontera Castle 1 / TBA" : "e.g. Invictus / TBA"}
           />
 
           <Input
