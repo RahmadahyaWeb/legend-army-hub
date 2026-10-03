@@ -39,13 +39,36 @@ export async function POST(request, { params }) {
       `;
     }
 
+    // Fetch latest member record if possible to ensure gear score and stats are fully synced
+    let finalGearScore = Number(gearScore) || 0;
+    let finalClassName = className || "";
+    let finalLevel = Number(level) || 0;
+    let finalMemberId = memberId || null;
+
+    if (memberId || cleanNick) {
+      const memRows = await sql`
+        SELECT id, nickname, class_name, level, gear_score
+        FROM members
+        WHERE (${memberId ? sql`id = ${memberId}` : sql`FALSE`})
+           OR (${cleanNick ? sql`LOWER(TRIM(nickname)) = LOWER(TRIM(${cleanNick}))` : sql`FALSE`})
+        ORDER BY updated_at DESC, gear_score DESC
+        LIMIT 1;
+      `;
+      if (memRows.length > 0) {
+        finalMemberId = memRows[0].id;
+        finalGearScore = memRows[0].gear_score;
+        finalClassName = memRows[0].class_name;
+        finalLevel = memRows[0].level;
+      }
+    }
+
     // Upsert into slot
     const [saved] = await sql`
       INSERT INTO guild_league_rosters (
         id, guild_league_id, member_id, nickname, class_name, level, gear_score, team_number, slot_number, updated_at
       ) VALUES (
-        ${rosterId}, ${guildLeagueId}, ${memberId || null}, ${cleanNick}, 
-        ${className || ""}, ${Number(level) || 0}, ${Number(gearScore) || 0}, 
+        ${rosterId}, ${guildLeagueId}, ${finalMemberId}, ${cleanNick}, 
+        ${finalClassName}, ${Number(finalLevel) || 0}, ${Number(finalGearScore) || 0}, 
         ${Number(teamNumber)}, ${Number(slotNumber)}, NOW()
       )
       ON CONFLICT (guild_league_id, team_number, slot_number) DO UPDATE SET

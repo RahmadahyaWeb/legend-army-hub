@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getDb } from "@/lib/db";
+import { getDb, syncRosterWithMembers } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
 
 /**
@@ -83,6 +83,9 @@ export async function POST(request, { params }) {
       `;
       count++;
     }
+
+    // Synchronize gear scores and stats with current members table
+    await syncRosterWithMembers(sql, targetLeagueId);
 
     return NextResponse.json({
       success: true,

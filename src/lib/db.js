@@ -139,3 +139,82 @@ export async function initDatabase() {
 
   return { success: true, message: "Database schema initialized successfully." };
 }
+
+/**
+ * Synchronizes guild event roster slots with current member profiles.
+ *
+ * Why this exists:
+ * When member profiles are updated or re-imported (or after member data reset),
+ * the roster slots in existing guild events must automatically reflect the
+ * updated Gear Score, Class, and Level of each player, while re-linking
+ * their member ID by case-insensitive nickname.
+ *
+ * Tricky logic:
+ * Uses a subquery with DISTINCT ON (LOWER(TRIM(nickname))) to ensure that only
+ * the most recently updated member record is selected in case of duplicate nicknames.
+ *
+ * @param {any} sql - Neon SQL client instance
+ * @param {string|null} [guildLeagueId=null] - Optional ID to limit sync to one event
+ * @returns {Promise<void>}
+ */
+export async function syncRosterWithMembers(sql, guildLeagueId = null) {
+  if (!sql) return;
+  try {
+    if (guildLeagueId) {
+      await sql`
+        UPDATE guild_league_rosters glr
+        SET 
+          member_id = m.id,
+          gear_score = m.gear_score,
+          class_name = m.class_name,
+          level = m.level,
+          updated_at = NOW()
+        FROM (
+          SELECT DISTINCT ON (LOWER(TRIM(nickname)))
+            id, nickname, class_name, level, gear_score
+          FROM members
+          ORDER BY LOWER(TRIM(nickname)), updated_at DESC, gear_score DESC
+        ) m
+        WHERE glr.guild_league_id = ${guildLeagueId}
+          AND (
+            (glr.member_id IS NOT NULL AND glr.member_id = m.id)
+            OR LOWER(TRIM(glr.nickname)) = LOWER(TRIM(m.nickname))
+          )
+          AND (
+            glr.gear_score IS DISTINCT FROM m.gear_score
+            OR glr.class_name IS DISTINCT FROM m.class_name
+            OR glr.level IS DISTINCT FROM m.level
+            OR glr.member_id IS DISTINCT FROM m.id
+          );
+      `;
+    } else {
+      await sql`
+        UPDATE guild_league_rosters glr
+        SET 
+          member_id = m.id,
+          gear_score = m.gear_score,
+          class_name = m.class_name,
+          level = m.level,
+          updated_at = NOW()
+        FROM (
+          SELECT DISTINCT ON (LOWER(TRIM(nickname)))
+            id, nickname, class_name, level, gear_score
+          FROM members
+          ORDER BY LOWER(TRIM(nickname)), updated_at DESC, gear_score DESC
+        ) m
+        WHERE (
+            (glr.member_id IS NOT NULL AND glr.member_id = m.id)
+            OR LOWER(TRIM(glr.nickname)) = LOWER(TRIM(m.nickname))
+          )
+          AND (
+            glr.gear_score IS DISTINCT FROM m.gear_score
+            OR glr.class_name IS DISTINCT FROM m.class_name
+            OR glr.level IS DISTINCT FROM m.level
+            OR glr.member_id IS DISTINCT FROM m.id
+          );
+      `;
+    }
+  } catch (err) {
+    console.error("syncRosterWithMembers error:", err);
+  }
+}

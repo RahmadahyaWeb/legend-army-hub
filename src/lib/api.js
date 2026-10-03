@@ -58,6 +58,7 @@ export async function saveMember(member) {
     throw new Error(err.error || "Failed to save member");
   }
   clearCache("members");
+  clearCache("guild_league");
   return await res.json();
 }
 
@@ -67,6 +68,7 @@ export async function deleteMember(id) {
   });
   if (!res.ok) throw new Error("Failed to delete member");
   clearCache("members");
+  clearCache("guild_league");
   return await res.json();
 }
 
@@ -79,6 +81,7 @@ export async function resetAllMembers() {
     throw new Error(err.error || "Failed to reset member data");
   }
   clearCache("members");
+  clearCache("guild_league");
   return await res.json();
 }
 
@@ -93,6 +96,7 @@ export async function importMembers(membersList) {
     throw new Error(err.error || "Failed to import members");
   }
   clearCache("members");
+  clearCache("guild_league");
   return await res.json();
 }
 

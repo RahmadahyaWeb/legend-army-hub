@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getDb } from "@/lib/db";
+import { getDb, syncRosterWithMembers } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
 
 export async function GET(request, { params }) {
@@ -11,6 +11,9 @@ export async function GET(request, { params }) {
         error: "DATABASE_URL not configured.",
       }, { status: 500 });
     }
+
+    // Automatically synchronize gear score, level, and class with current members table
+    await syncRosterWithMembers(sql, id);
 
     const [league] = await sql`
       SELECT 
@@ -49,19 +52,28 @@ export async function GET(request, { params }) {
 
     const roster = await sql`
       SELECT 
-        id,
-        guild_league_id AS "guildLeagueId",
-        member_id AS "memberId",
-        nickname,
-        class_name AS "className",
-        level,
-        gear_score AS "gearScore",
-        team_number AS "teamNumber",
-        slot_number AS "slotNumber",
-        created_at AS "createdAt"
-      FROM guild_league_rosters
-      WHERE guild_league_id = ${id}
-      ORDER BY team_number ASC, slot_number ASC;
+        r.id,
+        r.guild_league_id AS "guildLeagueId",
+        COALESCE(m.id, r.member_id) AS "memberId",
+        COALESCE(m.nickname, r.nickname) AS nickname,
+        COALESCE(m.class_name, r.class_name) AS "className",
+        COALESCE(m.level, r.level) AS level,
+        COALESCE(m.gear_score, r.gear_score) AS "gearScore",
+        r.team_number AS "teamNumber",
+        r.slot_number AS "slotNumber",
+        r.created_at AS "createdAt"
+      FROM guild_league_rosters r
+      LEFT JOIN (
+        SELECT DISTINCT ON (LOWER(TRIM(nickname)))
+          id, nickname, class_name, level, gear_score
+        FROM members
+        ORDER BY LOWER(TRIM(nickname)), updated_at DESC, gear_score DESC
+      ) m ON (
+        (r.member_id IS NOT NULL AND r.member_id = m.id)
+        OR LOWER(TRIM(r.nickname)) = LOWER(TRIM(m.nickname))
+      )
+      WHERE r.guild_league_id = ${id}
+      ORDER BY r.team_number ASC, r.slot_number ASC;
     `;
 
     return NextResponse.json({

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getDb, initDatabase } from "@/lib/db";
+import { getDb, initDatabase, syncRosterWithMembers } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
 
 export async function GET() {
@@ -125,6 +125,11 @@ export async function POST(request) {
         }
         inserted.push(row);
       }
+
+      // Sync guild event team rosters with updated member gear scores and stats
+      // so event rosters never become stale when members are imported.
+      await syncRosterWithMembers(sql);
+
       return NextResponse.json({ success: true, count: inserted.length });
     }
 
@@ -189,6 +194,9 @@ export async function POST(request) {
       `;
     }
 
+    // Sync guild event team rosters with updated member gear score and stats
+    await syncRosterWithMembers(sql);
+
     return NextResponse.json({ success: true, member });
   } catch (error) {
     console.error("POST /api/members error:", error);
@@ -240,6 +248,9 @@ export async function PUT(request) {
         created_at AS "createdAt",
         updated_at AS "updatedAt";
     `;
+
+    // Sync guild event team rosters with updated member gear score and stats
+    await syncRosterWithMembers(sql);
 
     return NextResponse.json({ success: true, member });
   } catch (error) {
