@@ -253,28 +253,28 @@ export const LANE_SELECT_GROUPS = [
   {
     group: "Top Lane",
     options: [
-      { value: "top", label: "Top Lane (General)" },
-      { value: "top_attack", label: "Top + Attack ⚔️ (Push Barricades)" },
-      { value: "top_defend", label: "Top + Defend 🛡️ (Delay MVP Portal)" },
-      { value: "top_mvp", label: "Top + MVP 👑 (18:00 & 08:00)" },
+      { value: "top", label: "Top • General (Lane Control)" },
+      { value: "top_attack", label: "Top • Attack ⚔️ (Push Barricades)" },
+      { value: "top_defend", label: "Top • Defend 🛡️ (Delay MVP)" },
+      { value: "top_mvp", label: "Top • MVP 👑 (18:00 & 08:00)" },
     ],
   },
   {
     group: "Mid Lane",
     options: [
-      { value: "mid", label: "Mid Lane (General)" },
-      { value: "mid_attack", label: "Mid + Attack ⚔️ (Push Barricades)" },
-      { value: "mid_defend", label: "Mid + Defend 🛡️ (Delay MVP Portal)" },
-      { value: "mid_mvp", label: "Mid + MVP 👑 (18:00 & 08:00)" },
+      { value: "mid", label: "Mid • General (Lane Control)" },
+      { value: "mid_attack", label: "Mid • Attack ⚔️ (Push Barricades)" },
+      { value: "mid_defend", label: "Mid • Defend 🛡️ (Delay MVP)" },
+      { value: "mid_mvp", label: "Mid • MVP 👑 (18:00 & 08:00)" },
     ],
   },
   {
     group: "Bot Lane",
     options: [
-      { value: "bot", label: "Bot Lane (General)" },
-      { value: "bot_attack", label: "Bot + Attack ⚔️ (Push Barricades)" },
-      { value: "bot_defend", label: "Bot + Defend 🛡️ (Delay MVP Portal)" },
-      { value: "bot_mvp", label: "Bot + MVP 👑 (18:00 & 08:00)" },
+      { value: "bot", label: "Bot • General (Lane Control)" },
+      { value: "bot_attack", label: "Bot • Attack ⚔️ (Push Barricades)" },
+      { value: "bot_defend", label: "Bot • Defend 🛡️ (Delay MVP)" },
+      { value: "bot_mvp", label: "Bot • MVP 👑 (18:00 & 08:00)" },
     ],
   },
 ];

@@ -811,7 +811,7 @@ export default function GuildLeagueDetailPage() {
                   No teams currently assigned to {lane.name}. Select a team's lane dropdown to position them here.
                 </div>
               ) : (
-                <div className="grid grid-cols-1 gap-3.5 sm:gap-5 lg:grid-cols-2">
+                <div className="grid grid-cols-1 gap-4 sm:gap-5 md:grid-cols-2 xl:grid-cols-3">
                   {teamNumbers.map((teamNumber) => {
                     const team = teams.find(
                       (t) => Number(t.teamNumber) === teamNumber
@@ -834,99 +834,68 @@ export default function GuildLeagueDetailPage() {
                     return (
                       <div
                         key={teamNumber}
-                        className="flex flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-xs hover:shadow-md transition"
+                        className="flex flex-col overflow-hidden rounded-2xl border border-zinc-200/90 bg-white shadow-xs hover:shadow-md transition-all duration-200"
                       >
-                        {/* TEAM CARD HEADER */}
-                        <div className="flex items-center justify-between gap-3 border-b border-zinc-200 bg-zinc-50/75 p-3.5 sm:px-5 sm:py-4">
-                          <div className="flex min-w-0 items-center gap-2.5 sm:gap-3">
-                            <div className="flex size-8 sm:size-9 shrink-0 items-center justify-center rounded-xl bg-zinc-900 text-xs font-black text-white shadow-xs">
+                        {/* TEAM CARD HEADER - ROW 1 */}
+                        <div className="flex items-center justify-between gap-2.5 border-b border-zinc-100 bg-zinc-50/80 px-3.5 py-3 sm:px-4.5 sm:py-3.5">
+                          <div className="flex min-w-0 items-center gap-2.5">
+                            <div className="flex size-7.5 sm:size-8 shrink-0 items-center justify-center rounded-xl bg-zinc-900 text-xs font-black text-white shadow-xs">
                               T{teamNumber}
                             </div>
                             <div className="min-w-0">
-                              <div className="flex items-center gap-1.5 sm:gap-2">
-                                <h3 className="text-xs sm:text-sm font-bold text-zinc-900 truncate">
-                                  {team?.name || `Team ${teamNumber}`}
-                                </h3>
-                              </div>
-                              <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] text-zinc-500">
-                                <span className="font-semibold text-zinc-700">
+                              <h3 className="truncate text-xs sm:text-sm font-bold text-zinc-900">
+                                {team?.name || `Team ${teamNumber}`}
+                              </h3>
+                              <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] text-zinc-500 font-medium">
+                                <span className="text-zinc-700 font-semibold">
                                   {teamMembers.length}/{membersPerTeam} Players
                                 </span>
                                 <span>•</span>
                                 <span>
                                   {Math.round(
                                     (teamMembers.length / (membersPerTeam || 1)) * 100
-                                  )}
-                                  %
+                                  )}%
                                 </span>
                               </div>
                             </div>
                           </div>
 
-                          <div className="flex shrink-0 items-center gap-2">
-                            {teamAvgGS > 0 && (
-                              <span className="hidden sm:inline-flex items-center gap-1 rounded-lg border border-zinc-200 bg-white px-2 py-1 text-[11px] font-bold text-zinc-800 shadow-xs">
-                                <Shield className="size-3 text-zinc-400" />
-                                <span>{formatNumber(teamAvgGS)} GS</span>
-                              </span>
-                            )}
-
-                            {/* LANE SELECTOR DROPDOWN */}
-                            <select
-                              value={team?.lane?.toLowerCase() || ""}
-                              onChange={(e) =>
-                                handleLaneChange(teamNumber, e.target.value)
-                              }
-                              className={`h-8 rounded-xl border px-2.5 text-xs font-bold shadow-xs focus:outline-none ${
-                                laneConfig
-                                  ? laneConfig.badgeClassName
-                                  : "border-zinc-300 bg-white text-zinc-700"
-                              }`}
-                            >
-                              <option value="">Unassigned Lane</option>
-                              {LANE_SELECT_GROUPS.map((grp) => (
-                                <optgroup key={grp.group} label={grp.group}>
-                                  {grp.options.map((opt) => (
-                                    <option key={opt.value} value={opt.value}>
-                                      {opt.label}
-                                    </option>
-                                  ))}
-                                </optgroup>
-                              ))}
-                            </select>
-                          </div>
+                          {teamAvgGS > 0 && (
+                            <div className="flex shrink-0 items-center gap-1 rounded-lg border border-zinc-200/90 bg-white px-2 py-1 text-[11px] font-bold text-zinc-800 shadow-2xs font-mono">
+                              <Shield className="size-3 text-zinc-400" />
+                              <span>{formatNumber(teamAvgGS)} GS</span>
+                            </div>
+                          )}
                         </div>
 
-                        {/* TACTICAL DUTY BANNER */}
-                        {laneConfig?.tacticalType === "mvp" && (
-                          <div className="flex items-center gap-2 border-b border-amber-200/70 bg-amber-50/80 px-3.5 sm:px-5 py-2 text-[11px] sm:text-xs text-amber-950 font-medium">
-                            <span className="shrink-0 text-sm">👑</span>
-                            <div className="min-w-0 truncate">
-                              <span className="font-bold text-amber-900">MVP: </span>
-                              <span>Regroup at MVP spawn at <strong>18:00</strong> & <strong>08:00</strong></span>
-                            </div>
-                          </div>
-                        )}
-
-                        {laneConfig?.tacticalType === "defend" && (
-                          <div className="flex items-center gap-2 border-b border-orange-200/70 bg-orange-50/80 px-3.5 sm:px-5 py-2 text-[11px] sm:text-xs text-orange-950 font-medium">
-                            <span className="shrink-0 text-sm">🛡️</span>
-                            <div className="min-w-0 truncate">
-                              <span className="font-bold text-orange-900">Defend: </span>
-                              <span>Hold lane (Skip MVP) & delay enemy at portal</span>
-                            </div>
-                          </div>
-                        )}
-
-                        {laneConfig?.tacticalType === "attack" && (
-                          <div className="flex items-center gap-2 border-b border-red-200/70 bg-red-50/80 px-3.5 sm:px-5 py-2 text-[11px] sm:text-xs text-red-950 font-medium">
-                            <span className="shrink-0 text-sm">⚔️</span>
-                            <div className="min-w-0 truncate">
-                              <span className="font-bold text-red-900">Attack: </span>
-                              <span>Push enemy lane and breach defensive barricades</span>
-                            </div>
-                          </div>
-                        )}
+                        {/* LANE & ROLE SELECTOR - ROW 2 */}
+                        <div className="flex items-center justify-between gap-2 border-b border-zinc-100 bg-zinc-50/40 px-3.5 py-2 sm:px-4.5">
+                          <span className="text-[10px] uppercase font-bold tracking-wider text-zinc-400 shrink-0">
+                            Battle Role
+                          </span>
+                          <select
+                            value={team?.lane?.toLowerCase() || ""}
+                            onChange={(e) =>
+                              handleLaneChange(teamNumber, e.target.value)
+                            }
+                            className={`h-7.5 max-w-[210px] sm:max-w-[240px] truncate rounded-lg border px-2 text-[11px] font-semibold shadow-2xs focus:outline-none focus:ring-1 focus:ring-zinc-400 transition ${
+                              laneConfig
+                                ? laneConfig.badgeClassName
+                                : "border-zinc-200 bg-white text-zinc-700"
+                            }`}
+                          >
+                            <option value="">Unassigned Lane</option>
+                            {LANE_SELECT_GROUPS.map((grp) => (
+                              <optgroup key={grp.group} label={grp.group}>
+                                {grp.options.map((opt) => (
+                                  <option key={opt.value} value={opt.value}>
+                                    {opt.label}
+                                  </option>
+                                ))}
+                              </optgroup>
+                            ))}
+                          </select>
+                        </div>
 
                         {/* PLAYER SLOTS */}
                         <div className="flex-1 divide-y divide-zinc-100">
@@ -943,13 +912,13 @@ export default function GuildLeagueDetailPage() {
                                   onClick={() =>
                                     setAssignSlot({ teamNumber, slotNumber })
                                   }
-                                  className="group flex cursor-pointer items-center justify-between px-3.5 sm:px-5 py-2 text-xs text-zinc-400 bg-zinc-50/20 hover:bg-red-50/30 transition"
+                                  className="group flex cursor-pointer items-center justify-between px-3.5 sm:px-4.5 py-2 text-xs bg-zinc-50/20 hover:bg-red-50/30 transition"
                                 >
-                                  <div className="flex items-center gap-2.5 sm:gap-3">
-                                    <span className="w-4 sm:w-5 text-zinc-300 font-mono text-[10px] sm:text-[11px]">
+                                  <div className="flex items-center gap-2">
+                                    <span className="w-5 text-zinc-300 font-mono text-[11px] font-bold group-hover:text-zinc-500 transition">
                                       #{slotNumber}
                                     </span>
-                                    <span className="italic text-zinc-400 text-[11px] group-hover:text-zinc-600 transition">
+                                    <span className="text-[11px] italic text-zinc-400 group-hover:text-zinc-600 transition font-medium">
                                       Empty Slot
                                     </span>
                                   </div>
@@ -960,7 +929,7 @@ export default function GuildLeagueDetailPage() {
                                       e.stopPropagation();
                                       setAssignSlot({ teamNumber, slotNumber });
                                     }}
-                                    className="inline-flex items-center gap-1 rounded-lg border border-zinc-200 bg-white px-2.5 py-1 text-[11px] font-bold text-zinc-700 shadow-xs group-hover:border-red-300 group-hover:bg-red-600 group-hover:text-white transition"
+                                    className="inline-flex items-center gap-1 rounded-lg border border-dashed border-zinc-200 bg-white px-2 py-0.5 text-[11px] font-bold text-zinc-600 shadow-2xs group-hover:border-red-300 group-hover:bg-red-600 group-hover:text-white transition"
                                   >
                                     <UserPlus className="size-3" />
                                     <span>Assign</span>
@@ -973,14 +942,14 @@ export default function GuildLeagueDetailPage() {
                               <div
                                 key={slotNumber}
                                 onClick={() => setSelectedMember(member)}
-                                className="group flex cursor-pointer items-center justify-between px-3.5 sm:px-5 py-2 text-xs transition hover:bg-zinc-50/90"
+                                className="group flex cursor-pointer items-center justify-between px-3.5 sm:px-4.5 py-2 text-xs transition hover:bg-zinc-50/90"
                               >
-                                <div className="flex min-w-0 items-center gap-2.5 sm:gap-3">
-                                  <span className="w-4 sm:w-5 font-bold font-mono text-[10px] sm:text-[11px] text-zinc-400 group-hover:text-zinc-700">
+                                <div className="flex min-w-0 items-center gap-2">
+                                  <span className="w-5 font-bold font-mono text-[11px] text-zinc-400 group-hover:text-zinc-700 transition">
                                     #{slotNumber}
                                   </span>
-                                  <div className="min-w-0 pr-2">
-                                    <div className="truncate font-bold text-zinc-900 text-xs sm:text-sm group-hover:text-red-700 transition">
+                                  <div className="min-w-0 pr-1.5">
+                                    <div className="truncate font-bold text-zinc-900 text-xs sm:text-[13px] group-hover:text-red-700 transition">
                                       {member.nickname}
                                     </div>
                                     <div className="mt-0.5 flex flex-wrap items-center gap-1.5">
@@ -997,7 +966,7 @@ export default function GuildLeagueDetailPage() {
                                   </div>
                                 </div>
 
-                                <div className="flex shrink-0 items-center gap-2 text-right">
+                                <div className="flex shrink-0 items-center gap-1.5 text-right">
                                   {Number(member.gearScore) > 0 && (
                                     <span className="font-bold text-zinc-900 font-mono text-[11px] sm:text-xs">
                                       {formatNumber(member.gearScore)} GS
@@ -1005,7 +974,7 @@ export default function GuildLeagueDetailPage() {
                                   )}
 
                                   {/* QUICK ACTION BUTTONS */}
-                                  <div className="flex items-center gap-1 opacity-90 sm:opacity-0 group-hover:opacity-100 transition">
+                                  <div className="flex items-center gap-0.5 opacity-90 sm:opacity-0 group-hover:opacity-100 transition">
                                     <button
                                       type="button"
                                       title="Relocate / Swap slot"
@@ -1013,9 +982,9 @@ export default function GuildLeagueDetailPage() {
                                         e.stopPropagation();
                                         setSelectedMember(member);
                                       }}
-                                      className="flex size-7 items-center justify-center rounded-lg text-zinc-400 hover:bg-zinc-200 hover:text-zinc-800 transition"
+                                      className="flex size-6.5 items-center justify-center rounded-lg text-zinc-400 hover:bg-zinc-200 hover:text-zinc-800 transition"
                                     >
-                                      <ArrowRightLeft className="size-3.5" />
+                                      <ArrowRightLeft className="size-3" />
                                     </button>
                                     <button
                                       type="button"
@@ -1024,9 +993,9 @@ export default function GuildLeagueDetailPage() {
                                         e.stopPropagation();
                                         handleRemoveMember(member);
                                       }}
-                                      className="flex size-7 items-center justify-center rounded-lg text-zinc-400 hover:bg-red-50 hover:text-red-600 transition"
+                                      className="flex size-6.5 items-center justify-center rounded-lg text-zinc-400 hover:bg-red-50 hover:text-red-600 transition"
                                     >
-                                      <Trash2 className="size-3.5" />
+                                      <Trash2 className="size-3" />
                                     </button>
                                   </div>
                                 </div>
@@ -1063,7 +1032,7 @@ export default function GuildLeagueDetailPage() {
                 </span>
               </div>
 
-              <div className="grid grid-cols-1 gap-3.5 sm:gap-5 lg:grid-cols-2">
+              <div className="grid grid-cols-1 gap-4 sm:gap-5 md:grid-cols-2 xl:grid-cols-3">
                 {laneGroups.unassigned.map((teamNumber) => {
                   const team = teams.find(
                     (t) => Number(t.teamNumber) === teamNumber
@@ -1086,31 +1055,45 @@ export default function GuildLeagueDetailPage() {
                   return (
                     <div
                       key={teamNumber}
-                      className="flex flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-xs hover:shadow-md transition"
+                      className="flex flex-col overflow-hidden rounded-2xl border border-zinc-200/90 bg-white shadow-xs hover:shadow-md transition-all duration-200"
                     >
-                      <div className="flex items-center justify-between gap-3 border-b border-zinc-200 bg-zinc-50/75 p-3.5 sm:px-5 sm:py-4">
-                        <div className="flex min-w-0 items-center gap-2.5 sm:gap-3">
-                          <div className="flex size-8 sm:size-9 shrink-0 items-center justify-center rounded-xl bg-zinc-900 text-xs font-black text-white shadow-xs">
+                      {/* TEAM CARD HEADER - ROW 1 */}
+                      <div className="flex items-center justify-between gap-2.5 border-b border-zinc-100 bg-zinc-50/80 px-3.5 py-3 sm:px-4.5 sm:py-3.5">
+                        <div className="flex min-w-0 items-center gap-2.5">
+                          <div className="flex size-7.5 sm:size-8 shrink-0 items-center justify-center rounded-xl bg-zinc-900 text-xs font-black text-white shadow-xs">
                             T{teamNumber}
                           </div>
                           <div className="min-w-0">
-                            <h3 className="text-xs sm:text-sm font-bold text-zinc-900 truncate">
+                            <h3 className="truncate text-xs sm:text-sm font-bold text-zinc-900">
                               {team?.name || `Team ${teamNumber}`}
                             </h3>
-                            <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] text-zinc-500">
-                              <span className="font-semibold text-zinc-700">
+                            <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] text-zinc-500 font-medium">
+                              <span className="text-zinc-700 font-semibold">
                                 {teamMembers.length}/{membersPerTeam} Players
                               </span>
                             </div>
                           </div>
                         </div>
 
+                        {teamAvgGS > 0 && (
+                          <div className="flex shrink-0 items-center gap-1 rounded-lg border border-zinc-200/90 bg-white px-2 py-1 text-[11px] font-bold text-zinc-800 shadow-2xs font-mono">
+                            <Shield className="size-3 text-zinc-400" />
+                            <span>{formatNumber(teamAvgGS)} GS</span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* LANE & ROLE SELECTOR - ROW 2 */}
+                      <div className="flex items-center justify-between gap-2 border-b border-zinc-100 bg-zinc-50/40 px-3.5 py-2 sm:px-4.5">
+                        <span className="text-[10px] uppercase font-bold tracking-wider text-zinc-400 shrink-0">
+                          Battle Role
+                        </span>
                         <select
                           value={team?.lane?.toLowerCase() || ""}
                           onChange={(e) =>
                             handleLaneChange(teamNumber, e.target.value)
                           }
-                          className="h-8 rounded-xl border border-zinc-300 bg-white px-2.5 text-xs font-bold text-zinc-700 shadow-xs focus:outline-none"
+                          className="h-7.5 max-w-[210px] sm:max-w-[240px] truncate rounded-lg border border-zinc-200 bg-white px-2 text-[11px] font-semibold text-zinc-700 shadow-2xs focus:outline-none focus:ring-1 focus:ring-zinc-400 transition"
                         >
                           <option value="">Unassigned Lane</option>
                           {LANE_SELECT_GROUPS.map((grp) => (
@@ -1125,6 +1108,7 @@ export default function GuildLeagueDetailPage() {
                         </select>
                       </div>
 
+                      {/* PLAYER SLOTS */}
                       <div className="flex-1 divide-y divide-zinc-100">
                         {Array.from({ length: membersPerTeam }, (_, sIdx) => {
                           const slotNumber = sIdx + 1;
@@ -1139,13 +1123,13 @@ export default function GuildLeagueDetailPage() {
                                 onClick={() =>
                                   setAssignSlot({ teamNumber, slotNumber })
                                 }
-                                className="group flex cursor-pointer items-center justify-between px-3.5 sm:px-5 py-2 text-xs text-zinc-400 bg-zinc-50/20 hover:bg-red-50/30 transition"
+                                className="group flex cursor-pointer items-center justify-between px-3.5 sm:px-4.5 py-2 text-xs bg-zinc-50/20 hover:bg-red-50/30 transition"
                               >
-                                <div className="flex items-center gap-2.5 sm:gap-3">
-                                  <span className="w-4 sm:w-5 text-zinc-300 font-mono text-[10px] sm:text-[11px]">
+                                <div className="flex items-center gap-2">
+                                  <span className="w-5 text-zinc-300 font-mono text-[11px] font-bold group-hover:text-zinc-500 transition">
                                     #{slotNumber}
                                   </span>
-                                  <span className="italic text-zinc-400 text-[11px]">
+                                  <span className="text-[11px] italic text-zinc-400 font-medium">
                                     Empty Slot
                                   </span>
                                 </div>
@@ -1156,7 +1140,7 @@ export default function GuildLeagueDetailPage() {
                                     e.stopPropagation();
                                     setAssignSlot({ teamNumber, slotNumber });
                                   }}
-                                  className="inline-flex items-center gap-1 rounded-lg border border-zinc-200 bg-white px-2.5 py-1 text-[11px] font-bold text-zinc-700 shadow-xs group-hover:bg-red-600 group-hover:text-white transition"
+                                  className="inline-flex items-center gap-1 rounded-lg border border-dashed border-zinc-200 bg-white px-2 py-0.5 text-[11px] font-bold text-zinc-600 shadow-2xs group-hover:bg-red-600 group-hover:text-white transition"
                                 >
                                   <UserPlus className="size-3" />
                                   <span>Assign</span>
@@ -1169,14 +1153,14 @@ export default function GuildLeagueDetailPage() {
                             <div
                               key={slotNumber}
                               onClick={() => setSelectedMember(member)}
-                              className="group flex cursor-pointer items-center justify-between px-3.5 sm:px-5 py-2 text-xs transition hover:bg-zinc-50"
+                              className="group flex cursor-pointer items-center justify-between px-3.5 sm:px-4.5 py-2 text-xs transition hover:bg-zinc-50/90"
                             >
-                              <div className="flex min-w-0 items-center gap-2.5 sm:gap-3">
-                                <span className="w-4 sm:w-5 font-bold font-mono text-[10px] sm:text-[11px] text-zinc-400 group-hover:text-zinc-700">
+                              <div className="flex min-w-0 items-center gap-2">
+                                <span className="w-5 font-bold font-mono text-[11px] text-zinc-400 group-hover:text-zinc-700 transition">
                                   #{slotNumber}
                                 </span>
-                                <div className="min-w-0 pr-2">
-                                  <div className="truncate font-bold text-zinc-900 text-xs sm:text-sm group-hover:text-red-700 transition">
+                                <div className="min-w-0 pr-1.5">
+                                  <div className="truncate font-bold text-zinc-900 text-xs sm:text-[13px] group-hover:text-red-700 transition">
                                     {member.nickname}
                                   </div>
                                   <div className="mt-0.5 flex flex-wrap items-center gap-1.5">
@@ -1193,33 +1177,35 @@ export default function GuildLeagueDetailPage() {
                                 </div>
                               </div>
 
-                              <div className="flex shrink-0 items-center gap-2 text-right">
+                              <div className="flex shrink-0 items-center gap-1.5 text-right">
                                 {Number(member.gearScore) > 0 && (
                                   <span className="font-bold text-zinc-900 font-mono text-[11px] sm:text-xs">
                                     {formatNumber(member.gearScore)} GS
                                   </span>
                                 )}
 
-                                <div className="flex items-center gap-1 opacity-90 sm:opacity-0 group-hover:opacity-100 transition">
+                                <div className="flex items-center gap-0.5 opacity-90 sm:opacity-0 group-hover:opacity-100 transition">
                                   <button
                                     type="button"
+                                    title="Relocate / Swap slot"
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       setSelectedMember(member);
                                     }}
-                                    className="flex size-7 items-center justify-center rounded-lg text-zinc-400 hover:bg-zinc-200 hover:text-zinc-800 transition"
+                                    className="flex size-6.5 items-center justify-center rounded-lg text-zinc-400 hover:bg-zinc-200 hover:text-zinc-800 transition"
                                   >
-                                    <ArrowRightLeft className="size-3.5" />
+                                    <ArrowRightLeft className="size-3" />
                                   </button>
                                   <button
                                     type="button"
+                                    title="Remove from roster"
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       handleRemoveMember(member);
                                     }}
-                                    className="flex size-7 items-center justify-center rounded-lg text-zinc-400 hover:bg-red-50 hover:text-red-600 transition"
+                                    className="flex size-6.5 items-center justify-center rounded-lg text-zinc-400 hover:bg-red-50 hover:text-red-600 transition"
                                   >
-                                    <Trash2 className="size-3.5" />
+                                    <Trash2 className="size-3" />
                                   </button>
                                 </div>
                               </div>
