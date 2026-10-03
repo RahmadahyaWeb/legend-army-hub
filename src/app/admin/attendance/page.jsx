@@ -237,8 +237,8 @@ export default function AttendancePage() {
 
       {/* MATCH OVERVIEW & ATTENDANCE STATS BANNER */}
       {currentMatch && (
-        <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm space-y-6">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-zinc-100 pb-5">
+        <div className="rounded-2xl border border-zinc-200 bg-white p-4 sm:p-6 shadow-sm space-y-5 sm:space-y-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-zinc-100 pb-4 sm:pb-5">
             <div>
               <div className="flex items-center gap-2">
                 <span className="rounded-full bg-red-50 px-2.5 py-0.5 text-[10px] font-bold text-red-700 uppercase">
@@ -248,11 +248,11 @@ export default function AttendancePage() {
                   {formatDate(currentMatch.matchDate || currentMatch.date)}
                 </span>
               </div>
-              <h2 className="mt-1.5 text-lg font-bold text-zinc-900">
+              <h2 className="mt-1.5 text-base sm:text-lg font-bold text-zinc-900">
                 {currentMatch.name}
               </h2>
               {currentMatch.opponent && (
-                <p className="text-xs font-semibold text-zinc-600">
+                <p className="text-xs font-semibold text-zinc-600 mt-0.5">
                   VS Opponent: {currentMatch.opponent}
                 </p>
               )}
@@ -264,7 +264,7 @@ export default function AttendancePage() {
                 type="button"
                 disabled={batchSaving || matchRoster.length === 0}
                 onClick={() => handleMarkAll("present")}
-                className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-emerald-600 px-3 text-xs font-bold text-white shadow-sm hover:bg-emerald-500 disabled:opacity-50"
+                className="inline-flex h-8.5 items-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 text-xs font-bold text-white shadow-xs hover:bg-emerald-500 disabled:opacity-50 transition"
               >
                 <CheckCircle2 className="size-3.5" />
                 <span>Mark All Present</span>
@@ -273,67 +273,67 @@ export default function AttendancePage() {
                 type="button"
                 disabled={batchSaving || matchRoster.length === 0}
                 onClick={() => handleMarkAll("unmarked")}
-                className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-3 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 disabled:opacity-50"
+                className="inline-flex h-8.5 items-center gap-1.5 rounded-xl border border-zinc-200 bg-white px-3.5 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 disabled:opacity-50 transition"
               >
                 <span>Reset</span>
               </button>
             </div>
           </div>
 
-          {/* OVERVIEW STATS CARDS */}
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-5">
-            <div className="rounded-xl border border-zinc-100 bg-zinc-50/75 p-4">
-              <div className="text-[11px] font-semibold text-zinc-500">
+          {/* OVERVIEW STATS CARDS - RESPONSIVE 2 -> 3 -> 5 COLS */}
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5 sm:gap-4">
+            <div className="rounded-xl border border-zinc-100 bg-zinc-50/75 p-3 sm:p-4">
+              <div className="text-[10px] sm:text-[11px] font-semibold text-zinc-500 truncate">
                 Assigned Roster
               </div>
-              <div className="mt-1 text-2xl font-bold text-zinc-900">
+              <div className="mt-1 text-xl sm:text-2xl font-bold text-zinc-900">
                 {totalAssigned} <span className="text-xs text-zinc-400">/ {maxRoster}</span>
               </div>
-              <div className="mt-0.5 text-[10px] text-zinc-400">
-                Players in match teams
+              <div className="mt-0.5 text-[10px] text-zinc-400 truncate">
+                Players in teams
               </div>
             </div>
 
-            <div className="rounded-xl border border-emerald-100 bg-emerald-50/50 p-4">
-              <div className="text-[11px] font-semibold text-emerald-700">
+            <div className="rounded-xl border border-emerald-100 bg-emerald-50/50 p-3 sm:p-4">
+              <div className="text-[10px] sm:text-[11px] font-semibold text-emerald-700 truncate">
                 Present Rate
               </div>
-              <div className="mt-1 text-2xl font-bold text-emerald-800">
+              <div className="mt-1 text-xl sm:text-2xl font-bold text-emerald-800">
                 {presentRate}%
               </div>
-              <div className="mt-0.5 text-[10px] text-emerald-600 font-medium">
-                {presentCount} of {totalAssigned} players checked in
+              <div className="mt-0.5 text-[10px] text-emerald-600 font-medium truncate">
+                {presentCount} of {totalAssigned} checked in
               </div>
             </div>
 
-            <div className="rounded-xl border border-emerald-100 bg-white p-4 shadow-sm">
-              <div className="text-[11px] font-semibold text-emerald-600">
+            <div className="rounded-xl border border-emerald-100 bg-white p-3 sm:p-4 shadow-xs">
+              <div className="text-[10px] sm:text-[11px] font-semibold text-emerald-600 truncate">
                 Present
               </div>
-              <div className="mt-1 text-2xl font-bold text-emerald-700">
+              <div className="mt-1 text-xl sm:text-2xl font-bold text-emerald-700">
                 {presentCount}
               </div>
-              <div className="mt-0.5 text-[10px] text-zinc-400">Confirmed on site</div>
+              <div className="mt-0.5 text-[10px] text-zinc-400 truncate">Confirmed on site</div>
             </div>
 
-            <div className="rounded-xl border border-amber-100 bg-white p-4 shadow-sm">
-              <div className="text-[11px] font-semibold text-amber-600">
+            <div className="rounded-xl border border-amber-100 bg-white p-3 sm:p-4 shadow-xs">
+              <div className="text-[10px] sm:text-[11px] font-semibold text-amber-600 truncate">
                 Late / Excused
               </div>
-              <div className="mt-1 text-2xl font-bold text-amber-700">
+              <div className="mt-1 text-xl sm:text-2xl font-bold text-amber-700">
                 {lateCount}
               </div>
-              <div className="mt-0.5 text-[10px] text-zinc-400">Delayed arrival</div>
+              <div className="mt-0.5 text-[10px] text-zinc-400 truncate">Delayed arrival</div>
             </div>
 
-            <div className="rounded-xl border border-red-100 bg-white p-4 shadow-sm">
-              <div className="text-[11px] font-semibold text-red-600">
+            <div className="col-span-2 sm:col-span-1 rounded-xl border border-red-100 bg-white p-3 sm:p-4 shadow-xs">
+              <div className="text-[10px] sm:text-[11px] font-semibold text-red-600 truncate">
                 Absent / Unmarked
               </div>
-              <div className="mt-1 text-2xl font-bold text-red-700">
+              <div className="mt-1 text-xl sm:text-2xl font-bold text-red-700">
                 {absentCount + unmarkedCount}
               </div>
-              <div className="mt-0.5 text-[10px] text-zinc-400">
+              <div className="mt-0.5 text-[10px] text-zinc-400 truncate">
                 {absentCount} absent, {unmarkedCount} unmarked
               </div>
             </div>
@@ -388,7 +388,7 @@ export default function AttendancePage() {
 
         {/* TABLE */}
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
+          <table className="w-full min-w-[580px] text-left text-xs">
             <thead className="border-b border-zinc-200 bg-zinc-50 text-zinc-600 font-semibold">
               <tr>
                 <th className="px-4 py-3">Team & Slot</th>

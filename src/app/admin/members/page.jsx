@@ -200,7 +200,7 @@ export default function MembersPage() {
           />
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <select
             value={statusFilter}
             onChange={(e) => {
@@ -238,7 +238,7 @@ export default function MembersPage() {
       {/* MEMBERS TABLE */}
       <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
+          <table className="w-full min-w-[620px] text-left text-xs">
             <thead className="border-b border-zinc-200 bg-zinc-50/75 text-zinc-600 font-semibold">
               <tr>
                 <th
@@ -389,7 +389,7 @@ export default function MembersPage() {
         </div>
 
         {/* PAGINATION */}
-        <div className="flex items-center justify-between border-t border-zinc-200 px-4 py-3 text-xs text-zinc-500">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-t border-zinc-200 px-4 py-3 text-xs text-zinc-500">
           <div>
             Showing{" "}
             <span className="font-semibold text-zinc-800">
@@ -406,7 +406,7 @@ export default function MembersPage() {
             members
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 self-end sm:self-auto">
             <button
               type="button"
               disabled={page <= 1}

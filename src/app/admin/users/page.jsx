@@ -130,7 +130,7 @@ export default function AdminUsersPage() {
 
       {/* ADMIN USERS LIST */}
       <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
-        <div className="border-b border-zinc-200 bg-zinc-50/75 px-6 py-4">
+        <div className="border-b border-zinc-200 bg-zinc-50/75 px-4 sm:px-6 py-3.5 sm:py-4">
           <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-500">
             Registered Administrators ({users.length})
           </h3>
@@ -140,7 +140,7 @@ export default function AdminUsersPage() {
           {loading ? (
             <div className="animate-pulse divide-y divide-zinc-100">
               {Array.from({ length: 4 }, (_, i) => (
-                <div key={i} className="flex items-center justify-between px-6 py-4">
+                <div key={i} className="flex items-center justify-between px-4 sm:px-6 py-3.5 sm:py-4">
                   <div className="flex items-center gap-3">
                     <div className="size-9 rounded-xl bg-zinc-200" />
                     <div className="space-y-1">
@@ -160,21 +160,23 @@ export default function AdminUsersPage() {
             users.map((u) => (
               <div
                 key={u.id}
-                className="flex items-center justify-between px-6 py-4 hover:bg-zinc-50 transition"
+                className="flex items-center justify-between px-4 sm:px-6 py-3.5 sm:py-4 hover:bg-zinc-50 transition gap-3"
               >
-                <div className="flex items-center gap-3">
-                  <div className="flex size-9 items-center justify-center rounded-xl bg-red-50 text-red-700">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-red-50 text-red-700">
                     <ShieldCheck className="size-5" />
                   </div>
-                  <div>
-                    <div className="text-sm font-bold text-zinc-900">
+                  <div className="min-w-0">
+                    <div className="text-sm font-bold text-zinc-900 truncate">
                       {u.displayName || "Admin"}
                     </div>
-                    <div className="text-xs text-zinc-500 flex items-center gap-2">
-                      <Mail className="size-3 text-zinc-400" />
-                      <span>{u.email}</span>
+                    <div className="text-xs text-zinc-500 flex flex-wrap items-center gap-1.5 mt-0.5">
+                      <span className="flex items-center gap-1 truncate max-w-[200px] sm:max-w-none">
+                        <Mail className="size-3 text-zinc-400 shrink-0" />
+                        <span className="truncate">{u.email}</span>
+                      </span>
                       <span>•</span>
-                      <span>Added {formatDate(u.createdAt)}</span>
+                      <span className="shrink-0">Added {formatDate(u.createdAt)}</span>
                     </div>
                   </div>
                 </div>
@@ -182,7 +184,7 @@ export default function AdminUsersPage() {
                 <button
                   type="button"
                   onClick={() => handleDelete(u.id, u.email)}
-                  className="flex size-8 items-center justify-center rounded-lg text-zinc-400 hover:bg-red-50 hover:text-red-600"
+                  className="flex size-8 shrink-0 items-center justify-center rounded-lg text-zinc-400 hover:bg-red-50 hover:text-red-600 transition"
                   title="Remove admin"
                 >
                   <Trash2 className="size-4" />

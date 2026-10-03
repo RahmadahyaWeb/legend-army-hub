@@ -285,14 +285,14 @@ export default function StrategyPage() {
         <div className="lg:col-span-8">
           <form
             onSubmit={handleSave}
-            className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm space-y-4"
+            className="rounded-2xl border border-zinc-200 bg-white p-4 sm:p-6 shadow-sm space-y-4"
           >
-            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-100 pb-4">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-100 pb-4">
               <h3 className="text-base font-bold text-zinc-900">
                 {selectedId ? "Edit Strategy Document" : "Create New Strategy"}
               </h3>
 
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <button
                   type="button"
                   disabled={sendingDiscord || (!title.trim() && !content.trim())}
@@ -328,7 +328,7 @@ export default function StrategyPage() {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div>
                 <label className="text-xs font-semibold text-zinc-700">
                   Category
