@@ -150,7 +150,7 @@ export default function CreateGuildLeagueModal({ open, onClose, onSuccess }) {
                 <span className="text-xs font-bold">Guild League (Default)</span>
               </div>
               <p className="text-[11px] text-zinc-500 mt-1">
-                Format 3 Lane taktis (Top, Mid, Bot)
+                3-lane tactical format (Top, Mid, Bot)
               </p>
             </button>
 
@@ -168,7 +168,7 @@ export default function CreateGuildLeagueModal({ open, onClose, onSuccess }) {
                 <span className="text-xs font-bold">WOE (War of Emperium)</span>
               </div>
               <p className="text-[11px] text-zinc-500 mt-1">
-                Format kesatuan tim (Tanpa pembagian lane)
+                Unified team format (No lane division)
               </p>
             </button>
           </div>

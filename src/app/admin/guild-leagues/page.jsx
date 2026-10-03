@@ -84,7 +84,7 @@ export default function GuildLeaguesPage() {
       <div className="flex flex-col gap-3.5 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-xl sm:text-2xl font-black text-zinc-900 tracking-tight">
-            Event Guild
+            Guild Events
           </h1>
           <p className="mt-1 text-xs text-zinc-500">
             Create guild events & matches, organize up to 30 teams, and assign tactical lineups

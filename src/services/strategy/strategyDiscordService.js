@@ -2,10 +2,10 @@ const DISCORD_WORKER_URL = "https://legend-army-discord.legendarmy.workers.dev/s
 
 export async function sendStrategyToDiscord({ title, category, mapName, content }) {
   if (!title || !title.trim()) {
-    throw new Error("Judul strategi tidak boleh kosong.");
+    throw new Error("Strategy title is required.");
   }
   if (!content || !content.trim()) {
-    throw new Error("Konten strategi tidak boleh kosong.");
+    throw new Error("Strategy content is required.");
   }
 
   const payload = {

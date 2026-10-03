@@ -263,7 +263,7 @@ export default function PublicRosterPage() {
                     WOE Battle Formations
                   </h2>
                   <p className="text-[11px] text-zinc-500">
-                    {maxTeams} Squad Formations • Format Kesatuan Tim (Tanpa Pembagian 3 Lane)
+                    {maxTeams} Squad Formations • Unified Team Formations (No 3-Lane Division)
                   </p>
                 </div>
               </div>

@@ -1,7 +1,7 @@
 // Job / Class color mapping for Ragnarok Origin / Legend Army Guild Hub
 
 export const CLASS_COLOR_CONFIG = {
-  // Paladin dan Lord Knight -> MERAH (Red)
+  // Paladin and Lord Knight -> RED
   paladin: {
     name: "Paladin",
     bg: "bg-red-50",
@@ -227,7 +227,7 @@ export const CLASS_COLOR_CONFIG = {
     glow: "shadow-emerald-500/20",
   },
 
-  // Clown dan Gypsy -> ORANGE
+  // Clown and Gypsy -> ORANGE
   clown: {
     name: "Clown",
     bg: "bg-orange-50",

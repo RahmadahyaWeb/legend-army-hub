@@ -49,8 +49,8 @@ export default function ResetMembersModal({ open, memberCount = 0, onClose, onSu
     <Modal
       open={open}
       onClose={() => !resetting && onClose()}
-      title="Reset Semua Member"
-      description="Kosongkan dan mulai data member dari awal"
+      title="Reset All Members"
+      description="Clear and start member data from scratch"
       icon={RotateCcw}
       size="sm"
       footer={
@@ -60,7 +60,7 @@ export default function ResetMembersModal({ open, memberCount = 0, onClose, onSu
             disabled={resetting}
             onClick={onClose}
           >
-            Batal
+            Cancel
           </Button>
           <Button
             variant="danger"
@@ -69,7 +69,7 @@ export default function ResetMembersModal({ open, memberCount = 0, onClose, onSu
             icon={RotateCcw}
             onClick={handleReset}
           >
-            Reset Semua Member
+            Reset All Members
           </Button>
         </>
       }
@@ -78,13 +78,13 @@ export default function ResetMembersModal({ open, memberCount = 0, onClose, onSu
         <div className="rounded-xl border border-amber-200 bg-amber-50/80 p-3.5 text-xs text-amber-900 flex items-start gap-2.5">
           <AlertTriangle className="size-4 shrink-0 text-amber-600 mt-0.5" />
           <p className="leading-relaxed">
-            Tindakan ini akan menghapus <strong>{memberCount} data member</strong> yang tersimpan di database. Setelah di-reset, Anda dapat mengimpor atau menambahkan ulang daftar member yang bersih dari awal.
+            This action will permanently delete <strong>{memberCount} member records</strong> stored in the database. After resetting, you can import or re-add a clean member roster from scratch.
           </p>
         </div>
 
         <Input
-          label="Ketik RESET di bawah untuk konfirmasi:"
-          placeholder="Ketik RESET untuk konfirmasi"
+          label="Type RESET below to confirm:"
+          placeholder="Type RESET to confirm"
           value={confirmationInput}
           onChange={(e) => setConfirmationInput(e.target.value)}
           disabled={resetting}
