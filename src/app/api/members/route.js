@@ -253,9 +253,17 @@ export async function DELETE(request) {
 
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
+    const isAll = searchParams.get("all") === "true";
+
+    if (isAll) {
+      // Clean up attendance references and delete all members
+      await sql`DELETE FROM attendances WHERE member_id IS NOT NULL;`;
+      await sql`DELETE FROM members;`;
+      return NextResponse.json({ success: true, message: "All members have been reset successfully." });
+    }
 
     if (!id) {
-      return NextResponse.json({ error: "Member ID is required" }, { status: 400 });
+      return NextResponse.json({ error: "Member ID or all=true is required" }, { status: 400 });
     }
 
     await sql`DELETE FROM members WHERE id = ${id};`;

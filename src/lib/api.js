@@ -70,6 +70,18 @@ export async function deleteMember(id) {
   return await res.json();
 }
 
+export async function resetAllMembers() {
+  const res = await fetch("/api/members?all=true", {
+    method: "DELETE",
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || "Failed to reset member data");
+  }
+  clearCache("members");
+  return await res.json();
+}
+
 export async function importMembers(membersList) {
   const res = await fetch("/api/members", {
     method: "POST",

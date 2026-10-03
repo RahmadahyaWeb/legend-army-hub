@@ -9,6 +9,8 @@ import {
   ChevronRight,
   Pencil,
   Power,
+  RefreshCw,
+  RotateCcw,
   Search,
   Trash2,
   Upload,
@@ -22,6 +24,7 @@ import EmptyState from "@/components/ui/EmptyState";
 import ImportMembersModal from "@/components/members/ImportMembersModal";
 import EditMemberModal from "@/components/members/EditMemberModal";
 import DeleteMemberModal from "@/components/members/DeleteMemberModal";
+import ResetMembersModal from "@/components/members/ResetMembersModal";
 import { ClassBadge } from "@/utils/classColors";
 
 const PAGE_SIZE_OPTIONS = [25, 50, 100];
@@ -29,7 +32,9 @@ const PAGE_SIZE_OPTIONS = [25, 50, 100];
 export default function MembersPage() {
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState("");
+  const [toastMessage, setToastMessage] = useState("");
 
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -40,6 +45,7 @@ export default function MembersPage() {
 
   // Modals state
   const [importModalOpen, setImportModalOpen] = useState(false);
+  const [resetModalOpen, setResetModalOpen] = useState(false);
   const [editingMember, setEditingMember] = useState(null);
   const [deletingMember, setDeletingMember] = useState(null);
 
@@ -151,8 +157,18 @@ export default function MembersPage() {
         <div className="flex flex-wrap items-center gap-2.5">
           <button
             type="button"
+            onClick={() => setResetModalOpen(true)}
+            className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-red-200 bg-red-50/80 px-3.5 text-xs font-bold text-red-700 shadow-2xs transition hover:bg-red-100 active:scale-95"
+            title="Kosongkan seluruh data member untuk mulai dari awal"
+          >
+            <RotateCcw className="size-3.5" />
+            <span>Reset Data</span>
+          </button>
+
+          <button
+            type="button"
             onClick={() => setImportModalOpen(true)}
-            className="inline-flex h-9 items-center gap-2 rounded-xl border border-zinc-200 bg-white px-3.5 text-xs font-semibold text-zinc-700 shadow-sm transition hover:bg-zinc-50"
+            className="inline-flex h-9 items-center gap-2 rounded-xl border border-zinc-200 bg-white px-3.5 text-xs font-semibold text-zinc-700 shadow-2xs transition hover:bg-zinc-50 active:scale-95"
           >
             <Upload className="size-3.5" />
             <span>Import CSV</span>
@@ -170,13 +186,29 @@ export default function MembersPage() {
                 isActive: true,
               })
             }
-            className="inline-flex h-9 items-center gap-2 rounded-xl bg-red-600 px-3.5 text-xs font-bold text-white shadow-sm transition hover:bg-red-500"
+            className="inline-flex h-9 items-center gap-2 rounded-xl bg-red-600 px-3.5 text-xs font-bold text-white shadow-2xs transition hover:bg-red-500 active:scale-95"
           >
             <UserPlus className="size-3.5" />
             <span>Add Member</span>
           </button>
         </div>
       </div>
+
+      {toastMessage && (
+        <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3.5 text-xs font-semibold text-emerald-900 flex items-center justify-between shadow-xs animate-in fade-in slide-in-from-top-2 duration-150">
+          <div className="flex items-center gap-2">
+            <span>✓</span>
+            <span>{toastMessage}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setToastMessage("")}
+            className="text-emerald-700 hover:text-emerald-900 text-xs font-bold"
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
       {error && (
         <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-xs font-medium text-red-700">
@@ -201,6 +233,23 @@ export default function MembersPage() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            disabled={refreshing}
+            onClick={async () => {
+              setRefreshing(true);
+              await loadMembers(false);
+              setRefreshing(false);
+              setToastMessage("Data member berhasil di-refresh dari server");
+              setTimeout(() => setToastMessage(""), 3000);
+            }}
+            title="Refresh data dari server"
+            className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-zinc-200 bg-white px-3 text-xs font-semibold text-zinc-700 shadow-2xs transition hover:bg-zinc-50 active:scale-95 disabled:opacity-50"
+          >
+            <RefreshCw className={`size-3.5 ${refreshing ? "animate-spin" : ""}`} />
+            <span className="hidden sm:inline">Refresh</span>
+          </button>
+
           <select
             value={statusFilter}
             onChange={(e) => {
@@ -431,10 +480,25 @@ export default function MembersPage() {
       </div>
 
       {/* MODALS */}
+      <ResetMembersModal
+        open={resetModalOpen}
+        memberCount={members.length}
+        onClose={() => setResetModalOpen(false)}
+        onSuccess={() => {
+          loadMembers(true);
+          setToastMessage("Seluruh data member berhasil di-reset!");
+          setTimeout(() => setToastMessage(""), 3500);
+        }}
+      />
+
       <ImportMembersModal
         open={importModalOpen}
         onClose={() => setImportModalOpen(false)}
-        onSuccess={() => loadMembers(true)}
+        onSuccess={() => {
+          loadMembers(true);
+          setToastMessage("Data member berhasil di-import!");
+          setTimeout(() => setToastMessage(""), 3500);
+        }}
       />
 
       <EditMemberModal
