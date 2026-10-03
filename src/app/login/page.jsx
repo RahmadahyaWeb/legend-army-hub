@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -19,6 +19,23 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [checkingAuth, setCheckingAuth] = useState(true);
+
+  // If already logged in, redirect immediately to /admin
+  useEffect(() => {
+    fetch("/api/auth")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.authenticated) {
+          router.replace("/admin");
+        } else {
+          setCheckingAuth(false);
+        }
+      })
+      .catch(() => {
+        setCheckingAuth(false);
+      });
+  }, [router]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -50,6 +67,19 @@ export default function LoginPage() {
       setLoading(false);
     }
   };
+
+  if (checkingAuth) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-zinc-950">
+        <div className="flex flex-col items-center gap-4">
+          <div className="flex size-12 items-center justify-center rounded-2xl bg-red-700/20 border border-red-500/30">
+            <ShieldCheck className="size-6 text-red-500" />
+          </div>
+          <div className="size-5 animate-spin rounded-full border-2 border-zinc-700 border-t-red-600" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-white">
