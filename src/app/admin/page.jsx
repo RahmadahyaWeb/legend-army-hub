@@ -100,7 +100,7 @@ export default function AdminDashboardPage() {
 
           <Link href="/admin/guild-leagues">
             <Button variant="primary" size="sm" icon={Swords}>
-              Guild Leagues
+              Event Guild
             </Button>
           </Link>
         </div>
@@ -132,7 +132,7 @@ export default function AdminDashboardPage() {
         <StatCard
           icon={Swords}
           value={guildLeagues.length}
-          label="Guild Leagues"
+          label="Event Guild"
           description="Events scheduled"
         />
       </div>

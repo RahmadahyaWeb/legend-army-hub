@@ -20,11 +20,11 @@ const INITIAL_FORM = {
 };
 
 /**
- * Create Guild League Match Modal
+ * Create Guild Event Modal
  *
  * Why this exists:
- * Setup dialog for creating a new Guild League match, configuring opponent,
- * schedule, total teams, and player capacity per team.
+ * Setup dialog for creating a new Guild Event (Guild League, War, Siege, etc.),
+ * configuring opponent, schedule, total teams (up to 30 teams), and player capacity per team.
  *
  * @param {Object} props - Component props
  * @param {boolean} props.open - Modal visibility
@@ -55,7 +55,7 @@ export default function CreateGuildLeagueModal({ open, onClose, onSuccess }) {
     if (saving) return;
 
     if (!form.name.trim()) {
-      setError("Match name / title is required.");
+      setError("Event name / title is required.");
       return;
     }
 
@@ -76,8 +76,8 @@ export default function CreateGuildLeagueModal({ open, onClose, onSuccess }) {
       if (onSuccess) onSuccess();
       handleClose();
     } catch (err) {
-      console.error("Create match error:", err);
-      setError(err.message || "Failed to create Guild League match.");
+      console.error("Create event error:", err);
+      setError(err.message || "Failed to create Guild Event.");
     } finally {
       setSaving(false);
     }
@@ -87,8 +87,8 @@ export default function CreateGuildLeagueModal({ open, onClose, onSuccess }) {
     <Modal
       open={open}
       onClose={handleClose}
-      title="Create Guild League Match"
-      description="Setup match schedule, opponent details, and lineup capacity."
+      title="Create Guild Event"
+      description="Setup event schedule, opponent/objective details, and lineup capacity."
       icon={Swords}
       size="md"
       footer={
@@ -106,32 +106,32 @@ export default function CreateGuildLeagueModal({ open, onClose, onSuccess }) {
             icon={Swords}
             onClick={handleSubmit}
           >
-            Create Match
+            Create Event
           </Button>
         </>
       }
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         <Input
-          label="Match / Event Title"
+          label="Event / Match Title"
           name="name"
           required
           value={form.name}
           onChange={handleChange}
-          placeholder="e.g. Guild League Season 4 - Match 1"
+          placeholder="e.g. Guild League Season 4 / Node War / Siege"
         />
 
         <div className="grid grid-cols-2 gap-4">
           <Input
-            label="Opponent Guild"
+            label="Opponent / Objective (Optional)"
             name="opponent"
             value={form.opponent}
             onChange={handleChange}
-            placeholder="e.g. Invictus / TBA"
+            placeholder="e.g. Invictus / Castle Defense / TBA"
           />
 
           <Input
-            label="Match Date"
+            label="Event Date"
             name="matchDate"
             type="date"
             value={form.matchDate}
@@ -153,11 +153,11 @@ export default function CreateGuildLeagueModal({ open, onClose, onSuccess }) {
           </Select>
 
           <Input
-            label="Total Teams"
+            label="Total Teams (Up to 30)"
             name="maxTeams"
             type="number"
             min="1"
-            max="12"
+            max="30"
             value={form.maxTeams}
             onChange={handleChange}
           />
@@ -167,7 +167,7 @@ export default function CreateGuildLeagueModal({ open, onClose, onSuccess }) {
             name="membersPerTeam"
             type="number"
             min="1"
-            max="20"
+            max="50"
             value={form.membersPerTeam}
             onChange={handleChange}
           />

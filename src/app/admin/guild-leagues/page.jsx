@@ -84,10 +84,10 @@ export default function GuildLeaguesPage() {
       <div className="flex flex-col gap-3.5 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-xl sm:text-2xl font-black text-zinc-900 tracking-tight">
-            Guild League Matches
+            Event Guild
           </h1>
           <p className="mt-1 text-xs text-zinc-500">
-            Create match events, manage team lanes, and assign player rosters
+            Create guild events & matches, organize up to 30 teams, and assign tactical lineups
           </p>
         </div>
 
@@ -97,7 +97,7 @@ export default function GuildLeaguesPage() {
             onChange={(e) => setStatusFilter(e.target.value)}
             className="!h-8.5 !py-0 !text-xs font-semibold"
           >
-            <option value="all">All Matches ({guildLeagues.length})</option>
+            <option value="all">All Events ({guildLeagues.length})</option>
             <option value="draft">Draft Only</option>
             <option value="published">Published Only</option>
             <option value="completed">Completed Only</option>
@@ -109,7 +109,7 @@ export default function GuildLeaguesPage() {
             icon={Plus}
             onClick={() => setCreateModalOpen(true)}
           >
-            New Match
+            New Event
           </Button>
         </div>
       </div>
@@ -120,11 +120,11 @@ export default function GuildLeaguesPage() {
       ) : filteredMatches.length === 0 ? (
         <EmptyState
           icon={Swords}
-          title="No Guild League matches found"
+          title="No Guild Events found"
           description={
             statusFilter !== "all"
-              ? "No matches match the selected status filter."
-              : "Create your first guild league event to start organizing teams and assigning rosters."
+              ? "No events match the selected status filter."
+              : "Create your first guild event to start organizing teams and assigning rosters."
           }
           action={
             <Button
@@ -133,7 +133,7 @@ export default function GuildLeaguesPage() {
               icon={Plus}
               onClick={() => setCreateModalOpen(true)}
             >
-              Create Match
+              Create Event
             </Button>
           }
         />
@@ -225,7 +225,7 @@ export default function GuildLeaguesPage() {
         onClose={() => setCreateModalOpen(false)}
         onSuccess={() => {
           loadMatches(true);
-          success("Match created", "New Guild League event has been registered.");
+          success("Event created", "New guild event has been registered.");
         }}
       />
     </div>

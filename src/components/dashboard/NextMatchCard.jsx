@@ -24,10 +24,10 @@ export default function NextMatchCard({ guildLeague = null, isAdmin = false }) {
           <CalendarDays className="size-5" />
         </div>
         <h2 className="mt-4 text-base font-bold text-zinc-900">
-          No Upcoming Guild League
+          No Upcoming Guild Event
         </h2>
         <p className="mt-1 text-xs text-zinc-500">
-          There is currently no upcoming match scheduled on the calendar.
+          There is currently no upcoming event scheduled on the calendar.
         </p>
       </Card>
     );
@@ -49,7 +49,7 @@ export default function NextMatchCard({ guildLeague = null, isAdmin = false }) {
       <div className="border-b border-brand-100 bg-brand-50/70 px-5 py-3 sm:px-6">
         <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-brand-700">
           <Swords className="size-4" />
-          <span>Next Guild League Match</span>
+          <span>Next Guild Event</span>
         </div>
       </div>
 

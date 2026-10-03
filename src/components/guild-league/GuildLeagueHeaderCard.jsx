@@ -39,7 +39,7 @@ export default function GuildLeagueHeaderCard({
         <div>
           <div className="flex items-center gap-2 text-[11px] sm:text-xs font-bold text-brand-600 uppercase tracking-widest">
             <Swords className="size-3.5 sm:size-4" />
-            <span>Guild League Lineup & Roster</span>
+            <span>Event Lineup & Roster</span>
           </div>
 
           <h1 className="mt-1 text-xl font-black text-zinc-900 sm:text-3xl lg:text-4xl tracking-tight">

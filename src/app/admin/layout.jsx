@@ -29,7 +29,7 @@ const navigation = [
     icon: Users,
   },
   {
-    name: "Guild League",
+    name: "Event Guild",
     href: "/admin/guild-leagues",
     icon: Swords,
   },

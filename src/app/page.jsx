@@ -158,8 +158,8 @@ export default function PublicDashboard() {
           <StatCard
             icon={Trophy}
             value={guildLeagues.length}
-            label="Matches"
-            description="Guild League history"
+            label="Guild Events"
+            description="Event & war history"
           />
         </div>
 

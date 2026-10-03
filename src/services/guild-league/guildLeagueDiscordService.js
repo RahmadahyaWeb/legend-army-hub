@@ -77,10 +77,10 @@ export async function sendGuildLeagueToDiscord({
     status: guildLeague.status || "draft",
     rosterUrl,
     assignedPlayers: Number(rosterCount) || (rosterMembers ? rosterMembers.length : 0),
-    maxPlayers: Number(maxRoster) || 60,
+    maxPlayers: Number(maxRoster) || (Number(maxTeams) || 30) * (Number(membersPerTeam) || 10),
     activeTeams: Number(teamCount) || maxTeams,
-    maxTeams: Number(maxTeams) || 12,
-    membersPerTeam: Number(membersPerTeam) || 5,
+    maxTeams: Number(maxTeams) || 30,
+    membersPerTeam: Number(membersPerTeam) || 10,
     teams: discordTeams,
     roster: (rosterMembers || []).map((member) => ({
       id: member.id,
