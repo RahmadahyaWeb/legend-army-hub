@@ -20,13 +20,17 @@ export async function POST(request, { params }) {
     }
 
     const rosterId = `${guildLeagueId}_t${teamNumber}_s${slotNumber}`;
+    const cleanNick = (nickname || "Unknown").trim();
 
-    // If memberId is provided, remove them from any existing slot in this guild league to prevent duplicates
-    if (memberId) {
+    // Remove them from any existing slot in this guild league to prevent duplicates (check BOTH memberId and nickname)
+    if (memberId || cleanNick) {
       await sql`
         DELETE FROM guild_league_rosters 
         WHERE guild_league_id = ${guildLeagueId} 
-          AND member_id = ${memberId}
+          AND (
+            (${memberId ? sql`member_id = ${memberId}` : sql`FALSE`})
+            OR (${cleanNick ? sql`LOWER(TRIM(nickname)) = LOWER(TRIM(${cleanNick}))` : sql`FALSE`})
+          )
           AND NOT (team_number = ${Number(teamNumber)} AND slot_number = ${Number(slotNumber)});
       `;
     }
@@ -36,7 +40,7 @@ export async function POST(request, { params }) {
       INSERT INTO guild_league_rosters (
         id, guild_league_id, member_id, nickname, class_name, level, gear_score, team_number, slot_number, updated_at
       ) VALUES (
-        ${rosterId}, ${guildLeagueId}, ${memberId || null}, ${nickname || "Unknown"}, 
+        ${rosterId}, ${guildLeagueId}, ${memberId || null}, ${cleanNick}, 
         ${className || ""}, ${Number(level) || 0}, ${Number(gearScore) || 0}, 
         ${Number(teamNumber)}, ${Number(slotNumber)}, NOW()
       )

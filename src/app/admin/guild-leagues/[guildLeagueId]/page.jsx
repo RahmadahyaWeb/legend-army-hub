@@ -269,6 +269,8 @@ export default function GuildLeagueDetailPage() {
     const targetSlot = Number(targetSlotArg ?? assignSlot?.slotNumber);
     if (!targetTeam || !targetSlot) return;
 
+    const memberNickKey = member.nickname?.toLowerCase().trim();
+
     // 1. Instant functional state update (never suffers from stale closure!)
     setData((prev) => {
       if (!prev) return prev;
@@ -284,11 +286,12 @@ export default function GuildLeagueDetailPage() {
         slotNumber: targetSlot,
       };
 
-      // Remove previous occupant of this slot OR this member anywhere else
+      // Remove previous occupant of this slot OR this member anywhere else (check both ID and nickname)
       const updatedRoster = currentRoster.filter(
         (r) =>
           !(Number(r.teamNumber) === targetTeam && Number(r.slotNumber) === targetSlot) &&
-          String(r.memberId || r.id) !== String(member.id)
+          String(r.memberId || r.id) !== String(member.id) &&
+          (!memberNickKey || r.nickname?.toLowerCase().trim() !== memberNickKey)
       );
 
       return {

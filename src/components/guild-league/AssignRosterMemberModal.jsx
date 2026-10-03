@@ -43,11 +43,13 @@ export default function AssignRosterMemberModal({
 
   // Local optimistic tracking during rapid fire clicks in this modal session
   const [sessionAssignedIds, setSessionAssignedIds] = useState(() => new Set());
+  const [sessionAssignedNicks, setSessionAssignedNicks] = useState(() => new Set());
   const [sessionOccupiedSlots, setSessionOccupiedSlots] = useState(() => new Set());
 
   useEffect(() => {
     if (!open) {
       setSessionAssignedIds(new Set());
+      setSessionAssignedNicks(new Set());
       setSessionOccupiedSlots(new Set());
       return;
     }
@@ -78,17 +80,25 @@ export default function AssignRosterMemberModal({
     };
   }, [open]);
 
-  // Combined assigned member IDs (from props + this rapid session)
-  const allAssignedIds = useMemo(() => {
-    const ids = new Set(assignedMemberIds.filter(Boolean).map(String));
-    rosterMembers.forEach((r) => {
+  // Combined assigned member IDs and Nicknames (from props + this rapid session)
+  const { allAssignedIds, allAssignedNicks } = useMemo(() => {
+    const ids = new Set((assignedMemberIds || []).filter(Boolean).map(String));
+    const nicks = new Set();
+
+    (rosterMembers || []).forEach((r) => {
       if (r.memberId || r.id) {
         ids.add(String(r.memberId || r.id));
       }
+      if (r.nickname) {
+        nicks.add(r.nickname.toLowerCase().trim());
+      }
     });
+
     sessionAssignedIds.forEach((id) => ids.add(String(id)));
-    return ids;
-  }, [assignedMemberIds, rosterMembers, sessionAssignedIds]);
+    sessionAssignedNicks.forEach((nick) => nicks.add(nick.toLowerCase().trim()));
+
+    return { allAssignedIds: ids, allAssignedNicks: nicks };
+  }, [assignedMemberIds, rosterMembers, sessionAssignedIds, sessionAssignedNicks]);
 
   // Extract unique classes for quick filter tags
   const uniqueClasses = useMemo(() => {
@@ -99,14 +109,23 @@ export default function AssignRosterMemberModal({
     return Array.from(set).sort();
   }, [members]);
 
-  // Filter & sort members
+  // Filter & sort members with nickname deduplication
   const availableMembers = useMemo(() => {
     const term = search.toLowerCase().trim();
+    const seenNicks = new Set();
 
     return members
       .filter((m) => {
+        const nickKey = m.nickname?.toLowerCase().trim();
+        if (!nickKey) return false;
+
+        // Prevent duplicates within the members list itself
+        if (seenNicks.has(nickKey)) return false;
+        seenNicks.add(nickKey);
+
         // Exclude members already assigned
         if (allAssignedIds.has(String(m.id))) return false;
+        if (allAssignedNicks.has(nickKey)) return false;
 
         // Class filter
         if (classFilter !== "all" && m.className !== classFilter) {
@@ -115,7 +134,7 @@ export default function AssignRosterMemberModal({
 
         // Search term
         if (!term) return true;
-        const matchNick = m.nickname?.toLowerCase().includes(term);
+        const matchNick = nickKey.includes(term);
         const matchClass = m.className?.toLowerCase().includes(term);
         return matchNick || matchClass;
       })
@@ -131,7 +150,7 @@ export default function AssignRosterMemberModal({
         }
         return 0;
       });
-  }, [members, allAssignedIds, search, classFilter, sortBy]);
+  }, [members, allAssignedIds, allAssignedNicks, search, classFilter, sortBy]);
 
   // Find next empty slot for auto-advance considering session state
   const findNextEmptySlot = (currentTeam, currentSlot) => {
@@ -165,10 +184,14 @@ export default function AssignRosterMemberModal({
   const handleSelectMember = (member) => {
     const currentTeam = Number(teamNumber);
     const currentSlot = Number(slotNumber);
+    const nickKey = member.nickname?.toLowerCase().trim();
 
     // 1. Instant local session update to prevent double-click or race condition
     const slotKey = `t${currentTeam}_s${currentSlot}`;
     setSessionAssignedIds((prev) => new Set([...prev, String(member.id)]));
+    if (nickKey) {
+      setSessionAssignedNicks((prev) => new Set([...prev, nickKey]));
+    }
     setSessionOccupiedSlots((prev) => new Set([...prev, slotKey]));
 
     // 2. Fire assign handler with explicit coordinates
