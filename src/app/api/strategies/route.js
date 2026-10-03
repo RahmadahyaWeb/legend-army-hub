@@ -1,6 +1,13 @@
 import { NextResponse } from "next/server";
 import { getDb, initDatabase } from "@/lib/db";
+import { requireAdmin } from "@/lib/auth";
 
+/**
+ * Retrieves all battle strategies, sorted by latest update timestamp.
+ * Accessible to guild members for tactical briefing.
+ *
+ * @returns {Promise<NextResponse>} List of strategies
+ */
 export async function GET() {
   try {
     const sql = getDb();
@@ -33,7 +40,17 @@ export async function GET() {
   }
 }
 
+/**
+ * Creates a new strategy entry.
+ * Guarded by requireAdmin so only authorized officers can publish official battle plans.
+ *
+ * @param {Request} request - Next.js HTTP Request object
+ * @returns {Promise<NextResponse>} Created strategy record
+ */
 export async function POST(request) {
+  const authError = await requireAdmin(request);
+  if (authError) return authError;
+
   try {
     const sql = getDb();
     if (!sql) {
@@ -62,7 +79,17 @@ export async function POST(request) {
   }
 }
 
+/**
+ * Updates an existing strategy entry.
+ * Guarded by requireAdmin to prevent unauthorized alterations to tactics.
+ *
+ * @param {Request} request - Next.js HTTP Request object
+ * @returns {Promise<NextResponse>} Updated strategy record
+ */
 export async function PUT(request) {
+  const authError = await requireAdmin(request);
+  if (authError) return authError;
+
   try {
     const sql = getDb();
     if (!sql) {
@@ -98,7 +125,17 @@ export async function PUT(request) {
   }
 }
 
+/**
+ * Deletes a strategy entry.
+ * Guarded by requireAdmin to ensure only officers can permanently remove tactics.
+ *
+ * @param {Request} request - Next.js HTTP Request object
+ * @returns {Promise<NextResponse>} Confirmation of deletion
+ */
 export async function DELETE(request) {
+  const authError = await requireAdmin(request);
+  if (authError) return authError;
+
   try {
     const sql = getDb();
     if (!sql) {

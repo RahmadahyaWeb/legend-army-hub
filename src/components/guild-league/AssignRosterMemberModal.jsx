@@ -2,23 +2,37 @@
 
 import { useEffect, useMemo, useState } from "react";
 import {
-  ArrowUpDown,
-  Check,
-  Filter,
   Loader2,
   Search,
-  Shield,
   Sparkles,
   UserPlus,
   Users,
   X,
-  Zap,
 } from "lucide-react";
 import { fetchMembers, assignRosterMember } from "@/lib/api";
 import { ClassBadge } from "@/utils/classColors";
 
 let cachedMembersList = null;
 
+/**
+ * Modal dialog for assigning available guild members to specific team slots.
+ * Includes instant optimistic state updates to prevent race conditions during rapid clicking,
+ * and an auto-advance feature to cycle through consecutive vacant slots.
+ *
+ * @param {object} props
+ * @param {boolean} props.open - Visibility state
+ * @param {string} props.guildLeagueId - Target league ID
+ * @param {number} props.teamNumber - Target team index (1-based)
+ * @param {number} props.slotNumber - Target slot index (1-based)
+ * @param {number} [props.maxTeams=2] - Total teams in league
+ * @param {number} [props.membersPerTeam=10] - Slots per team
+ * @param {Array} [props.rosterMembers=[]] - Existing assigned roster entries
+ * @param {Array} [props.assignedMemberIds=[]] - IDs already in roster
+ * @param {Function} props.onClose - Modal close handler
+ * @param {Function} [props.onSuccess] - Callback when assignment succeeds
+ * @param {Function} [props.onAssign] - Optimistic assign callback
+ * @param {Function} [props.onSelectSlot] - Callback to switch active slot for auto-advance
+ */
 export default function AssignRosterMemberModal({
   open,
   guildLeagueId,

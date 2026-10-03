@@ -1,9 +1,25 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { X } from "lucide-react";
+import { UserCheck } from "lucide-react";
 import { saveMember } from "@/lib/api";
+import Modal from "@/components/ui/Modal";
+import Input from "@/components/ui/Input";
+import Button from "@/components/ui/Button";
 
+/**
+ * Edit Member Modal Dialog
+ *
+ * Why this exists:
+ * Allows administrators to update character class, combat attributes (level, gear score),
+ * guild role, and active status for a specific guild member.
+ *
+ * @param {Object} props - Component props
+ * @param {boolean} props.open - Modal open state
+ * @param {Object|null} props.member - Member record being edited
+ * @param {() => void} props.onClose - Close callback
+ * @param {() => void} [props.onSuccess] - Refresh callback after successful save
+ */
 export default function EditMemberModal({ open, member, onClose, onSuccess }) {
   const [form, setForm] = useState({
     nickname: "",
@@ -18,21 +34,21 @@ export default function EditMemberModal({ open, member, onClose, onSuccess }) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
+  // Populate form fields when member prop changes
   useEffect(() => {
-    if (!open || !member) return;
-
-    setForm({
-      nickname: member.nickname ?? "",
-      level: member.level ?? "",
-      gearScore: member.gearScore ?? "",
-      className: member.className ?? member.class ?? "",
-      role: member.role ?? "Member",
-      isActive: typeof member.isActive === "boolean" ? member.isActive : true,
-      notes: member.notes ?? "",
-    });
-
-    setError("");
-  }, [open, member]);
+    if (member && open) {
+      setForm({
+        nickname: member.nickname ?? "",
+        level: member.level ? String(member.level) : "",
+        gearScore: member.gearScore ? String(member.gearScore) : "",
+        className: member.className ?? member.class ?? "",
+        role: member.role ?? "Member",
+        isActive: typeof member.isActive === "boolean" ? member.isActive : true,
+        notes: member.notes ?? "",
+      });
+      setError("");
+    }
+  }, [member, open]);
 
   if (!open || !member) return null;
 
@@ -42,12 +58,6 @@ export default function EditMemberModal({ open, member, onClose, onSuccess }) {
       ...current,
       [name]: type === "checkbox" ? checked : value,
     }));
-  };
-
-  const handleClose = () => {
-    if (saving) return;
-    setError("");
-    onClose();
   };
 
   const handleSubmit = async (event) => {
@@ -60,12 +70,12 @@ export default function EditMemberModal({ open, member, onClose, onSuccess }) {
     const gearScore = Number(form.gearScore);
 
     if (!nickname) {
-      setError("Nickname is required.");
+      setError("Character nickname is required.");
       return;
     }
 
     if (!className) {
-      setError("Class is required.");
+      setError("Class / Job name is required.");
       return;
     }
 
@@ -94,155 +104,105 @@ export default function EditMemberModal({ open, member, onClose, onSuccess }) {
     }
   };
 
-  const inputClass =
-    "mt-1.5 h-10 w-full rounded-lg border border-zinc-300 bg-white px-3 text-sm text-zinc-900 outline-none transition placeholder:text-zinc-400 focus:border-red-600 focus:ring-1 focus:ring-red-600";
-  const labelClass = "text-xs font-semibold text-zinc-700";
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-      <div className="flex max-h-[92vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
-        <div className="flex shrink-0 items-start justify-between border-b border-zinc-200 px-6 py-4">
-          <div>
-            <h2 className="text-base font-bold text-zinc-900">
-              Edit Guild Member
-            </h2>
-            <p className="mt-0.5 text-xs text-zinc-500">
-              Update character details and combat attributes.
-            </p>
-          </div>
-
-          <button
-            type="button"
-            onClick={handleClose}
+    <Modal
+      open={open}
+      onClose={() => !saving && onClose()}
+      title="Edit Guild Member"
+      description="Update character details, class assignment, and combat attributes."
+      icon={UserCheck}
+      size="md"
+      footer={
+        <>
+          <Button
+            variant="secondary"
+            onClick={onClose}
             disabled={saving}
-            className="flex size-8 items-center justify-center rounded-lg text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700 disabled:opacity-50"
           >
-            <X className="size-4" />
-          </button>
+            Cancel
+          </Button>
+          <Button
+            variant="primary"
+            loading={saving}
+            onClick={handleSubmit}
+          >
+            Save Changes
+          </Button>
+        </>
+      }
+    >
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <Input
+          label="Character Nickname"
+          name="nickname"
+          required
+          value={form.nickname}
+          onChange={handleChange}
+          placeholder="e.g. ShadowKnight"
+        />
+
+        <div className="grid grid-cols-2 gap-4">
+          <Input
+            label="Base Level"
+            name="level"
+            type="number"
+            min="1"
+            value={form.level}
+            onChange={handleChange}
+            placeholder="e.g. 110"
+          />
+
+          <Input
+            label="Gear Score (GS)"
+            name="gearScore"
+            type="number"
+            min="0"
+            value={form.gearScore}
+            onChange={handleChange}
+            placeholder="e.g. 450000"
+          />
         </div>
 
-        <form onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col">
-          <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-6">
-            <div>
-              <label htmlFor="edit-nickname" className={labelClass}>
-                Character Nickname
-              </label>
-              <input
-                id="edit-nickname"
-                name="nickname"
-                type="text"
-                required
-                value={form.nickname}
-                onChange={handleChange}
-                className={inputClass}
-              />
-            </div>
+        <div className="grid grid-cols-2 gap-4">
+          <Input
+            label="Class / Job"
+            name="className"
+            required
+            value={form.className}
+            onChange={handleChange}
+            placeholder="e.g. Paladin, High Priest"
+          />
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="edit-level" className={labelClass}>
-                  Level
-                </label>
-                <input
-                  id="edit-level"
-                  name="level"
-                  type="number"
-                  min="1"
-                  value={form.level}
-                  onChange={handleChange}
-                  className={inputClass}
-                />
-              </div>
+          <Input
+            label="Guild Role"
+            name="role"
+            value={form.role}
+            onChange={handleChange}
+            placeholder="Member / Officer / Leader"
+          />
+        </div>
 
-              <div>
-                <label htmlFor="edit-gear-score" className={labelClass}>
-                  Gear Score
-                </label>
-                <input
-                  id="edit-gear-score"
-                  name="gearScore"
-                  type="number"
-                  min="0"
-                  value={form.gearScore}
-                  onChange={handleChange}
-                  className={inputClass}
-                />
-              </div>
-            </div>
+        <div className="pt-1">
+          <label className="flex items-center gap-2 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              name="isActive"
+              checked={form.isActive}
+              onChange={handleChange}
+              className="size-4 rounded text-brand-600 focus:ring-brand-500"
+            />
+            <span className="text-xs font-semibold text-zinc-700">
+              Active Member (Include in guild power calculations & roster)
+            </span>
+          </label>
+        </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="edit-class" className={labelClass}>
-                  Class / Job
-                </label>
-                <input
-                  id="edit-class"
-                  name="className"
-                  type="text"
-                  required
-                  value={form.className}
-                  onChange={handleChange}
-                  className={inputClass}
-                />
-              </div>
-
-              <div>
-                <label htmlFor="edit-role" className={labelClass}>
-                  Guild Role
-                </label>
-                <input
-                  id="edit-role"
-                  name="role"
-                  type="text"
-                  value={form.role}
-                  onChange={handleChange}
-                  className={inputClass}
-                  placeholder="Member / Officer / Leader"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="flex items-center gap-2 cursor-pointer pt-2">
-                <input
-                  type="checkbox"
-                  name="isActive"
-                  checked={form.isActive}
-                  onChange={handleChange}
-                  className="size-4 rounded text-red-600 focus:ring-red-500"
-                />
-                <span className="text-xs font-semibold text-zinc-700">
-                  Active Member (Include in average stats and guild roster)
-                </span>
-              </label>
-            </div>
-
-            {error && (
-              <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-xs font-medium text-red-700">
-                {error}
-              </div>
-            )}
+        {error && (
+          <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-xs font-medium text-red-700 animate-in fade-in duration-150">
+            {error}
           </div>
-
-          <div className="flex shrink-0 justify-end gap-3 border-t border-zinc-200 px-6 py-4">
-            <button
-              type="button"
-              onClick={handleClose}
-              disabled={saving}
-              className="rounded-xl border border-zinc-300 bg-white px-4 py-2 text-xs font-semibold text-zinc-700 hover:bg-zinc-50"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={saving}
-              className="rounded-xl bg-red-600 px-5 py-2 text-xs font-bold text-white shadow hover:bg-red-500 disabled:opacity-50"
-            >
-              {saving ? "Saving..." : "Save changes"}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+        )}
+      </form>
+    </Modal>
   );
 }

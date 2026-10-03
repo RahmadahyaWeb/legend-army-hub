@@ -24,7 +24,7 @@ export async function sendStrategyToDiscord({ title, category, mapName, content 
   });
 
   const contentType = response.headers.get("content-type") || "";
-  let data = null;
+  let data;
 
   if (contentType.includes("application/json")) {
     data = await response.json().catch(() => null);

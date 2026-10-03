@@ -11,7 +11,15 @@ import {
   Mail,
   ShieldCheck,
 } from "lucide-react";
+import Button from "@/components/ui/Button";
 
+/**
+ * Administrator Login Authentication Page
+ *
+ * Why this exists:
+ * Authenticates guild leadership against PostgreSQL hashed records or environment admin credentials.
+ * Establishes standard session cookie (`la_session`) and redirects to `/admin`.
+ */
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -61,7 +69,7 @@ export default function LoginPage() {
 
       router.replace("/admin");
     } catch (err) {
-      console.error(err);
+      console.error("Login authentication error:", err);
       setError(err.message || "Invalid email or password.");
     } finally {
       setLoading(false);
@@ -72,10 +80,10 @@ export default function LoginPage() {
     return (
       <div className="flex min-h-screen items-center justify-center bg-zinc-950">
         <div className="flex flex-col items-center gap-4">
-          <div className="flex size-12 items-center justify-center rounded-2xl bg-red-700/20 border border-red-500/30">
-            <ShieldCheck className="size-6 text-red-500" />
+          <div className="flex size-12 items-center justify-center rounded-2xl bg-brand-700/20 border border-brand-500/30">
+            <ShieldCheck className="size-6 text-brand-500" />
           </div>
-          <div className="size-5 animate-spin rounded-full border-2 border-zinc-700 border-t-red-600" />
+          <div className="size-5 animate-spin rounded-full border-2 border-zinc-700 border-t-brand-600" />
         </div>
       </div>
     );
@@ -86,8 +94,8 @@ export default function LoginPage() {
       <div className="grid min-h-screen lg:grid-cols-[1.05fr_0.95fr]">
         {/* LEFT BRAND SECTION */}
         <section className="relative hidden overflow-hidden bg-zinc-950 lg:flex lg:flex-col">
-          <div className="absolute -left-40 -top-40 size-[500px] rounded-full bg-red-700/20 blur-3xl" />
-          <div className="absolute -bottom-48 -right-32 size-[520px] rounded-full bg-red-700/10 blur-3xl" />
+          <div className="absolute -left-40 -top-40 size-[500px] rounded-full bg-brand-700/20 blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-48 -right-32 size-[520px] rounded-full bg-brand-700/10 blur-3xl pointer-events-none" />
 
           <div className="relative z-10 flex h-full flex-col p-10 xl:p-14">
             <Link href="/" className="flex w-fit items-center gap-3">
@@ -108,11 +116,11 @@ export default function LoginPage() {
 
             <div className="my-auto max-w-xl">
               <div className="mb-6 flex size-12 items-center justify-center rounded-xl border border-white/10 bg-white/5">
-                <ShieldCheck className="size-5 text-red-500" />
+                <ShieldCheck className="size-5 text-brand-500" />
               </div>
 
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-red-500">
-                Administration
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-500">
+                Command Administration
               </p>
 
               <h1 className="mt-5 text-4xl font-semibold leading-tight tracking-tight text-white xl:text-5xl">
@@ -122,19 +130,16 @@ export default function LoginPage() {
               </h1>
 
               <p className="mt-6 max-w-lg text-base leading-7 text-zinc-400">
-                Manage members, Guild League rosters, strategies, and guild
-                operations from one central place.
+                Manage members, Guild League rosters, tactical strategies, and guild
+                operations from one unified command center.
               </p>
             </div>
 
             <div className="border-t border-white/10 pt-6">
-              <div className="flex items-center justify-between">
-                <p className="text-xs text-zinc-600">
-                  © {new Date().getFullYear()} Legend Army
-                </p>
-                <p className="text-xs text-zinc-600">
-                  Made by{" "}
-                  <span className="font-semibold text-zinc-400">XKG</span>
+              <div className="flex items-center justify-between text-xs text-zinc-600">
+                <p>© {new Date().getFullYear()} Legend Army</p>
+                <p>
+                  Made by <span className="font-semibold text-zinc-400">XKG</span>
                 </p>
               </div>
             </div>
@@ -147,10 +152,10 @@ export default function LoginPage() {
             <div className="mb-8">
               <Link
                 href="/"
-                className="inline-flex items-center gap-2 text-xs font-medium text-zinc-500 hover:text-zinc-900 transition"
+                className="inline-flex items-center gap-2 text-xs font-semibold text-zinc-500 hover:text-zinc-900 transition"
               >
                 <ArrowLeft className="size-3.5" />
-                <span>Back to Home</span>
+                <span>Back to Hub</span>
               </Link>
             </div>
 
@@ -159,23 +164,23 @@ export default function LoginPage() {
                 Sign in to Guild Hub
               </h2>
               <p className="mt-1.5 text-xs text-zinc-500">
-                Enter your administrative credentials to access the hub.
+                Enter your administrative credentials to access command settings.
               </p>
             </div>
 
             {error && (
-              <div className="mb-6 rounded-xl border border-red-200 bg-red-50 p-4 text-xs font-medium text-red-700">
+              <div className="mb-6 rounded-xl border border-red-200 bg-red-50 p-4 text-xs font-semibold text-red-700 animate-in fade-in duration-150">
                 {error}
               </div>
             )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-zinc-700">
+                <label className="block text-xs font-bold text-zinc-700">
                   Email Address
                 </label>
-                <div className="relative mt-1.5">
-                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-zinc-400">
+                <div className="relative mt-1.5 flex items-center">
+                  <div className="pointer-events-none absolute left-3 flex items-center justify-center text-zinc-400">
                     <Mail className="size-4" />
                   </div>
                   <input
@@ -184,17 +189,17 @@ export default function LoginPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="admin@legendarmy.com"
-                    className="block w-full rounded-xl border border-zinc-200 py-2.5 pl-10 pr-3 text-sm placeholder:text-zinc-400 focus:border-red-600 focus:outline-none focus:ring-1 focus:ring-red-600"
+                    className="h-10 w-full rounded-xl border border-zinc-200 pl-10 pr-3.5 text-xs sm:text-sm placeholder:text-zinc-400 focus:border-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-zinc-700">
+                <label className="block text-xs font-bold text-zinc-700">
                   Password
                 </label>
-                <div className="relative mt-1.5">
-                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-zinc-400">
+                <div className="relative mt-1.5 flex items-center">
+                  <div className="pointer-events-none absolute left-3 flex items-center justify-center text-zinc-400">
                     <LockKeyhole className="size-4" />
                   </div>
                   <input
@@ -203,12 +208,13 @@ export default function LoginPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="block w-full rounded-xl border border-zinc-200 py-2.5 pl-10 pr-10 text-sm placeholder:text-zinc-400 focus:border-red-600 focus:outline-none focus:ring-1 focus:ring-red-600"
+                    className="h-10 w-full rounded-xl border border-zinc-200 pl-10 pr-10 text-xs sm:text-sm placeholder:text-zinc-400 focus:border-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-zinc-400 hover:text-zinc-600"
+                    className="absolute right-3 flex items-center text-zinc-400 hover:text-zinc-600 p-0.5"
+                    aria-label="Toggle password visibility"
                   >
                     {showPassword ? (
                       <EyeOff className="size-4" />
@@ -219,13 +225,17 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="mt-6 flex w-full items-center justify-center rounded-xl bg-red-600 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-red-500 disabled:opacity-50"
-              >
-                {loading ? "Signing in..." : "Sign in to Dashboard"}
-              </button>
+              <div className="pt-2">
+                <Button
+                  type="submit"
+                  variant="primary"
+                  size="md"
+                  loading={loading}
+                  className="w-full !h-11"
+                >
+                  Sign in to Dashboard
+                </Button>
+              </div>
             </form>
           </div>
         </section>

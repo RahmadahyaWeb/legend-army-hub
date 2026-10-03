@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   CalendarDays,
@@ -15,12 +15,25 @@ import { fetchGuildLeagues, deleteGuildLeague } from "@/lib/api";
 import { formatDate } from "@/utils/formatters";
 import { SkeletonGrid } from "@/components/ui/LoadingState";
 import EmptyState from "@/components/ui/EmptyState";
+import Button from "@/components/ui/Button";
+import Select from "@/components/ui/Select";
+import Badge from "@/components/ui/Badge";
+import { Card } from "@/components/ui/Card";
+import { useToast } from "@/components/ui/ToastProvider";
 import CreateGuildLeagueModal from "@/components/guild-league/CreateGuildLeagueModal";
 
+/**
+ * Guild League Matches Index Page
+ *
+ * Why this exists:
+ * Lists all past and upcoming Guild League battle events, allowing guild leaders
+ * to filter by status, initiate new matches, or jump to match lineup management.
+ */
 export default function GuildLeaguesPage() {
+  const { success, error: toastError } = useToast();
+
   const [guildLeagues, setGuildLeagues] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState("all");
 
@@ -29,10 +42,9 @@ export default function GuildLeaguesPage() {
       if (!silent) setLoading(true);
       const data = await fetchGuildLeagues(silent);
       setGuildLeagues(data);
-      setError("");
     } catch (err) {
       console.error("Guild Leagues error:", err);
-      setError("Failed to load guild leagues.");
+      toastError("Failed to load matches", err.message);
     } finally {
       setLoading(false);
     }
@@ -52,25 +64,26 @@ export default function GuildLeaguesPage() {
 
     try {
       await deleteGuildLeague(id);
+      success("Match deleted", `"${name}" removed successfully.`);
       loadMatches(true);
     } catch (err) {
       console.error("Delete error:", err);
-      alert("Failed to delete: " + err.message);
+      toastError("Failed to delete match", err.message);
       loadMatches(true);
     }
   };
 
-  const filteredMatches = guildLeagues.filter((m) => {
-    if (statusFilter === "all") return true;
-    return m.status === statusFilter;
-  });
+  const filteredMatches = useMemo(() => {
+    if (statusFilter === "all") return guildLeagues;
+    return guildLeagues.filter((m) => m.status === statusFilter);
+  }, [guildLeagues, statusFilter]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* HEADER */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3.5 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-zinc-900">
+          <h1 className="text-xl sm:text-2xl font-black text-zinc-900 tracking-tight">
             Guild League Matches
           </h1>
           <p className="mt-1 text-xs text-zinc-500">
@@ -78,34 +91,28 @@ export default function GuildLeaguesPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
-          <select
+        <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
+          <Select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="h-9 rounded-xl border border-zinc-200 bg-white px-3 text-xs font-medium text-zinc-700 focus:border-red-600 focus:outline-none"
+            className="!h-8.5 !py-0 !text-xs font-semibold"
           >
             <option value="all">All Matches ({guildLeagues.length})</option>
-            <option value="draft">Draft</option>
-            <option value="published">Published</option>
-            <option value="completed">Completed</option>
-          </select>
+            <option value="draft">Draft Only</option>
+            <option value="published">Published Only</option>
+            <option value="completed">Completed Only</option>
+          </Select>
 
-          <button
-            type="button"
+          <Button
+            variant="primary"
+            size="sm"
+            icon={Plus}
             onClick={() => setCreateModalOpen(true)}
-            className="inline-flex h-9 items-center gap-2 rounded-xl bg-red-600 px-3.5 text-xs font-bold text-white shadow-sm transition hover:bg-red-500"
           >
-            <Plus className="size-3.5" />
-            <span>New Match</span>
-          </button>
+            New Match
+          </Button>
         </div>
       </div>
-
-      {error && (
-        <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-xs font-medium text-red-700">
-          {error}
-        </div>
-      )}
 
       {/* MATCHES LIST */}
       {loading && guildLeagues.length === 0 ? (
@@ -114,16 +121,20 @@ export default function GuildLeaguesPage() {
         <EmptyState
           icon={Swords}
           title="No Guild League matches found"
-          description="Create your first guild league event to start organizing teams and assigning rosters."
+          description={
+            statusFilter !== "all"
+              ? "No matches match the selected status filter."
+              : "Create your first guild league event to start organizing teams and assigning rosters."
+          }
           action={
-            <button
-              type="button"
+            <Button
+              variant="primary"
+              size="sm"
+              icon={Plus}
               onClick={() => setCreateModalOpen(true)}
-              className="inline-flex items-center gap-2 rounded-xl bg-red-600 px-4 py-2 text-xs font-bold text-white shadow hover:bg-red-500"
             >
-              <Plus className="size-3.5" />
-              <span>Create Match</span>
-            </button>
+              Create Match
+            </Button>
           }
         />
       ) : (
@@ -131,28 +142,35 @@ export default function GuildLeaguesPage() {
           {filteredMatches.map((gl) => {
             const rosterCount = gl.assignedPlayers || gl.rosterCount || 0;
             const maxRoster = gl.maxRoster || 20;
+            const statusVariant =
+              gl.status === "completed"
+                ? "info"
+                : gl.status === "published"
+                ? "success"
+                : "brand";
 
             return (
-              <div
+              <Card
                 key={gl.id}
-                className="flex flex-col justify-between rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm transition hover:border-zinc-300"
+                className="flex flex-col justify-between p-4 sm:p-5 hover:border-zinc-300"
               >
                 <div>
                   <div className="flex items-start justify-between gap-3">
-                    <span className="inline-flex items-center rounded-full bg-red-50 px-2.5 py-0.5 text-xs font-bold text-red-700 uppercase">
-                      {gl.status || "DRAFT"}
-                    </span>
+                    <Badge variant={statusVariant} size="xs" dot>
+                      {(gl.status || "DRAFT").toUpperCase()}
+                    </Badge>
+
                     <button
                       type="button"
                       onClick={(e) => handleDelete(gl.id, gl.name, e)}
-                      className="text-zinc-400 hover:text-red-600"
+                      className="text-zinc-400 hover:text-red-600 transition p-1"
                       title="Delete match"
                     >
-                      <Trash2 className="size-4" />
+                      <Trash2 className="size-3.5" />
                     </button>
                   </div>
 
-                  <h3 className="mt-3 text-base font-bold text-zinc-900">
+                  <h3 className="mt-3 text-sm sm:text-base font-bold text-zinc-900 tracking-tight">
                     {gl.name}
                   </h3>
 
@@ -161,11 +179,13 @@ export default function GuildLeaguesPage() {
                       <CalendarDays className="size-3.5 text-zinc-400" />
                       <span>{formatDate(gl.matchDate || gl.date)}</span>
                     </div>
+
                     {gl.opponent && (
                       <div className="font-semibold text-zinc-800">
                         VS: {gl.opponent}
                       </div>
                     )}
+
                     <div className="flex items-center gap-2">
                       <Users className="size-3.5 text-zinc-400" />
                       <span>
@@ -175,11 +195,11 @@ export default function GuildLeaguesPage() {
                   </div>
                 </div>
 
-                <div className="mt-6 flex items-center justify-between gap-2 pt-4 border-t border-zinc-100">
+                <div className="mt-5 flex items-center justify-between gap-2 pt-3.5 border-t border-zinc-100">
                   <Link
                     href={`/roster/${gl.id}`}
                     target="_blank"
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-zinc-500 hover:text-zinc-900"
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-zinc-500 hover:text-zinc-900 transition"
                   >
                     <span>Public</span>
                     <ExternalLink className="size-3" />
@@ -187,13 +207,13 @@ export default function GuildLeaguesPage() {
 
                   <Link
                     href={`/admin/guild-leagues/${gl.id}`}
-                    className="inline-flex items-center gap-1.5 rounded-xl bg-zinc-900 px-3.5 py-2 text-xs font-bold text-white transition hover:bg-zinc-800"
+                    className="inline-flex h-8.5 items-center gap-1.5 rounded-xl bg-zinc-900 px-3.5 text-xs font-bold text-white shadow-2xs transition hover:bg-zinc-800"
                   >
                     <span>Manage Roster</span>
                     <ChevronRight className="size-3.5" />
                   </Link>
                 </div>
-              </div>
+              </Card>
             );
           })}
         </div>
@@ -203,7 +223,10 @@ export default function GuildLeaguesPage() {
       <CreateGuildLeagueModal
         open={createModalOpen}
         onClose={() => setCreateModalOpen(false)}
-        onSuccess={() => loadMatches(true)}
+        onSuccess={() => {
+          loadMatches(true);
+          success("Match created", "New Guild League event has been registered.");
+        }}
       />
     </div>
   );

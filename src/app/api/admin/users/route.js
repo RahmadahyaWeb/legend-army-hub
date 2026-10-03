@@ -1,13 +1,26 @@
 import { NextResponse } from "next/server";
 import { getDb, initDatabase } from "@/lib/db";
+import { requireAdmin } from "@/lib/auth";
 import crypto from "crypto";
 
+/**
+ * Generates SHA-256 hash for stored passwords
+ * @param {string} password - Raw password string
+ * @returns {string} Hex hash string
+ */
 function hashPassword(password) {
   return crypto.createHash("sha256").update(password).digest("hex");
 }
 
-export async function GET() {
+/**
+ * GET /api/admin/users
+ * Lists registered administrator accounts
+ */
+export async function GET(request) {
   try {
+    const authCheck = await requireAdmin(request);
+    if (authCheck instanceof NextResponse) return authCheck;
+
     const sql = getDb();
     if (!sql) {
       return NextResponse.json({ users: [] });
@@ -30,8 +43,15 @@ export async function GET() {
   }
 }
 
+/**
+ * POST /api/admin/users
+ * Registers or updates an administrator account
+ */
 export async function POST(request) {
   try {
+    const authCheck = await requireAdmin(request);
+    if (authCheck instanceof NextResponse) return authCheck;
+
     const sql = getDb();
     if (!sql) {
       return NextResponse.json({ error: "DATABASE_URL not configured" }, { status: 500 });
@@ -74,8 +94,15 @@ export async function POST(request) {
   }
 }
 
+/**
+ * DELETE /api/admin/users?id=...
+ * Removes an administrator account
+ */
 export async function DELETE(request) {
   try {
+    const authCheck = await requireAdmin(request);
+    if (authCheck instanceof NextResponse) return authCheck;
+
     const sql = getDb();
     if (!sql) {
       return NextResponse.json({ error: "DATABASE_URL not configured" }, { status: 500 });

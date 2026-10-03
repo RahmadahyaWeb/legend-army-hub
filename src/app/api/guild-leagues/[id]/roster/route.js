@@ -1,8 +1,12 @@
 import { NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
+import { requireAdmin } from "@/lib/auth";
 
 export async function POST(request, { params }) {
   try {
+    const authCheck = await requireAdmin(request);
+    if (authCheck instanceof NextResponse) return authCheck;
+
     const { id: guildLeagueId } = await params;
     const sql = getDb();
     if (!sql) {
@@ -66,6 +70,9 @@ export async function POST(request, { params }) {
 
 export async function DELETE(request, { params }) {
   try {
+    const authCheck = await requireAdmin(request);
+    if (authCheck instanceof NextResponse) return authCheck;
+
     const { id: guildLeagueId } = await params;
     const sql = getDb();
     if (!sql) {

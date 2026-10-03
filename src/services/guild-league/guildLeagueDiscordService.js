@@ -105,8 +105,7 @@ export async function sendGuildLeagueToDiscord({
   });
 
   const contentType = response.headers.get("content-type") || "";
-
-  let data = null;
+  let data;
 
   if (contentType.includes("application/json")) {
     data = await response.json().catch(() => null);

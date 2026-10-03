@@ -1,6 +1,14 @@
 import { NextResponse } from "next/server";
 import { getDb, initDatabase } from "@/lib/db";
+import { requireAdmin } from "@/lib/auth";
 
+/**
+ * Retrieves attendance records optionally filtered by guildLeagueId.
+ * Joined with members table to include current nicknames and gear scores.
+ *
+ * @param {Request} request - Next.js HTTP Request object
+ * @returns {Promise<NextResponse>} List of attendances
+ */
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -58,7 +66,17 @@ export async function GET(request) {
   }
 }
 
+/**
+ * Upserts a member's attendance status for a specific guild league event.
+ * Guarded by requireAdmin so only authorized officers can submit roll-calls.
+ *
+ * @param {Request} request - Next.js HTTP Request object
+ * @returns {Promise<NextResponse>} Recorded attendance row
+ */
 export async function POST(request) {
+  const authError = await requireAdmin(request);
+  if (authError) return authError;
+
   try {
     const sql = getDb();
     if (!sql) {

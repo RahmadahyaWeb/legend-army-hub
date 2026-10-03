@@ -1,18 +1,35 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ArrowRightLeft,
   Check,
-  ChevronRight,
   Loader2,
   Trash2,
-  Users,
   X,
 } from "lucide-react";
 import { assignRosterMember, removeRosterMember } from "@/lib/api";
 import { ClassBadge } from "@/utils/classColors";
 
+/**
+ * ManageRosterMemberModal
+ *
+ * Why this exists:
+ * Allows guild officers to relocate a player to a new team/slot or perform
+ * a mutual swap with another occupant, or cleanly remove the player from the lineup.
+ *
+ * @param {Object} props - Component props
+ * @param {boolean} props.open - Modal visibility
+ * @param {string} props.guildLeagueId - Guild league ID
+ * @param {Object} props.member - Selected member to manage
+ * @param {number} [props.maxTeams=2]
+ * @param {number} [props.membersPerTeam=10]
+ * @param {Array<Object>} [props.rosterMembers=[]]
+ * @param {() => void} props.onClose
+ * @param {() => void} [props.onSuccess]
+ * @param {(member: Object, targetTeam: number, targetSlot: number) => void} [props.onMove]
+ * @param {(member: Object) => void} [props.onRemove]
+ */
 export default function ManageRosterMemberModal({
   open,
   guildLeagueId,
@@ -25,18 +42,19 @@ export default function ManageRosterMemberModal({
   onMove,
   onRemove,
 }) {
-  const [targetTeam, setTargetTeam] = useState(() => member?.teamNumber || 1);
-  const [targetSlot, setTargetSlot] = useState(() => member?.slotNumber || 1);
+  const [targetTeam, setTargetTeam] = useState(1);
+  const [targetSlot, setTargetSlot] = useState(1);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
-  // Sync when member changes
-  useMemo(() => {
+  // Synchronize target inputs when selected member changes or modal opens
+  useEffect(() => {
     if (member) {
       setTargetTeam(Number(member.teamNumber) || 1);
       setTargetSlot(Number(member.slotNumber) || 1);
+      setError("");
     }
-  }, [member]);
+  }, [member, open]);
 
   const targetOccupant = useMemo(() => {
     if (!member) return null;
@@ -72,7 +90,7 @@ export default function ManageRosterMemberModal({
 
     try {
       if (targetOccupant) {
-        // Swap positions
+        // Swap positions between current member and target slot occupant
         await Promise.all([
           assignRosterMember(guildLeagueId, {
             memberId: member.memberId || member.id,
@@ -94,7 +112,7 @@ export default function ManageRosterMemberModal({
           }),
         ]);
       } else {
-        // Move to empty slot
+        // Relocate to empty target slot
         await removeRosterMember(guildLeagueId, member.teamNumber, member.slotNumber);
         await assignRosterMember(guildLeagueId, {
           memberId: member.memberId || member.id,

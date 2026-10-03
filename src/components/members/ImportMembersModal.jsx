@@ -7,12 +7,20 @@ import {
   CheckCircle2,
   FileSpreadsheet,
   Upload,
-  UserPlus,
   X,
   XCircle,
 } from "lucide-react";
 import { importMembers } from "@/lib/api";
 
+/**
+ * Modal component for bulk CSV/spreadsheet import of guild members.
+ * Parses file client-side, validates fields, shows tabular preview, and batch-inserts into database.
+ *
+ * @param {object} props
+ * @param {boolean} props.open - Modal visibility state
+ * @param {Function} props.onClose - Modal close handler
+ * @param {Function} [props.onSuccess] - Callback when import finishes successfully
+ */
 export default function ImportMembersModal({ open, onClose, onSuccess }) {
   const inputRef = useRef(null);
 
@@ -21,7 +29,7 @@ export default function ImportMembersModal({ open, onClose, onSuccess }) {
   const [error, setError] = useState("");
   const [step, setStep] = useState("upload");
   const [importing, setImporting] = useState(false);
-  const [importResult, setImportResult] = useState(null);
+  const [_importResult, setImportResult] = useState(null);
 
   const normalizedMembers = useMemo(() => {
     return rows.map((row, index) => {

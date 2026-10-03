@@ -2,29 +2,29 @@
 
 import { useEffect, useState } from "react";
 import {
-  KeyRound,
   Mail,
-  Plus,
   ShieldCheck,
   Trash2,
-  UserCheck,
   UserPlus,
-  Users,
-  X,
 } from "lucide-react";
+import { formatDate } from "@/utils/formatters";
+import Button from "@/components/ui/Button";
+import Input from "@/components/ui/Input";
+import Modal from "@/components/ui/Modal";
+import Badge from "@/components/ui/Badge";
+import { Card } from "@/components/ui/Card";
+import { useToast } from "@/components/ui/ToastProvider";
 
-function formatDate(timestamp) {
-  if (!timestamp) return "—";
-  const date = new Date(timestamp);
-  if (Number.isNaN(date.getTime())) return "—";
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  }).format(date);
-}
-
+/**
+ * Admin Users Management
+ *
+ * Why this exists:
+ * Manages authorized administrator accounts who have permission to edit rosters,
+ * update tactical configurations, and push broadcasts.
+ */
 export default function AdminUsersPage() {
+  const { success, error: toastError } = useToast();
+
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
@@ -44,6 +44,7 @@ export default function AdminUsersPage() {
       setUsers(data.users || []);
     } catch (err) {
       console.error("Failed to load admin users:", err);
+      toastError("Load Error", "Failed to retrieve registered admin users.");
     } finally {
       setLoading(false);
     }
@@ -54,7 +55,7 @@ export default function AdminUsersPage() {
   }, []);
 
   const handleCreate = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     if (!email.trim() || !password) {
       setError("Email and password are required.");
       return;
@@ -83,6 +84,7 @@ export default function AdminUsersPage() {
       setDisplayName("");
       setPassword("");
       setModalOpen(false);
+      success("Admin registered", `New administrator "${email}" created.`);
       loadUsers();
     } catch (err) {
       setError(err.message);
@@ -98,39 +100,47 @@ export default function AdminUsersPage() {
       const res = await fetch(`/api/admin/users?id=${encodeURIComponent(id)}`, {
         method: "DELETE",
       });
-      if (res.ok) loadUsers();
+      if (res.ok) {
+        success("Admin removed", `User "${userEmail}" has been deleted.`);
+        loadUsers();
+      }
     } catch (err) {
       console.error("Delete error:", err);
-      alert("Failed to delete admin: " + err.message);
+      toastError("Delete failed", err.message);
     }
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* HEADER */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3.5 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-zinc-900">
-            Admin Accounts
-          </h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl sm:text-2xl font-black text-zinc-900 tracking-tight">
+              Admin Accounts
+            </h1>
+            <Badge variant="brand" size="sm">
+              {users.length} Active
+            </Badge>
+          </div>
           <p className="mt-1 text-xs text-zinc-500">
-            Manage admin accounts with access to Guild Hub dashboard & settings
+            Manage administrative credentials with access to Guild Hub dashboard & controls
           </p>
         </div>
 
-        <button
-          type="button"
+        <Button
+          variant="primary"
+          size="sm"
+          icon={UserPlus}
           onClick={() => setModalOpen(true)}
-          className="inline-flex h-9 items-center gap-2 rounded-xl bg-red-600 px-3.5 text-xs font-bold text-white shadow-sm transition hover:bg-red-500"
         >
-          <UserPlus className="size-3.5" />
-          <span>Add Admin User</span>
-        </button>
+          Add Admin User
+        </Button>
       </div>
 
       {/* ADMIN USERS LIST */}
-      <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
-        <div className="border-b border-zinc-200 bg-zinc-50/75 px-4 sm:px-6 py-3.5 sm:py-4">
+      <Card className="overflow-hidden">
+        <div className="border-b border-zinc-100 bg-zinc-50/75 px-4 sm:px-6 py-3.5">
           <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-500">
             Registered Administrators ({users.length})
           </h3>
@@ -139,8 +149,8 @@ export default function AdminUsersPage() {
         <div className="divide-y divide-zinc-100">
           {loading ? (
             <div className="animate-pulse divide-y divide-zinc-100">
-              {Array.from({ length: 4 }, (_, i) => (
-                <div key={i} className="flex items-center justify-between px-4 sm:px-6 py-3.5 sm:py-4">
+              {Array.from({ length: 3 }, (_, i) => (
+                <div key={i} className="flex items-center justify-between p-4 sm:px-6">
                   <div className="flex items-center gap-3">
                     <div className="size-9 rounded-xl bg-zinc-200" />
                     <div className="space-y-1">
@@ -154,16 +164,16 @@ export default function AdminUsersPage() {
             </div>
           ) : users.length === 0 ? (
             <div className="p-8 text-center text-xs text-zinc-500">
-              No custom admin accounts registered yet.
+              No custom admin accounts registered yet. Default admin credentials active.
             </div>
           ) : (
             users.map((u) => (
               <div
                 key={u.id}
-                className="flex items-center justify-between px-4 sm:px-6 py-3.5 sm:py-4 hover:bg-zinc-50 transition gap-3"
+                className="flex items-center justify-between p-4 sm:px-6 hover:bg-zinc-50/70 transition gap-3"
               >
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-red-50 text-red-700">
+                  <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-700">
                     <ShieldCheck className="size-5" />
                   </div>
                   <div className="min-w-0">
@@ -193,108 +203,70 @@ export default function AdminUsersPage() {
             ))
           )}
         </div>
-      </div>
+      </Card>
 
       {/* ADD ADMIN MODAL */}
-      {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl">
-            <div className="flex items-start justify-between border-b border-zinc-200 px-6 py-4">
-              <div className="flex items-center gap-3">
-                <div className="flex size-9 items-center justify-center rounded-xl bg-red-50 text-red-700">
-                  <UserPlus className="size-5" />
-                </div>
-                <div>
-                  <h3 className="text-base font-bold text-zinc-900">
-                    Add New Admin User
-                  </h3>
-                  <p className="text-xs text-zinc-500">
-                    Create login credentials for guild leadership
-                  </p>
-                </div>
-              </div>
+      <Modal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        title="Add New Admin User"
+        description="Create login credentials for guild leadership."
+        icon={UserPlus}
+        size="sm"
+        footer={
+          <>
+            <Button
+              variant="secondary"
+              disabled={saving}
+              onClick={() => setModalOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="primary"
+              loading={saving}
+              icon={UserPlus}
+              onClick={handleCreate}
+            >
+              Create Admin
+            </Button>
+          </>
+        }
+      >
+        <form onSubmit={handleCreate} className="space-y-4">
+          <Input
+            label="Admin Display Name"
+            placeholder="e.g. Lead Officer / Vice Guild Leader"
+            value={displayName}
+            onChange={(e) => setDisplayName(e.target.value)}
+          />
 
-              <button
-                type="button"
-                onClick={() => setModalOpen(false)}
-                className="flex size-8 items-center justify-center rounded-lg text-zinc-400 hover:bg-zinc-100"
-              >
-                <X className="size-4" />
-              </button>
+          <Input
+            label="Email Address"
+            type="email"
+            required
+            placeholder="admin@legendarmy.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+
+          <Input
+            label="Password"
+            type="password"
+            required
+            placeholder="Minimum 6 characters"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            helperText="Stored with SHA-256 cryptographic verification."
+          />
+
+          {error && (
+            <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-xs font-semibold text-red-700 animate-in fade-in duration-150">
+              {error}
             </div>
-
-            <form onSubmit={handleCreate}>
-              <div className="p-6 space-y-4">
-                {error && (
-                  <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-xs font-medium text-red-700">
-                    {error}
-                  </div>
-                )}
-
-                <div>
-                  <label className="text-xs font-semibold text-zinc-700">
-                    Display Name
-                  </label>
-                  <input
-                    type="text"
-                    value={displayName}
-                    onChange={(e) => setDisplayName(e.target.value)}
-                    placeholder="e.g. Guild Master / Officer John"
-                    className="mt-1.5 h-10 w-full rounded-xl border border-zinc-300 bg-white px-3 text-sm text-zinc-900 focus:border-red-600 focus:outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-xs font-semibold text-zinc-700">
-                    Admin Email Address
-                  </label>
-                  <input
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="officer@legendarmy.com"
-                    className="mt-1.5 h-10 w-full rounded-xl border border-zinc-300 bg-white px-3 text-sm text-zinc-900 focus:border-red-600 focus:outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-xs font-semibold text-zinc-700">
-                    Password (min. 6 characters)
-                  </label>
-                  <input
-                    type="password"
-                    required
-                    minLength={6}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="mt-1.5 h-10 w-full rounded-xl border border-zinc-300 bg-white px-3 text-sm text-zinc-900 focus:border-red-600 focus:outline-none"
-                  />
-                </div>
-              </div>
-
-              <div className="flex justify-end gap-3 border-t border-zinc-200 bg-zinc-50 px-6 py-4">
-                <button
-                  type="button"
-                  onClick={() => setModalOpen(false)}
-                  disabled={saving}
-                  className="rounded-xl border border-zinc-300 bg-white px-4 py-2 text-xs font-semibold text-zinc-700 hover:bg-zinc-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={saving}
-                  className="rounded-xl bg-red-600 px-5 py-2 text-xs font-bold text-white shadow hover:bg-red-500 disabled:opacity-50"
-                >
-                  {saving ? "Creating..." : "Create Admin Account"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+          )}
+        </form>
+      </Modal>
     </div>
   );
 }

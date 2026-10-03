@@ -1,7 +1,19 @@
 import { NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
+import { requireAdmin } from "@/lib/auth";
 
+/**
+ * Updates or creates team metadata (custom name, lane assignment) for a guild league.
+ * Restricted to administrators to prevent unauthorized tactical reassignments.
+ *
+ * @param {Request} request - Next.js HTTP Request object
+ * @param {{ params: Promise<{ id: string }> }} context - Route parameters containing guildLeagueId
+ * @returns {Promise<NextResponse>} Upserted team record
+ */
 export async function PUT(request, { params }) {
+  const authError = await requireAdmin(request);
+  if (authError) return authError;
+
   try {
     const { id: guildLeagueId } = await params;
     const sql = getDb();

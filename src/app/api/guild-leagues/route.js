@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getDb, initDatabase } from "@/lib/db";
+import { requireAdmin } from "@/lib/auth";
 
 export async function GET() {
   try {
@@ -49,6 +50,9 @@ export async function GET() {
 
 export async function POST(request) {
   try {
+    const authCheck = await requireAdmin(request);
+    if (authCheck instanceof NextResponse) return authCheck;
+
     const sql = getDb();
     if (!sql) {
       return NextResponse.json(

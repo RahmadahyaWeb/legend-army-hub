@@ -1,6 +1,4 @@
-"use client";
-
-import { Shield, Swords, Users } from "lucide-react";
+import { Shield } from "lucide-react";
 
 /**
  * Standard branded page loading state with shield icon
@@ -151,7 +149,7 @@ export function AdminDashboardSkeleton() {
 /**
  * Full Roster Detail Skeleton for public roster and admin roster manager
  */
-export function RosterDetailSkeleton({ isPublic = false }) {
+export function RosterDetailSkeleton() {
   return (
     <div className="space-y-6 animate-pulse">
       {/* HEADER INFO */}

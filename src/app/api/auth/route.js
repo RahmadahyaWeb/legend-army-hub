@@ -144,7 +144,7 @@ export async function GET() {
 
     const decoded = JSON.parse(Buffer.from(sessionToken, "base64").toString("utf-8"));
     return NextResponse.json({ authenticated: true, user: decoded });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ authenticated: false, user: null });
   }
 }

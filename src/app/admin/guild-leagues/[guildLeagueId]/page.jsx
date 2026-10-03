@@ -4,21 +4,13 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import {
-  AlertCircle,
   ArrowLeft,
-  ArrowRightLeft,
-  CalendarDays,
-  CheckCircle2,
   Copy,
   ExternalLink,
   Layers,
   Send,
   Shield,
   Swords,
-  Trash2,
-  UserPlus,
-  Users,
-  X,
   Zap,
 } from "lucide-react";
 import {
@@ -28,63 +20,51 @@ import {
   assignRosterMember,
   removeRosterMember,
 } from "@/lib/api";
+import { useToast } from "@/components/ui/ToastProvider";
+import Button from "@/components/ui/Button";
+import Select from "@/components/ui/Select";
+import Tabs from "@/components/ui/Tabs";
+import { RosterDetailSkeleton } from "@/components/ui/LoadingState";
+import GuildLeagueHeaderCard from "@/components/guild-league/GuildLeagueHeaderCard";
+import TacticalDirectivesBar from "@/components/guild-league/TacticalDirectivesBar";
+import LaneGroupSection from "@/components/guild-league/LaneGroupSection";
 import AssignRosterMemberModal from "@/components/guild-league/AssignRosterMemberModal";
 import ManageRosterMemberModal from "@/components/guild-league/ManageRosterMemberModal";
 import CopyRosterModal from "@/components/guild-league/CopyRosterModal";
 import { sendGuildLeagueToDiscord } from "@/services/guild-league/guildLeagueDiscordService";
-import { RosterDetailSkeleton } from "@/components/ui/LoadingState";
-import { ClassBadge } from "@/utils/classColors";
-import {
-  getBaseLane,
-  getLaneConfig,
-  LANE_SELECT_GROUPS,
-} from "@/utils/guildLeague";
+import { getBaseLane, getLaneConfig } from "@/utils/guildLeague";
+import { formatDate } from "@/utils/formatters";
 
 const LANE_SECTIONS = [
   {
     id: "top",
     name: "Top Lane",
     icon: Swords,
-    badgeBg: "bg-orange-50 border-orange-200 text-orange-800",
-    pillActive: "bg-orange-600 text-white shadow-orange-600/25",
   },
   {
     id: "mid",
     name: "Mid Lane",
     icon: Shield,
-    badgeBg: "bg-blue-50 border-blue-200 text-blue-800",
-    pillActive: "bg-blue-600 text-white shadow-blue-600/25",
   },
   {
     id: "bot",
     name: "Bottom Lane",
     icon: Zap,
-    badgeBg: "bg-emerald-50 border-emerald-200 text-emerald-800",
-    pillActive: "bg-emerald-600 text-white shadow-emerald-600/25",
   },
 ];
 
-function formatDate(timestamp) {
-  if (!timestamp) return "—";
-  const date = new Date(timestamp);
-  if (Number.isNaN(date.getTime())) return "—";
-  return new Intl.DateTimeFormat("en-US", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).format(date);
-}
-
-function formatNumber(value) {
-  const number = Number(value);
-  if (Number.isNaN(number)) return "0";
-  return number.toLocaleString();
-}
-
+/**
+ * Guild League Lineup & Roster Management Page
+ *
+ * Why this exists:
+ * The command hub where Guild Leaders & Officers manage match lineups,
+ * assign members to tactical lanes (Top/Mid/Bot/Reserve), adjust formations,
+ * and push real-time broadcasts to the guild Discord server.
+ */
 export default function GuildLeagueDetailPage() {
   const params = useParams();
   const guildLeagueId = params?.guildLeagueId;
+  const { success, error: toastError } = useToast();
 
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -101,23 +81,13 @@ export default function GuildLeagueDetailPage() {
   // In-flight mutations counter to prevent race conditions during rapid actions
   const inFlightOpsRef = useRef(0);
 
-  // Toast feedback state
-  const [toast, setToast] = useState(null);
-
-  const showToast = (message, type = "success") => {
-    setToast({ message, type, id: Date.now() });
-  };
-
-  useEffect(() => {
-    if (!toast) return;
-    const timer = setTimeout(() => {
-      setToast(null);
-    }, 3200);
-    return () => clearTimeout(timer);
-  }, [toast]);
-
+  /**
+   * Fetches full match details, team definitions, and roster assignments.
+   * @param {boolean} [silent=false] - Suppress full screen loading indicator
+   */
   const loadDetail = async (silent = false) => {
     if (!guildLeagueId) return;
+
     try {
       if (!silent && !data) {
         setLoading(true);
@@ -146,9 +116,9 @@ export default function GuildLeagueDetailPage() {
   const teams = data?.teams || [];
   const roster = data?.roster || [];
 
-  const maxTeams = guildLeague?.maxTeams || 2;
-  const membersPerTeam = guildLeague?.membersPerTeam || 10;
-  const maxRoster = guildLeague?.maxRoster || maxTeams * membersPerTeam;
+  const maxTeams = Number(guildLeague?.maxTeams) || 2;
+  const membersPerTeam = Number(guildLeague?.membersPerTeam) || 10;
+  const maxRoster = Number(guildLeague?.maxRoster) || maxTeams * membersPerTeam;
   const totalAssigned = roster.length;
   const assignedMemberIds = roster.map((r) => r.memberId || r.id).filter(Boolean);
 
@@ -185,7 +155,7 @@ export default function GuildLeagueDetailPage() {
     return map;
   }, [allTeamNumbers, teams]);
 
-  // Compute stats per lane
+  // Compute aggregated stats per lane
   const laneStats = useMemo(() => {
     const stats = {};
     ["top", "mid", "bot", "unassigned"].forEach((laneKey) => {
@@ -210,6 +180,9 @@ export default function GuildLeagueDetailPage() {
     return stats;
   }, [laneGroups, roster, membersPerTeam]);
 
+  /**
+   * Updates match status (Draft, Published, Completed, Cancelled)
+   */
   const handleStatusChange = async (newStatus) => {
     setData((prev) =>
       prev
@@ -222,14 +195,17 @@ export default function GuildLeagueDetailPage() {
 
     try {
       await updateGuildLeague(guildLeagueId, { status: newStatus });
-      showToast(`Match status updated to ${newStatus.toUpperCase()}`);
+      success("Match status updated", `Status changed to ${newStatus.toUpperCase()}`);
     } catch (err) {
       console.error("Status update error:", err);
-      showToast(err.message || "Failed to update status.", "error");
+      toastError("Failed to update status", err.message);
       loadDetail(true);
     }
   };
 
+  /**
+   * Changes tactical lane assignment for a team
+   */
   const handleLaneChange = async (teamNumber, newLane) => {
     setData((prev) => {
       if (!prev) return prev;
@@ -252,17 +228,20 @@ export default function GuildLeagueDetailPage() {
         newLane
       );
       const cfg = getLaneConfig(newLane);
-      showToast(
-        `Team ${teamNumber} assigned to ${cfg ? cfg.label : "Unassigned"}`
+      success(
+        "Lane assignment saved",
+        `Team ${teamNumber} positioned on ${cfg ? cfg.label : "Unassigned"}`
       );
     } catch (err) {
       console.error("Lane change error:", err);
-      showToast(err.message || "Failed to update team lane.", "error");
+      toastError("Failed to update lane", err.message);
       loadDetail(true);
     }
   };
 
-  // RAPID-SAFE ROBUST ASSIGN HANDLER
+  /**
+   * Assigns a player to a specific team slot with optimistic updates
+   */
   const handleAssignMember = async (member, targetTeamArg, targetSlotArg) => {
     if (!member) return;
     const targetTeam = Number(targetTeamArg ?? assignSlot?.teamNumber);
@@ -271,7 +250,7 @@ export default function GuildLeagueDetailPage() {
 
     const memberNickKey = member.nickname?.toLowerCase().trim();
 
-    // 1. Instant functional state update (never suffers from stale closure!)
+    // 1. Instant functional state update (safeguard against stale closures)
     setData((prev) => {
       if (!prev) return prev;
       const currentRoster = prev.roster || [];
@@ -286,7 +265,7 @@ export default function GuildLeagueDetailPage() {
         slotNumber: targetSlot,
       };
 
-      // Remove previous occupant of this slot OR this member anywhere else (check both ID and nickname)
+      // Remove previous occupant of this slot or this member anywhere else
       const updatedRoster = currentRoster.filter(
         (r) =>
           !(Number(r.teamNumber) === targetTeam && Number(r.slotNumber) === targetSlot) &&
@@ -300,7 +279,10 @@ export default function GuildLeagueDetailPage() {
       };
     });
 
-    showToast(`Assigned ${member.nickname} to Team ${targetTeam} (#${targetSlot})`);
+    success(
+      "Player assigned",
+      `Assigned ${member.nickname} to Team ${targetTeam} (#${targetSlot})`
+    );
 
     // 2. Async backend persistence without wiping newer in-flight states
     inFlightOpsRef.current += 1;
@@ -316,14 +298,16 @@ export default function GuildLeagueDetailPage() {
       });
     } catch (err) {
       console.error("Assign error:", err);
-      showToast(err.message || "Failed to assign member.", "error");
+      toastError("Failed to assign player", err.message);
       loadDetail(true);
     } finally {
       inFlightOpsRef.current = Math.max(0, inFlightOpsRef.current - 1);
     }
   };
 
-  // RAPID-SAFE ROBUST MOVE/SWAP HANDLER
+  /**
+   * Relocates or mutually swaps a player's position
+   */
   const handleMoveMember = async (member, targetTeam, targetSlot) => {
     if (!member) return;
     const tTeam = Number(targetTeam);
@@ -356,7 +340,7 @@ export default function GuildLeagueDetailPage() {
         });
         return { ...prev, roster: updated };
       } else {
-        // Move to empty
+        // Move to empty slot
         const updated = currentRoster.map((r) => {
           if (Number(r.teamNumber) === sTeam && Number(r.slotNumber) === sSlot) {
             return { ...r, teamNumber: tTeam, slotNumber: tSlot };
@@ -368,7 +352,10 @@ export default function GuildLeagueDetailPage() {
     });
 
     setSelectedMember(null);
-    showToast(`Relocated ${member.nickname} to Team ${tTeam} (#${tSlot})`);
+    success(
+      "Position updated",
+      `Relocated ${member.nickname} to Team ${tTeam} (#${tSlot})`
+    );
 
     inFlightOpsRef.current += 1;
     try {
@@ -407,14 +394,16 @@ export default function GuildLeagueDetailPage() {
       }
     } catch (err) {
       console.error("Move error:", err);
-      showToast(err.message || "Failed to relocate member.", "error");
+      toastError("Failed to relocate player", err.message);
       loadDetail(true);
     } finally {
       inFlightOpsRef.current = Math.max(0, inFlightOpsRef.current - 1);
     }
   };
 
-  // RAPID-SAFE REMOVE HANDLER
+  /**
+   * Removes a member from the active roster
+   */
   const handleRemoveMember = async (member) => {
     if (!member) return;
     const tTeam = Number(member.teamNumber);
@@ -430,20 +419,23 @@ export default function GuildLeagueDetailPage() {
     });
 
     setSelectedMember(null);
-    showToast(`Removed ${member.nickname} from roster`);
+    success("Player removed", `Removed ${member.nickname} from the roster.`);
 
     inFlightOpsRef.current += 1;
     try {
       await removeRosterMember(guildLeagueId, tTeam, tSlot);
     } catch (err) {
       console.error("Remove error:", err);
-      showToast(err.message || "Failed to remove member.", "error");
+      toastError("Failed to remove player", err.message);
       loadDetail(true);
     } finally {
       inFlightOpsRef.current = Math.max(0, inFlightOpsRef.current - 1);
     }
   };
 
+  /**
+   * Dispatches match roster embed to Discord webhook worker
+   */
   const handleSendDiscord = async () => {
     if (!guildLeague) return;
     setSendingDiscord(true);
@@ -462,11 +454,11 @@ export default function GuildLeagueDetailPage() {
         teamCount: maxTeams,
         formattedDate: formatDate(guildLeague.matchDate || guildLeague.date),
       });
-      showToast("Successfully broadcasted roster to Discord channel!");
+      success("Discord broadcast sent", "Roster lineup pushed to Discord channel.");
       setDiscordMsg("Successfully pushed roster to Discord channel!");
     } catch (err) {
       console.error("Discord error:", err);
-      showToast("Discord broadcast failed: " + err.message, "error");
+      toastError("Discord push failed", err.message);
       setDiscordMsg("Discord push error: " + err.message);
     } finally {
       setSendingDiscord(false);
@@ -492,25 +484,47 @@ export default function GuildLeagueDetailPage() {
     );
   }
 
-  const matchDate = guildLeague.matchDate || guildLeague.date;
+  // Define tab navigation elements
+  const tabsList = [
+    {
+      id: "all",
+      label: `All Lanes (${totalAssigned}/${maxRoster})`,
+    },
+    ...LANE_SECTIONS.map((l) => ({
+      id: l.id,
+      label: l.name,
+      icon: l.icon,
+      count: laneStats[l.id]?.assignedCount || 0,
+    })),
+    ...(laneGroups.unassigned.length > 0
+      ? [
+          {
+            id: "unassigned",
+            label: "Unassigned",
+            icon: Layers,
+            count: laneStats.unassigned?.assignedCount || 0,
+          },
+        ]
+      : []),
+  ];
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      {/* TOP BAR / ACTIONS */}
+      {/* TOP HEADER / ACTION BAR */}
       <div className="flex flex-col gap-3.5 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
           <Link
             href="/admin/guild-leagues"
-            className="flex size-9 items-center justify-center rounded-xl border border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-50 shadow-xs transition"
+            className="flex size-9 items-center justify-center rounded-xl border border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-50 shadow-2xs transition"
           >
             <ArrowLeft className="size-4" />
           </Link>
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-red-600">
+              <span className="text-xs font-bold uppercase tracking-wider text-brand-600">
                 Guild League Admin
               </span>
-              <span className="rounded-full bg-red-50 border border-red-200 px-2 py-0.2 text-[10px] font-black text-red-700 uppercase">
+              <span className="rounded-full bg-brand-50 border border-brand-200 px-2 py-0.2 text-[10px] font-black text-brand-700 uppercase">
                 {guildLeague.status || "DRAFT"}
               </span>
             </div>
@@ -524,41 +538,41 @@ export default function GuildLeagueDetailPage() {
           <Link
             href={`/roster/${guildLeagueId}`}
             target="_blank"
-            className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-zinc-200 bg-white px-3 text-xs font-bold text-zinc-700 hover:bg-zinc-50 shadow-xs transition"
+            className="inline-flex h-8.5 items-center gap-1.5 rounded-xl border border-zinc-200 bg-white px-3 text-xs font-bold text-zinc-700 hover:bg-zinc-50 shadow-2xs transition"
           >
             <ExternalLink className="size-3.5" />
             <span>Public View</span>
           </Link>
 
-          <button
-            type="button"
+          <Button
+            variant="secondary"
+            size="sm"
+            icon={Copy}
             onClick={() => setCopyModalOpen(true)}
-            className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-zinc-200 bg-white px-3 text-xs font-bold text-zinc-700 hover:bg-zinc-50 shadow-xs transition"
           >
-            <Copy className="size-3.5" />
-            <span>Copy Roster</span>
-          </button>
+            Copy Roster
+          </Button>
 
-          <button
-            type="button"
-            disabled={sendingDiscord}
+          <Button
+            variant="discord"
+            size="sm"
+            icon={Send}
+            loading={sendingDiscord}
             onClick={handleSendDiscord}
-            className="inline-flex h-9 items-center gap-1.5 rounded-xl bg-indigo-600 px-3.5 text-xs font-bold text-white shadow-xs hover:bg-indigo-500 active:scale-95 transition disabled:opacity-50"
           >
-            <Send className="size-3.5" />
-            <span>{sendingDiscord ? "Pushing..." : "Push to Discord"}</span>
-          </button>
+            {sendingDiscord ? "Pushing..." : "Push to Discord"}
+          </Button>
 
-          <select
+          <Select
             value={guildLeague.status}
             onChange={(e) => handleStatusChange(e.target.value)}
-            className="h-9 rounded-xl border border-zinc-200 bg-white px-3 text-xs font-bold text-zinc-800 shadow-xs focus:border-red-600 focus:outline-none"
+            className="!h-8.5 !py-0 !text-xs font-bold"
           >
             <option value="draft">Status: Draft</option>
             <option value="published">Status: Published</option>
             <option value="completed">Status: Completed</option>
             <option value="cancelled">Status: Cancelled</option>
-          </select>
+          </Select>
         </div>
       </div>
 
@@ -568,660 +582,79 @@ export default function GuildLeagueDetailPage() {
           <button
             type="button"
             onClick={() => setDiscordMsg("")}
-            className="text-indigo-600 hover:text-indigo-800 text-xs"
+            className="text-indigo-600 hover:text-indigo-800 text-xs font-bold"
           >
             ✕
           </button>
         </div>
       )}
 
-      {/* HERO MATCH CARD - EXACT MATCH WITH PUBLIC ROSTER */}
-      <div className="rounded-2xl border border-zinc-200 bg-white p-4 sm:p-6 shadow-xs">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <div className="flex items-center gap-2 text-[11px] sm:text-xs font-bold text-red-700 uppercase tracking-widest">
-              <Swords className="size-3.5 sm:size-4" />
-              <span>Guild League Lineup & Roster</span>
-            </div>
-            <h1 className="mt-1 text-xl font-black text-zinc-900 sm:text-3xl lg:text-4xl tracking-tight">
-              {guildLeague.name}
-            </h1>
-            <div className="mt-1.5 flex flex-wrap items-center gap-3 text-xs text-zinc-500">
-              <div className="flex items-center gap-1.5">
-                <CalendarDays className="size-3.5" />
-                <span>{formatDate(matchDate)}</span>
-              </div>
-              {guildLeague.opponent && (
-                <div className="flex items-center gap-1 font-bold text-zinc-900">
-                  <span>Opponent: {guildLeague.opponent}</span>
-                </div>
-              )}
-            </div>
+      {/* HERO MATCH SUMMARY & STATS CARD */}
+      <GuildLeagueHeaderCard
+        guildLeague={guildLeague}
+        totalAssigned={totalAssigned}
+        maxRoster={maxRoster}
+        averageGearScore={averageGearScore}
+        maxTeams={maxTeams}
+        actions={
+          <div className="mt-4 border-t border-zinc-100 pt-3.5">
+            <Tabs
+              tabs={tabsList}
+              activeTab={activeTab}
+              onChange={setActiveTab}
+            />
           </div>
+        }
+      />
 
-          {/* QUICK STATS - EXACT 3-COLUMN GRID AS PUBLIC ROSTER */}
-          <div className="grid grid-cols-3 gap-2 sm:gap-3 w-full lg:w-auto">
-            <div className="rounded-xl sm:rounded-2xl border border-zinc-200 bg-zinc-50/75 p-2.5 sm:p-4 text-center sm:text-left min-w-0">
-              <div className="text-[9px] sm:text-[10px] uppercase font-bold text-zinc-400 tracking-wider truncate">
-                Total Roster
-              </div>
-              <div className="mt-0.5 text-sm sm:text-xl font-black text-zinc-900 truncate">
-                {totalAssigned}/{maxRoster}
-              </div>
-              <div className="text-[9px] sm:text-[11px] text-zinc-500 mt-0.5 font-medium truncate">
-                {Math.round((totalAssigned / (maxRoster || 1)) * 100)}% Deployed
-              </div>
-            </div>
+      {/* TACTICAL DIRECTIVES BAR */}
+      <TacticalDirectivesBar />
 
-            <div className="rounded-xl sm:rounded-2xl border border-zinc-200 bg-zinc-50/75 p-2.5 sm:p-4 text-center sm:text-left min-w-0">
-              <div className="text-[9px] sm:text-[10px] uppercase font-bold text-zinc-400 tracking-wider truncate">
-                Average GS
-              </div>
-              <div className="mt-0.5 text-sm sm:text-xl font-black text-zinc-900 truncate">
-                {averageGearScore > 0 ? formatNumber(averageGearScore) : "—"}
-              </div>
-              <div className="text-[9px] sm:text-[11px] text-zinc-500 mt-0.5 font-medium truncate">
-                Guild Power
-              </div>
-            </div>
-
-            <div className="rounded-xl sm:rounded-2xl border border-zinc-200 bg-zinc-50/75 p-2.5 sm:p-4 text-center sm:text-left min-w-0">
-              <div className="text-[9px] sm:text-[10px] uppercase font-bold text-zinc-400 tracking-wider truncate">
-                Active Teams
-              </div>
-              <div className="mt-0.5 text-sm sm:text-xl font-black text-zinc-900 truncate">
-                {maxTeams} Teams
-              </div>
-              <div className="text-[9px] sm:text-[11px] text-zinc-500 mt-0.5 font-medium truncate">
-                3 Lanes
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {guildLeague.notes && (
-          <div className="mt-4 rounded-xl bg-zinc-50 p-3.5 text-xs text-zinc-700 border border-zinc-200 leading-relaxed">
-            <strong className="text-zinc-900">Tactical Strategy / Briefing: </strong>
-            {guildLeague.notes}
-          </div>
-        )}
-
-        {/* LANE FILTER TABS */}
-        <div className="mt-4 flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-1 no-scrollbar border-t border-zinc-100 pt-3.5 -mx-1 px-1 sm:mx-0 sm:px-0">
-          <button
-            type="button"
-            onClick={() => setActiveTab("all")}
-            className={`shrink-0 rounded-xl px-3 sm:px-4 py-1.5 sm:py-2 text-xs font-bold transition shadow-xs ${
-              activeTab === "all"
-                ? "bg-zinc-900 text-white"
-                : "bg-white border border-zinc-200 text-zinc-700 hover:bg-zinc-50"
-            }`}
-          >
-            All Lanes ({totalAssigned}/{maxRoster})
-          </button>
-
-          {LANE_SECTIONS.map((lane) => {
-            const stat = laneStats[lane.id];
-            const isActive = activeTab === lane.id;
-            const Icon = lane.icon;
-
-            return (
-              <button
-                key={lane.id}
-                type="button"
-                onClick={() => setActiveTab(lane.id)}
-                className={`shrink-0 inline-flex items-center gap-1.5 rounded-xl px-3 sm:px-4 py-1.5 sm:py-2 text-xs font-bold transition shadow-xs ${
-                  isActive
-                    ? lane.pillActive
-                    : "bg-white border border-zinc-200 text-zinc-700 hover:bg-zinc-50"
-                }`}
-              >
-                <Icon className="size-3.5" />
-                <span>{lane.name}</span>
-                <span
-                  className={`rounded-full px-1.5 py-0.2 text-[10px] font-mono ${
-                    isActive ? "bg-white/20 text-white" : "bg-zinc-100 text-zinc-600"
-                  }`}
-                >
-                  {stat?.assignedCount || 0}
-                </span>
-              </button>
-            );
-          })}
-
-          {laneGroups.unassigned.length > 0 && (
-            <button
-              type="button"
-              onClick={() => setActiveTab("unassigned")}
-              className={`shrink-0 rounded-xl px-3 sm:px-4 py-1.5 sm:py-2 text-xs font-bold transition shadow-xs ${
-                activeTab === "unassigned"
-                  ? "bg-zinc-800 text-white"
-                  : "bg-white border border-zinc-200 text-zinc-700 hover:bg-zinc-50"
-              }`}
-            >
-              Unassigned ({laneStats.unassigned?.assignedCount || 0})
-            </button>
-          )}
-        </div>
-      </div>
-
-      {/* TACTICAL DIRECTIVES BAR - MATCH PUBLIC ROSTER */}
-      <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-xs">
-        <div className="grid grid-cols-1 divide-y divide-zinc-100 md:grid-cols-3 md:divide-x md:divide-y-0 text-xs">
-          <div className="flex items-center gap-3 p-3 sm:p-4">
-            <span className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-800 text-sm border border-amber-200">
-              👑
-            </span>
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center justify-between gap-2 font-bold text-zinc-900">
-                <span>MVP Strike</span>
-                <span className="shrink-0 font-mono text-[10px] text-amber-700 bg-amber-50 px-1.5 py-0.2 rounded border border-amber-200">18:00 & 08:00</span>
-              </div>
-              <p className="text-[11px] text-zinc-500 leading-snug mt-0.5">
-                Regroup at MVP spawn at 18:00 & 08:00 to secure boss kill.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 p-3 sm:p-4">
-            <span className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-orange-50 text-orange-800 text-sm border border-orange-200">
-              🛡️
-            </span>
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center justify-between gap-2 font-bold text-zinc-900">
-                <span>Lane Defense</span>
-                <span className="shrink-0 text-[10px] text-orange-700 bg-orange-50 px-1.5 py-0.2 rounded border border-orange-200 uppercase font-bold">Skip MVP</span>
-              </div>
-              <p className="text-[11px] text-zinc-500 leading-snug mt-0.5">
-                Hold lane defense & delay enemy advance at the MVP portal.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 p-3 sm:p-4">
-            <span className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-red-50 text-red-800 text-sm border border-red-200">
-              ⚔️
-            </span>
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center justify-between gap-2 font-bold text-zinc-900">
-                <span>Lane Assault</span>
-                <span className="shrink-0 text-[10px] text-red-700 bg-red-50 px-1.5 py-0.2 rounded border border-red-200 uppercase font-bold">Siege</span>
-              </div>
-              <p className="text-[11px] text-zinc-500 leading-snug mt-0.5">
-                Push enemy lane and breach defensive barricades.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 3 BATTLEFIELD LANE SECTIONS */}
+      {/* BATTLEFIELD LANE SECTIONS */}
       <div className="space-y-4 sm:space-y-6">
         {LANE_SECTIONS.map((lane) => {
           if (activeTab !== "all" && activeTab !== lane.id) return null;
 
-          const teamNumbers = laneGroups[lane.id] || [];
-          const stat = laneStats[lane.id];
-          const Icon = lane.icon;
-
           return (
-            <section
+            <LaneGroupSection
               key={lane.id}
-              id={`lane-${lane.id}`}
-              className="space-y-3 sm:space-y-4 animate-in fade-in duration-200"
-            >
-              {/* LANE HEADER */}
-              <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between rounded-2xl border border-zinc-200 bg-white p-3.5 sm:p-4 shadow-xs">
-                <div className="flex items-center justify-between sm:justify-start gap-2.5 sm:gap-3">
-                  <div className="flex items-center gap-2.5 sm:gap-3">
-                    <div className="flex size-8 sm:size-9 shrink-0 items-center justify-center rounded-xl bg-zinc-50 border border-zinc-200 text-zinc-800">
-                      <Icon className="size-4" />
-                    </div>
-                    <h2 className="text-sm sm:text-base font-bold text-zinc-900">
-                      {lane.name}
-                    </h2>
-                  </div>
-                  <span className="rounded-md border border-zinc-200 bg-zinc-50 px-2 py-0.5 text-[10px] sm:text-[11px] font-bold text-zinc-600">
-                    {teamNumbers.length} {teamNumbers.length === 1 ? "Team" : "Teams"}
-                  </span>
-                </div>
-
-                {/* FORMATION STATS */}
-                <div className="flex items-center justify-between sm:justify-end gap-2 text-[11px] sm:text-xs">
-                  <div className="rounded-xl border border-zinc-200 bg-zinc-50 px-2.5 sm:px-3 py-1 text-zinc-600 font-medium">
-                    <span>Formation: </span>
-                    <strong className="text-zinc-900 font-bold">
-                      {stat?.assignedCount || 0} / {stat?.capacity || 0}
-                    </strong>
-                  </div>
-                  {stat?.avgGS > 0 && (
-                    <div className="rounded-xl border border-zinc-200 bg-zinc-50 px-2.5 sm:px-3 py-1 text-zinc-600 font-medium">
-                      <span>Avg GS: </span>
-                      <strong className="text-zinc-900 font-bold font-mono">
-                        {formatNumber(stat.avgGS)}
-                      </strong>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* TEAMS GRID */}
-              {teamNumbers.length === 0 ? (
-                <div className="rounded-2xl border border-dashed border-zinc-300 bg-white p-6 sm:p-8 text-center text-xs text-zinc-500">
-                  No teams currently assigned to {lane.name}. Select a team's lane dropdown to position them here.
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 gap-4 sm:gap-5 md:grid-cols-2 xl:grid-cols-3">
-                  {teamNumbers.map((teamNumber) => {
-                    const team = teams.find(
-                      (t) => Number(t.teamNumber) === teamNumber
-                    );
-                    const laneConfig = getLaneConfig(team?.lane);
-                    const teamMembers = roster
-                      .filter((r) => Number(r.teamNumber) === teamNumber)
-                      .sort((a, b) => Number(a.slotNumber) - Number(b.slotNumber));
-
-                    const teamAvgGS =
-                      teamMembers.length > 0
-                        ? Math.round(
-                            teamMembers.reduce(
-                              (s, m) => s + (Number(m.gearScore) || 0),
-                              0
-                            ) / teamMembers.length
-                          )
-                        : 0;
-
-                    return (
-                      <div
-                        key={teamNumber}
-                        className="flex flex-col overflow-hidden rounded-2xl border border-zinc-200/90 bg-white shadow-xs hover:shadow-md transition-all duration-200"
-                      >
-                        {/* TEAM CARD HEADER - ROW 1 */}
-                        <div className="flex items-center justify-between gap-2.5 border-b border-zinc-100 bg-zinc-50/80 px-3.5 py-3 sm:px-4.5 sm:py-3.5">
-                          <div className="flex min-w-0 items-center gap-2.5">
-                            <div className="flex size-7.5 sm:size-8 shrink-0 items-center justify-center rounded-xl bg-zinc-900 text-xs font-black text-white shadow-xs">
-                              T{teamNumber}
-                            </div>
-                            <div className="min-w-0">
-                              <h3 className="truncate text-xs sm:text-sm font-bold text-zinc-900">
-                                {team?.name || `Team ${teamNumber}`}
-                              </h3>
-                              <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] text-zinc-500 font-medium">
-                                <span className="text-zinc-700 font-semibold">
-                                  {teamMembers.length}/{membersPerTeam} Players
-                                </span>
-                                <span>•</span>
-                                <span>
-                                  {Math.round(
-                                    (teamMembers.length / (membersPerTeam || 1)) * 100
-                                  )}%
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-
-                          {teamAvgGS > 0 && (
-                            <div className="flex shrink-0 items-center gap-1 rounded-lg border border-zinc-200/90 bg-white px-2 py-1 text-[11px] font-bold text-zinc-800 shadow-2xs font-mono">
-                              <Shield className="size-3 text-zinc-400" />
-                              <span>{formatNumber(teamAvgGS)} GS</span>
-                            </div>
-                          )}
-                        </div>
-
-                        {/* LANE & ROLE SELECTOR - ROW 2 */}
-                        <div className="flex items-center justify-between gap-2 border-b border-zinc-100 bg-zinc-50/40 px-3.5 py-2 sm:px-4.5">
-                          <span className="text-[10px] uppercase font-bold tracking-wider text-zinc-400 shrink-0">
-                            Battle Role
-                          </span>
-                          <select
-                            value={team?.lane?.toLowerCase() || ""}
-                            onChange={(e) =>
-                              handleLaneChange(teamNumber, e.target.value)
-                            }
-                            className={`h-7.5 max-w-[210px] sm:max-w-[240px] truncate rounded-lg border px-2 text-[11px] font-semibold shadow-2xs focus:outline-none focus:ring-1 focus:ring-zinc-400 transition ${
-                              laneConfig
-                                ? laneConfig.badgeClassName
-                                : "border-zinc-200 bg-white text-zinc-700"
-                            }`}
-                          >
-                            <option value="">Unassigned Lane</option>
-                            {LANE_SELECT_GROUPS.map((grp) => (
-                              <optgroup key={grp.group} label={grp.group}>
-                                {grp.options.map((opt) => (
-                                  <option key={opt.value} value={opt.value}>
-                                    {opt.label}
-                                  </option>
-                                ))}
-                              </optgroup>
-                            ))}
-                          </select>
-                        </div>
-
-                        {/* PLAYER SLOTS */}
-                        <div className="flex-1 divide-y divide-zinc-100">
-                          {Array.from({ length: membersPerTeam }, (_, sIdx) => {
-                            const slotNumber = sIdx + 1;
-                            const member = teamMembers.find(
-                              (m) => Number(m.slotNumber) === slotNumber
-                            );
-
-                            if (!member) {
-                              return (
-                                <div
-                                  key={slotNumber}
-                                  onClick={() =>
-                                    setAssignSlot({ teamNumber, slotNumber })
-                                  }
-                                  className="group flex cursor-pointer items-center justify-between px-3.5 sm:px-4.5 py-2 text-xs bg-zinc-50/20 hover:bg-red-50/30 transition"
-                                >
-                                  <div className="flex items-center gap-2">
-                                    <span className="w-5 text-zinc-300 font-mono text-[11px] font-bold group-hover:text-zinc-500 transition">
-                                      #{slotNumber}
-                                    </span>
-                                    <span className="text-[11px] italic text-zinc-400 group-hover:text-zinc-600 transition font-medium">
-                                      Empty Slot
-                                    </span>
-                                  </div>
-
-                                  <button
-                                    type="button"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      setAssignSlot({ teamNumber, slotNumber });
-                                    }}
-                                    className="inline-flex items-center gap-1 rounded-lg border border-dashed border-zinc-200 bg-white px-2 py-0.5 text-[11px] font-bold text-zinc-600 shadow-2xs group-hover:border-red-300 group-hover:bg-red-600 group-hover:text-white transition"
-                                  >
-                                    <UserPlus className="size-3" />
-                                    <span>Assign</span>
-                                  </button>
-                                </div>
-                              );
-                            }
-
-                            return (
-                              <div
-                                key={slotNumber}
-                                onClick={() => setSelectedMember(member)}
-                                className="group flex cursor-pointer items-center justify-between px-3.5 sm:px-4.5 py-2 text-xs transition hover:bg-zinc-50/90"
-                              >
-                                <div className="flex min-w-0 items-center gap-2">
-                                  <span className="w-5 font-bold font-mono text-[11px] text-zinc-400 group-hover:text-zinc-700 transition">
-                                    #{slotNumber}
-                                  </span>
-                                  <div className="min-w-0 pr-1.5">
-                                    <div className="truncate font-bold text-zinc-900 text-xs sm:text-[13px] group-hover:text-red-700 transition">
-                                      {member.nickname}
-                                    </div>
-                                    <div className="mt-0.5 flex flex-wrap items-center gap-1.5">
-                                      <ClassBadge
-                                        className={member.className}
-                                        size="xs"
-                                      />
-                                      {Number(member.level) > 0 && (
-                                        <span className="text-[10px] text-zinc-400 font-medium">
-                                          Lv. {member.level}
-                                        </span>
-                                      )}
-                                    </div>
-                                  </div>
-                                </div>
-
-                                <div className="flex shrink-0 items-center gap-1.5 text-right">
-                                  {Number(member.gearScore) > 0 && (
-                                    <span className="font-bold text-zinc-900 font-mono text-[11px] sm:text-xs">
-                                      {formatNumber(member.gearScore)} GS
-                                    </span>
-                                  )}
-
-                                  {/* QUICK ACTION BUTTONS */}
-                                  <div className="flex items-center gap-0.5 opacity-90 sm:opacity-0 group-hover:opacity-100 transition">
-                                    <button
-                                      type="button"
-                                      title="Relocate / Swap slot"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        setSelectedMember(member);
-                                      }}
-                                      className="flex size-6.5 items-center justify-center rounded-lg text-zinc-400 hover:bg-zinc-200 hover:text-zinc-800 transition"
-                                    >
-                                      <ArrowRightLeft className="size-3" />
-                                    </button>
-                                    <button
-                                      type="button"
-                                      title="Remove from roster"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleRemoveMember(member);
-                                      }}
-                                      className="flex size-6.5 items-center justify-center rounded-lg text-zinc-400 hover:bg-red-50 hover:text-red-600 transition"
-                                    >
-                                      <Trash2 className="size-3" />
-                                    </button>
-                                  </div>
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </section>
+              id={lane.id}
+              name={lane.name}
+              icon={lane.icon}
+              teamNumbers={laneGroups[lane.id] || []}
+              teams={teams}
+              roster={roster}
+              stat={laneStats[lane.id]}
+              membersPerTeam={membersPerTeam}
+              onLaneChange={handleLaneChange}
+              onAssignSlot={(slot) => setAssignSlot(slot)}
+              onSelectMember={(member) => setSelectedMember(member)}
+              onRemoveMember={handleRemoveMember}
+            />
           );
         })}
 
-        {/* UNASSIGNED TEAMS SECTION */}
+        {/* RESERVE / UNASSIGNED TEAMS SECTION */}
         {(activeTab === "all" || activeTab === "unassigned") &&
           laneGroups.unassigned.length > 0 && (
-            <section className="space-y-3 sm:space-y-4 border-t border-zinc-200 pt-5 sm:pt-6">
-              <div className="flex items-center justify-between rounded-2xl border border-zinc-200 bg-white p-3.5 sm:p-4 shadow-xs">
-                <div className="flex items-center gap-2.5 sm:gap-3">
-                  <div className="flex size-8 sm:size-9 items-center justify-center rounded-xl bg-zinc-50 border border-zinc-200 text-zinc-700">
-                    <Layers className="size-4" />
-                  </div>
-                  <div>
-                    <h2 className="text-xs sm:text-sm font-bold text-zinc-900">
-                      Reserve / Unassigned Formations
-                    </h2>
-                  </div>
-                </div>
-                <span className="rounded-md border border-zinc-200 bg-zinc-50 px-2 py-0.5 text-[10px] sm:text-[11px] font-bold text-zinc-600">
-                  {laneGroups.unassigned.length} Teams
-                </span>
-              </div>
-
-              <div className="grid grid-cols-1 gap-4 sm:gap-5 md:grid-cols-2 xl:grid-cols-3">
-                {laneGroups.unassigned.map((teamNumber) => {
-                  const team = teams.find(
-                    (t) => Number(t.teamNumber) === teamNumber
-                  );
-                  const laneConfig = getLaneConfig(team?.lane);
-                  const teamMembers = roster
-                    .filter((r) => Number(r.teamNumber) === teamNumber)
-                    .sort((a, b) => Number(a.slotNumber) - Number(b.slotNumber));
-
-                  const teamAvgGS =
-                    teamMembers.length > 0
-                      ? Math.round(
-                          teamMembers.reduce(
-                            (s, m) => s + (Number(m.gearScore) || 0),
-                            0
-                          ) / teamMembers.length
-                        )
-                      : 0;
-
-                  return (
-                    <div
-                      key={teamNumber}
-                      className="flex flex-col overflow-hidden rounded-2xl border border-zinc-200/90 bg-white shadow-xs hover:shadow-md transition-all duration-200"
-                    >
-                      {/* TEAM CARD HEADER - ROW 1 */}
-                      <div className="flex items-center justify-between gap-2.5 border-b border-zinc-100 bg-zinc-50/80 px-3.5 py-3 sm:px-4.5 sm:py-3.5">
-                        <div className="flex min-w-0 items-center gap-2.5">
-                          <div className="flex size-7.5 sm:size-8 shrink-0 items-center justify-center rounded-xl bg-zinc-900 text-xs font-black text-white shadow-xs">
-                            T{teamNumber}
-                          </div>
-                          <div className="min-w-0">
-                            <h3 className="truncate text-xs sm:text-sm font-bold text-zinc-900">
-                              {team?.name || `Team ${teamNumber}`}
-                            </h3>
-                            <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] text-zinc-500 font-medium">
-                              <span className="text-zinc-700 font-semibold">
-                                {teamMembers.length}/{membersPerTeam} Players
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-
-                        {teamAvgGS > 0 && (
-                          <div className="flex shrink-0 items-center gap-1 rounded-lg border border-zinc-200/90 bg-white px-2 py-1 text-[11px] font-bold text-zinc-800 shadow-2xs font-mono">
-                            <Shield className="size-3 text-zinc-400" />
-                            <span>{formatNumber(teamAvgGS)} GS</span>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* LANE & ROLE SELECTOR - ROW 2 */}
-                      <div className="flex items-center justify-between gap-2 border-b border-zinc-100 bg-zinc-50/40 px-3.5 py-2 sm:px-4.5">
-                        <span className="text-[10px] uppercase font-bold tracking-wider text-zinc-400 shrink-0">
-                          Battle Role
-                        </span>
-                        <select
-                          value={team?.lane?.toLowerCase() || ""}
-                          onChange={(e) =>
-                            handleLaneChange(teamNumber, e.target.value)
-                          }
-                          className="h-7.5 max-w-[210px] sm:max-w-[240px] truncate rounded-lg border border-zinc-200 bg-white px-2 text-[11px] font-semibold text-zinc-700 shadow-2xs focus:outline-none focus:ring-1 focus:ring-zinc-400 transition"
-                        >
-                          <option value="">Unassigned Lane</option>
-                          {LANE_SELECT_GROUPS.map((grp) => (
-                            <optgroup key={grp.group} label={grp.group}>
-                              {grp.options.map((opt) => (
-                                <option key={opt.value} value={opt.value}>
-                                  {opt.label}
-                                </option>
-                              ))}
-                            </optgroup>
-                          ))}
-                        </select>
-                      </div>
-
-                      {/* PLAYER SLOTS */}
-                      <div className="flex-1 divide-y divide-zinc-100">
-                        {Array.from({ length: membersPerTeam }, (_, sIdx) => {
-                          const slotNumber = sIdx + 1;
-                          const member = teamMembers.find(
-                            (m) => Number(m.slotNumber) === slotNumber
-                          );
-
-                          if (!member) {
-                            return (
-                              <div
-                                key={slotNumber}
-                                onClick={() =>
-                                  setAssignSlot({ teamNumber, slotNumber })
-                                }
-                                className="group flex cursor-pointer items-center justify-between px-3.5 sm:px-4.5 py-2 text-xs bg-zinc-50/20 hover:bg-red-50/30 transition"
-                              >
-                                <div className="flex items-center gap-2">
-                                  <span className="w-5 text-zinc-300 font-mono text-[11px] font-bold group-hover:text-zinc-500 transition">
-                                    #{slotNumber}
-                                  </span>
-                                  <span className="text-[11px] italic text-zinc-400 font-medium">
-                                    Empty Slot
-                                  </span>
-                                </div>
-
-                                <button
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setAssignSlot({ teamNumber, slotNumber });
-                                  }}
-                                  className="inline-flex items-center gap-1 rounded-lg border border-dashed border-zinc-200 bg-white px-2 py-0.5 text-[11px] font-bold text-zinc-600 shadow-2xs group-hover:bg-red-600 group-hover:text-white transition"
-                                >
-                                  <UserPlus className="size-3" />
-                                  <span>Assign</span>
-                                </button>
-                              </div>
-                            );
-                          }
-
-                          return (
-                            <div
-                              key={slotNumber}
-                              onClick={() => setSelectedMember(member)}
-                              className="group flex cursor-pointer items-center justify-between px-3.5 sm:px-4.5 py-2 text-xs transition hover:bg-zinc-50/90"
-                            >
-                              <div className="flex min-w-0 items-center gap-2">
-                                <span className="w-5 font-bold font-mono text-[11px] text-zinc-400 group-hover:text-zinc-700 transition">
-                                  #{slotNumber}
-                                </span>
-                                <div className="min-w-0 pr-1.5">
-                                  <div className="truncate font-bold text-zinc-900 text-xs sm:text-[13px] group-hover:text-red-700 transition">
-                                    {member.nickname}
-                                  </div>
-                                  <div className="mt-0.5 flex flex-wrap items-center gap-1.5">
-                                    <ClassBadge
-                                      className={member.className}
-                                      size="xs"
-                                    />
-                                    {Number(member.level) > 0 && (
-                                      <span className="text-[10px] text-zinc-400 font-medium">
-                                        Lv. {member.level}
-                                      </span>
-                                    )}
-                                  </div>
-                                </div>
-                              </div>
-
-                              <div className="flex shrink-0 items-center gap-1.5 text-right">
-                                {Number(member.gearScore) > 0 && (
-                                  <span className="font-bold text-zinc-900 font-mono text-[11px] sm:text-xs">
-                                    {formatNumber(member.gearScore)} GS
-                                  </span>
-                                )}
-
-                                <div className="flex items-center gap-0.5 opacity-90 sm:opacity-0 group-hover:opacity-100 transition">
-                                  <button
-                                    type="button"
-                                    title="Relocate / Swap slot"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      setSelectedMember(member);
-                                    }}
-                                    className="flex size-6.5 items-center justify-center rounded-lg text-zinc-400 hover:bg-zinc-200 hover:text-zinc-800 transition"
-                                  >
-                                    <ArrowRightLeft className="size-3" />
-                                  </button>
-                                  <button
-                                    type="button"
-                                    title="Remove from roster"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      handleRemoveMember(member);
-                                    }}
-                                    className="flex size-6.5 items-center justify-center rounded-lg text-zinc-400 hover:bg-red-50 hover:text-red-600 transition"
-                                  >
-                                    <Trash2 className="size-3" />
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </section>
+            <LaneGroupSection
+              id="unassigned"
+              name="Reserve / Unassigned Formations"
+              icon={Layers}
+              teamNumbers={laneGroups.unassigned}
+              teams={teams}
+              roster={roster}
+              stat={laneStats.unassigned}
+              membersPerTeam={membersPerTeam}
+              onLaneChange={handleLaneChange}
+              onAssignSlot={(slot) => setAssignSlot(slot)}
+              onSelectMember={(member) => setSelectedMember(member)}
+              onRemoveMember={handleRemoveMember}
+            />
           )}
       </div>
 
-      {/* MODALS */}
+      {/* ACTION MODALS */}
       <AssignRosterMemberModal
         open={Boolean(assignSlot)}
         guildLeagueId={guildLeagueId}
@@ -1256,25 +689,6 @@ export default function GuildLeagueDetailPage() {
         onClose={() => setCopyModalOpen(false)}
         onSuccess={() => loadDetail(true)}
       />
-
-      {/* FLOATING TOAST FEEDBACK */}
-      {toast && !assignSlot && !selectedMember && !copyModalOpen && (
-        <div className="fixed bottom-6 right-6 z-40 flex items-center gap-2.5 rounded-2xl border border-zinc-900/10 bg-zinc-900 px-4 py-3 text-xs font-semibold text-white shadow-xl backdrop-blur-sm animate-in slide-in-from-bottom-5 duration-200">
-          {toast.type === "error" ? (
-            <AlertCircle className="size-4 text-red-400 shrink-0" />
-          ) : (
-            <CheckCircle2 className="size-4 text-emerald-400 shrink-0" />
-          )}
-          <span>{toast.message}</span>
-          <button
-            type="button"
-            onClick={() => setToast(null)}
-            className="ml-2 rounded-lg p-0.5 text-zinc-400 hover:text-white"
-          >
-            <X className="size-3.5" />
-          </button>
-        </div>
-      )}
     </div>
   );
 }

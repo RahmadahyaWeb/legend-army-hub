@@ -9,7 +9,6 @@ import {
   ChevronRight,
   Pencil,
   Power,
-  RefreshCw,
   RotateCcw,
   Search,
   Trash2,
@@ -18,9 +17,22 @@ import {
   Users,
 } from "lucide-react";
 import { fetchMembers, saveMember } from "@/lib/api";
-import { formatNumber, formatDate } from "@/utils/formatters";
-import { PageLoading, SkeletonTable } from "@/components/ui/LoadingState";
+import { formatNumber } from "@/utils/formatters";
+import { SkeletonTable } from "@/components/ui/LoadingState";
 import EmptyState from "@/components/ui/EmptyState";
+import Button from "@/components/ui/Button";
+import Input from "@/components/ui/Input";
+import Select from "@/components/ui/Select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/Table";
+import Badge from "@/components/ui/Badge";
+import { useToast } from "@/components/ui/ToastProvider";
 import ImportMembersModal from "@/components/members/ImportMembersModal";
 import EditMemberModal from "@/components/members/EditMemberModal";
 import DeleteMemberModal from "@/components/members/DeleteMemberModal";
@@ -29,13 +41,18 @@ import { ClassBadge } from "@/utils/classColors";
 
 const PAGE_SIZE_OPTIONS = [25, 50, 100];
 
+/**
+ * Guild Members Management Page
+ *
+ * Why this exists:
+ * The single source of truth for all guild characters, power levels, gear scores,
+ * roles, and attendance status. Enables CSV batch roster import, editing, and reset.
+ */
 export default function MembersPage() {
+  const { success, error: toastError } = useToast();
+
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const [error, setError] = useState("");
-  const [toastMessage, setToastMessage] = useState("");
-
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [sortField, setSortField] = useState("gearScore");
@@ -49,15 +66,18 @@ export default function MembersPage() {
   const [editingMember, setEditingMember] = useState(null);
   const [deletingMember, setDeletingMember] = useState(null);
 
+  /**
+   * Loads member list from the serverless Postgres API
+   * @param {boolean} [silent=false]
+   */
   const loadMembers = async (silent = false) => {
     try {
       if (!silent) setLoading(true);
       const data = await fetchMembers(silent);
       setMembers(data);
-      setError("");
     } catch (err) {
       console.error("Failed to load members:", err);
-      setError("Failed to load members.");
+      toastError("Failed to load members", err.message);
     } finally {
       setLoading(false);
     }
@@ -88,28 +108,37 @@ export default function MembersPage() {
         id: member.id,
         isActive: updatedStatus,
       });
+      success(
+        "Status updated",
+        `${member.nickname} is now ${updatedStatus ? "Active" : "Inactive"}`
+      );
       loadMembers(true);
     } catch (err) {
       console.error("Toggle active error:", err);
+      toastError("Status update failed", err.message);
       loadMembers(true);
     }
   };
 
+  // Filter and sort members
   const filteredMembers = useMemo(() => {
     return members.filter((member) => {
-      // Search
-      const term = search.toLowerCase().trim();
-      const matchNickname = member.nickname?.toLowerCase().includes(term);
-      const matchClass = member.className?.toLowerCase().includes(term);
-      const matchRole = member.role?.toLowerCase().includes(term);
-
-      if (term && !matchNickname && !matchClass && !matchRole) {
-        return false;
+      if (search.trim()) {
+        const query = search.toLowerCase().trim();
+        const nickname = (member.nickname || "").toLowerCase();
+        const className = (member.className || member.class || "").toLowerCase();
+        const role = (member.role || "").toLowerCase();
+        if (
+          !nickname.includes(query) &&
+          !className.includes(query) &&
+          !role.includes(query)
+        ) {
+          return false;
+        }
       }
 
-      // Status
-      if (statusFilter === "active") return member.isActive !== false;
-      if (statusFilter === "inactive") return member.isActive === false;
+      if (statusFilter === "active" && member.isActive === false) return false;
+      if (statusFilter === "inactive" && member.isActive !== false) return false;
 
       return true;
     });
@@ -117,387 +146,367 @@ export default function MembersPage() {
 
   const sortedMembers = useMemo(() => {
     return [...filteredMembers].sort((a, b) => {
-      let valA = a[sortField];
-      let valB = b[sortField];
+      let aVal = a[sortField];
+      let bVal = b[sortField];
 
-      if (typeof valA === "string") valA = valA.toLowerCase();
-      if (typeof valB === "string") valB = valB.toLowerCase();
-
-      if (valA === valB) return 0;
-      if (valA === null || valA === undefined) return 1;
-      if (valB === null || valB === undefined) return -1;
-
-      if (sortDirection === "asc") {
-        return valA > valB ? 1 : -1;
+      if (sortField === "gearScore" || sortField === "level") {
+        aVal = Number(aVal) || 0;
+        bVal = Number(bVal) || 0;
       } else {
-        return valA < valB ? 1 : -1;
+        aVal = (aVal || "").toString().toLowerCase();
+        bVal = (bVal || "").toString().toLowerCase();
       }
+
+      if (aVal < bVal) return sortDirection === "asc" ? -1 : 1;
+      if (aVal > bVal) return sortDirection === "asc" ? 1 : -1;
+      return 0;
     });
   }, [filteredMembers, sortField, sortDirection]);
 
+  // Pagination calculation
   const totalPages = Math.ceil(sortedMembers.length / pageSize) || 1;
   const paginatedMembers = useMemo(() => {
     const start = (page - 1) * pageSize;
     return sortedMembers.slice(start, start + pageSize);
   }, [sortedMembers, page, pageSize]);
 
+  const activeCount = members.filter((m) => m.isActive !== false).length;
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* PAGE HEADER */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3.5 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-zinc-900">
-            Guild Members
-          </h1>
-          <p className="mt-1 text-xs text-zinc-500">
-            Total {members.length} registered guild members
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl sm:text-2xl font-black text-zinc-900 tracking-tight">
+              Guild Members
+            </h1>
+            <Badge variant="brand" size="sm">
+              {activeCount} Active / {members.length} Total
+            </Badge>
+          </div>
+          <p className="text-xs text-zinc-500 mt-1">
+            Manage combat characters, job classes, and power levels for guild events
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2.5">
-          <button
-            type="button"
+        <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
+          <Button
+            variant="outline"
+            size="sm"
+            icon={RotateCcw}
             onClick={() => setResetModalOpen(true)}
-            className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-red-200 bg-red-50/80 px-3.5 text-xs font-bold text-red-700 shadow-2xs transition hover:bg-red-100 active:scale-95"
-            title="Kosongkan seluruh data member untuk mulai dari awal"
+            className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
           >
-            <RotateCcw className="size-3.5" />
-            <span>Reset Data</span>
-          </button>
+            Reset
+          </Button>
 
-          <button
-            type="button"
+          <Button
+            variant="secondary"
+            size="sm"
+            icon={Upload}
             onClick={() => setImportModalOpen(true)}
-            className="inline-flex h-9 items-center gap-2 rounded-xl border border-zinc-200 bg-white px-3.5 text-xs font-semibold text-zinc-700 shadow-2xs transition hover:bg-zinc-50 active:scale-95"
           >
-            <Upload className="size-3.5" />
-            <span>Import CSV</span>
-          </button>
+            Import CSV
+          </Button>
 
-          <button
-            type="button"
+          <Button
+            variant="primary"
+            size="sm"
+            icon={UserPlus}
             onClick={() =>
               setEditingMember({
                 nickname: "",
-                className: "",
-                level: 60,
-                gearScore: 700,
+                level: 110,
+                gearScore: 400000,
+                className: "Paladin",
                 role: "Member",
                 isActive: true,
               })
             }
-            className="inline-flex h-9 items-center gap-2 rounded-xl bg-red-600 px-3.5 text-xs font-bold text-white shadow-2xs transition hover:bg-red-500 active:scale-95"
           >
-            <UserPlus className="size-3.5" />
-            <span>Add Member</span>
-          </button>
+            Add Member
+          </Button>
         </div>
       </div>
 
-      {toastMessage && (
-        <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3.5 text-xs font-semibold text-emerald-900 flex items-center justify-between shadow-xs animate-in fade-in slide-in-from-top-2 duration-150">
-          <div className="flex items-center gap-2">
-            <span>✓</span>
-            <span>{toastMessage}</span>
-          </div>
-          <button
-            type="button"
-            onClick={() => setToastMessage("")}
-            className="text-emerald-700 hover:text-emerald-900 text-xs font-bold"
-          >
-            ✕
-          </button>
-        </div>
-      )}
-
-      {error && (
-        <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-xs font-medium text-red-700">
-          {error}
-        </div>
-      )}
-
-      {/* FILTER & SEARCH BAR */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="pointer-events-none absolute left-3 top-2.5 size-4 text-zinc-400" />
-          <input
-            type="text"
+      {/* FILTER CONTROLS BAR */}
+      <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between rounded-2xl border border-zinc-200 bg-white p-3.5 sm:p-4 shadow-xs">
+        <div className="flex flex-1 items-center gap-2 sm:max-w-md">
+          <Input
+            icon={Search}
+            placeholder="Search by nickname, class, or role..."
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
               setPage(1);
             }}
-            placeholder="Search by player or class..."
-            className="h-9 w-full rounded-xl border border-zinc-200 bg-white pl-9 pr-3 text-xs placeholder:text-zinc-400 focus:border-red-600 focus:outline-none focus:ring-1 focus:ring-red-600"
+            containerClassName="w-full"
+            className="!h-9 text-xs"
           />
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            disabled={refreshing}
-            onClick={async () => {
-              setRefreshing(true);
-              await loadMembers(false);
-              setRefreshing(false);
-              setToastMessage("Data member berhasil di-refresh dari server");
-              setTimeout(() => setToastMessage(""), 3000);
-            }}
-            title="Refresh data dari server"
-            className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-zinc-200 bg-white px-3 text-xs font-semibold text-zinc-700 shadow-2xs transition hover:bg-zinc-50 active:scale-95 disabled:opacity-50"
-          >
-            <RefreshCw className={`size-3.5 ${refreshing ? "animate-spin" : ""}`} />
-            <span className="hidden sm:inline">Refresh</span>
-          </button>
-
-          <select
+          <Select
             value={statusFilter}
             onChange={(e) => {
               setStatusFilter(e.target.value);
               setPage(1);
             }}
-            className="h-9 rounded-xl border border-zinc-200 bg-white px-3 text-xs font-medium text-zinc-700 focus:border-red-600 focus:outline-none"
+            className="!h-9 !py-0 text-xs font-semibold"
           >
             <option value="all">All Status ({members.length})</option>
-            <option value="active">
-              Active ({members.filter((m) => m.isActive !== false).length})
-            </option>
+            <option value="active">Active Only ({activeCount})</option>
             <option value="inactive">
-              Inactive ({members.filter((m) => m.isActive === false).length})
+              Inactive Only ({members.length - activeCount})
             </option>
-          </select>
+          </Select>
 
-          <select
+          <Select
             value={pageSize}
             onChange={(e) => {
               setPageSize(Number(e.target.value));
               setPage(1);
             }}
-            className="h-9 rounded-xl border border-zinc-200 bg-white px-3 text-xs font-medium text-zinc-700 focus:border-red-600 focus:outline-none"
+            className="!h-9 !py-0 text-xs font-semibold"
           >
             {PAGE_SIZE_OPTIONS.map((size) => (
               <option key={size} value={size}>
                 {size} per page
               </option>
             ))}
-          </select>
+          </Select>
         </div>
       </div>
 
       {/* MEMBERS TABLE */}
-      <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[620px] text-left text-xs">
-            <thead className="border-b border-zinc-200 bg-zinc-50/75 text-zinc-600 font-semibold">
-              <tr>
-                <th
+      {loading ? (
+        <SkeletonTable rows={10} />
+      ) : sortedMembers.length === 0 ? (
+        <EmptyState
+          icon={Users}
+          title="No guild members found"
+          description={
+            search || statusFilter !== "all"
+              ? "No characters match your search filters."
+              : "Start by importing member CSV data or manually adding members."
+          }
+          action={
+            <Button
+              variant="primary"
+              size="sm"
+              icon={UserPlus}
+              onClick={() => setImportModalOpen(true)}
+            >
+              Import Members
+            </Button>
+          }
+        />
+      ) : (
+        <div className="space-y-3">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-12 text-center">#</TableHead>
+                <TableHead
                   onClick={() => handleSort("nickname")}
-                  className="cursor-pointer px-4 py-3.5 hover:text-zinc-900"
+                  className="cursor-pointer select-none"
                 >
                   <div className="flex items-center gap-1.5">
-                    <span>Player</span>
-                    {sortField === "nickname" && (
+                    <span>Character</span>
+                    {sortField === "nickname" ? (
                       sortDirection === "asc" ? (
-                        <ArrowUp className="size-3 text-red-600" />
+                        <ArrowUp className="size-3 text-brand-600" />
                       ) : (
-                        <ArrowDown className="size-3 text-red-600" />
+                        <ArrowDown className="size-3 text-brand-600" />
                       )
+                    ) : (
+                      <ArrowUpDown className="size-3 text-zinc-300" />
                     )}
                   </div>
-                </th>
-                <th
+                </TableHead>
+                <TableHead
                   onClick={() => handleSort("className")}
-                  className="cursor-pointer px-4 py-3.5 hover:text-zinc-900"
+                  className="cursor-pointer select-none"
                 >
                   <div className="flex items-center gap-1.5">
-                    <span>Class</span>
-                    {sortField === "className" && (
+                    <span>Class / Job</span>
+                    {sortField === "className" ? (
                       sortDirection === "asc" ? (
-                        <ArrowUp className="size-3 text-red-600" />
+                        <ArrowUp className="size-3 text-brand-600" />
                       ) : (
-                        <ArrowDown className="size-3 text-red-600" />
+                        <ArrowDown className="size-3 text-brand-600" />
                       )
+                    ) : (
+                      <ArrowUpDown className="size-3 text-zinc-300" />
                     )}
                   </div>
-                </th>
-                <th
+                </TableHead>
+                <TableHead
                   onClick={() => handleSort("level")}
-                  className="cursor-pointer px-4 py-3.5 hover:text-zinc-900"
+                  className="cursor-pointer select-none text-right"
                 >
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center justify-end gap-1.5">
                     <span>Level</span>
-                    {sortField === "level" && (
+                    {sortField === "level" ? (
                       sortDirection === "asc" ? (
-                        <ArrowUp className="size-3 text-red-600" />
+                        <ArrowUp className="size-3 text-brand-600" />
                       ) : (
-                        <ArrowDown className="size-3 text-red-600" />
+                        <ArrowDown className="size-3 text-brand-600" />
                       )
+                    ) : (
+                      <ArrowUpDown className="size-3 text-zinc-300" />
                     )}
                   </div>
-                </th>
-                <th
+                </TableHead>
+                <TableHead
                   onClick={() => handleSort("gearScore")}
-                  className="cursor-pointer px-4 py-3.5 hover:text-zinc-900"
+                  className="cursor-pointer select-none text-right"
                 >
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center justify-end gap-1.5">
                     <span>Gear Score</span>
-                    {sortField === "gearScore" && (
+                    {sortField === "gearScore" ? (
                       sortDirection === "asc" ? (
-                        <ArrowUp className="size-3 text-red-600" />
+                        <ArrowUp className="size-3 text-brand-600" />
                       ) : (
-                        <ArrowDown className="size-3 text-red-600" />
+                        <ArrowDown className="size-3 text-brand-600" />
                       )
+                    ) : (
+                      <ArrowUpDown className="size-3 text-zinc-300" />
                     )}
                   </div>
-                </th>
-                <th className="px-4 py-3.5">Role</th>
-                <th className="px-4 py-3.5">Status</th>
-                <th className="px-4 py-3.5 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-zinc-100">
-              {loading && members.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="p-0">
-                    <SkeletonTable rows={6} cols={7} />
-                  </td>
-                </tr>
-              ) : paginatedMembers.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="p-8 text-center text-zinc-500">
-                    No members match your criteria.
-                  </td>
-                </tr>
-              ) : (
-                paginatedMembers.map((m) => (
-                  <tr key={m.id} className="transition hover:bg-zinc-50/80">
-                    <td className="px-4 py-3 font-bold text-zinc-900">
-                      {m.nickname}
-                    </td>
-                    <td className="px-4 py-3">
-                      {m.className ? (
-                        <ClassBadge className={m.className} size="xs" />
-                      ) : (
-                        <span className="text-zinc-400">—</span>
+                </TableHead>
+                <TableHead className="text-center">Status</TableHead>
+                <TableHead className="text-right w-24">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {paginatedMembers.map((member, index) => {
+                const globalIndex = (page - 1) * pageSize + index + 1;
+                const isActive = member.isActive !== false;
+
+                return (
+                  <TableRow key={member.id || globalIndex}>
+                    <TableCell className="text-center font-mono text-zinc-400 text-xs font-semibold">
+                      {globalIndex}
+                    </TableCell>
+
+                    <TableCell>
+                      <div className="font-bold text-zinc-900 text-xs sm:text-sm">
+                        {member.nickname}
+                      </div>
+                      {member.role && (
+                        <div className="text-[10px] uppercase font-bold tracking-wider text-zinc-400 mt-0.5">
+                          {member.role}
+                        </div>
                       )}
-                    </td>
-                    <td className="px-4 py-3 text-zinc-600">
-                      {m.level ? `Lv. ${m.level}` : "—"}
-                    </td>
-                    <td className="px-4 py-3 font-bold text-zinc-900">
-                      {m.gearScore
-                        ? `${formatNumber(m.gearScore)} GS`
-                        : "—"}
-                    </td>
-                    <td className="px-4 py-3 text-zinc-600">{m.role || "Member"}</td>
-                    <td className="px-4 py-3">
+                    </TableCell>
+
+                    <TableCell>
+                      <ClassBadge
+                        className={member.className || member.class}
+                        size="sm"
+                      />
+                    </TableCell>
+
+                    <TableCell className="text-right font-mono text-xs sm:text-sm font-semibold text-zinc-700">
+                      {member.level ? `Lv. ${member.level}` : "—"}
+                    </TableCell>
+
+                    <TableCell className="text-right font-mono text-xs sm:text-sm font-bold text-zinc-900">
+                      {member.gearScore > 0 ? formatNumber(member.gearScore) : "—"}
+                    </TableCell>
+
+                    <TableCell className="text-center">
                       <button
                         type="button"
-                        onClick={() => handleToggleActive(m)}
-                        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-bold ${
-                          m.isActive !== false
-                            ? "bg-emerald-50 text-emerald-700"
-                            : "bg-zinc-100 text-zinc-500"
+                        onClick={() => handleToggleActive(member)}
+                        className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-bold border transition ${
+                          isActive
+                            ? "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100"
+                            : "bg-zinc-100 text-zinc-500 border-zinc-200 hover:bg-zinc-200"
                         }`}
                       >
-                        <span
-                          className={`size-1.5 rounded-full ${
-                            m.isActive !== false
-                              ? "bg-emerald-500"
-                              : "bg-zinc-400"
-                          }`}
-                        />
-                        {m.isActive !== false ? "Active" : "Inactive"}
+                        <Power className="size-2.5" />
+                        <span>{isActive ? "Active" : "Inactive"}</span>
                       </button>
-                    </td>
-                    <td className="px-4 py-3 text-right">
+                    </TableCell>
+
+                    <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-1">
                         <button
                           type="button"
-                          onClick={() => setEditingMember(m)}
-                          className="flex size-7 items-center justify-center rounded-lg text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900"
+                          onClick={() => setEditingMember(member)}
+                          className="flex size-7.5 items-center justify-center rounded-lg text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700 transition"
                           title="Edit member"
                         >
                           <Pencil className="size-3.5" />
                         </button>
                         <button
                           type="button"
-                          onClick={() => setDeletingMember(m)}
-                          className="flex size-7 items-center justify-center rounded-lg text-red-500 hover:bg-red-50 hover:text-red-700"
+                          onClick={() => setDeletingMember(member)}
+                          className="flex size-7.5 items-center justify-center rounded-lg text-zinc-400 hover:bg-red-50 hover:text-red-600 transition"
                           title="Delete member"
                         >
                           <Trash2 className="size-3.5" />
                         </button>
                       </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
 
-        {/* PAGINATION */}
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-t border-zinc-200 px-4 py-3 text-xs text-zinc-500">
-          <div>
-            Showing{" "}
-            <span className="font-semibold text-zinc-800">
-              {sortedMembers.length === 0 ? 0 : (page - 1) * pageSize + 1}
-            </span>{" "}
-            to{" "}
-            <span className="font-semibold text-zinc-800">
-              {Math.min(page * pageSize, sortedMembers.length)}
-            </span>{" "}
-            of{" "}
-            <span className="font-semibold text-zinc-800">
-              {sortedMembers.length}
-            </span>{" "}
-            members
-          </div>
+          {/* PAGINATION CONTROLS */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between rounded-xl border border-zinc-200 bg-white px-4 py-3 text-xs shadow-2xs">
+              <span className="text-zinc-500 font-medium">
+                Showing {(page - 1) * pageSize + 1} to{" "}
+                {Math.min(page * pageSize, sortedMembers.length)} of{" "}
+                <strong className="text-zinc-900 font-bold">
+                  {sortedMembers.length}
+                </strong>{" "}
+                members
+              </span>
 
-          <div className="flex items-center gap-2 self-end sm:self-auto">
-            <button
-              type="button"
-              disabled={page <= 1}
-              onClick={() => setPage((p) => p - 1)}
-              className="flex size-7 items-center justify-center rounded-lg border border-zinc-200 hover:bg-zinc-50 disabled:opacity-40"
-            >
-              <ChevronLeft className="size-3.5" />
-            </button>
-            <span>
-              Page {page} of {totalPages}
-            </span>
-            <button
-              type="button"
-              disabled={page >= totalPages}
-              onClick={() => setPage((p) => p + 1)}
-              className="flex size-7 items-center justify-center rounded-lg border border-zinc-200 hover:bg-zinc-50 disabled:opacity-40"
-            >
-              <ChevronRight className="size-3.5" />
-            </button>
-          </div>
+              <div className="flex items-center gap-1.5">
+                <Button
+                  variant="outline"
+                  size="xs"
+                  disabled={page <= 1}
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  icon={ChevronLeft}
+                >
+                  Prev
+                </Button>
+
+                <span className="px-2 font-bold font-mono text-zinc-700">
+                  {page} / {totalPages}
+                </span>
+
+                <Button
+                  variant="outline"
+                  size="xs"
+                  disabled={page >= totalPages}
+                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                >
+                  <span>Next</span>
+                  <ChevronRight className="size-3" />
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
-      </div>
+      )}
 
       {/* MODALS */}
-      <ResetMembersModal
-        open={resetModalOpen}
-        memberCount={members.length}
-        onClose={() => setResetModalOpen(false)}
-        onSuccess={() => {
-          loadMembers(true);
-          setToastMessage("Seluruh data member berhasil di-reset!");
-          setTimeout(() => setToastMessage(""), 3500);
-        }}
-      />
-
       <ImportMembersModal
         open={importModalOpen}
         onClose={() => setImportModalOpen(false)}
         onSuccess={() => {
           loadMembers(true);
-          setToastMessage("Data member berhasil di-import!");
-          setTimeout(() => setToastMessage(""), 3500);
+          success("Import completed", "Member roster successfully imported.");
         }}
       />
 
@@ -505,14 +514,30 @@ export default function MembersPage() {
         open={Boolean(editingMember)}
         member={editingMember}
         onClose={() => setEditingMember(null)}
-        onSuccess={() => loadMembers(true)}
+        onSuccess={() => {
+          loadMembers(true);
+          success("Member saved", "Character data updated successfully.");
+        }}
       />
 
       <DeleteMemberModal
         open={Boolean(deletingMember)}
         member={deletingMember}
         onClose={() => setDeletingMember(null)}
-        onSuccess={() => loadMembers(true)}
+        onSuccess={() => {
+          loadMembers(true);
+          success("Member deleted", "Character removed from guild roster.");
+        }}
+      />
+
+      <ResetMembersModal
+        open={resetModalOpen}
+        memberCount={members.length}
+        onClose={() => setResetModalOpen(false)}
+        onSuccess={() => {
+          loadMembers(true);
+          success("Roster reset", "All member records have been purged.");
+        }}
       />
     </div>
   );

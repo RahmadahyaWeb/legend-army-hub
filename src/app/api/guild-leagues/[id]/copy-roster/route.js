@@ -1,7 +1,19 @@
 import { NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
+import { requireAdmin } from "@/lib/auth";
 
+/**
+ * Copies team and roster slot configurations from a source league to a target league.
+ * Guarded by requireAdmin to ensure only authenticated guild officers can perform batch overwrites.
+ *
+ * @param {Request} request - Next.js HTTP Request object
+ * @param {{ params: Promise<{ id: string }> }} context - Route parameters containing target guildLeagueId
+ * @returns {Promise<NextResponse>} Result summary of copied roster members
+ */
 export async function POST(request, { params }) {
+  const authError = await requireAdmin(request);
+  if (authError) return authError;
+
   try {
     const { id: targetLeagueId } = await params;
     const sql = getDb();
