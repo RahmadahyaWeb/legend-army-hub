@@ -240,8 +240,6 @@ async function handleGuildLeague(request, env, corsHeaders) {
 		rosterUrl,
 		assignedPlayers,
 		maxPlayers,
-		activeTeams,
-		maxTeams,
 		teams,
 		eventType = 'guild_league',
 	} = body;
@@ -262,166 +260,199 @@ async function handleGuildLeague(request, env, corsHeaders) {
 	const normalizedType = String(eventType || 'guild_league').toLowerCase().trim();
 	const isWoe = normalizedType === 'woe';
 	const isPolarity = normalizedType === 'polarity';
-
-	const normalizedStatus = String(status || 'draft').toLowerCase();
-
-	const statusLabels = {
-		draft: 'Draft',
-		open: 'Open / Preparing',
-		published: 'Published',
-		completed: 'Completed',
-		cancelled: 'Cancelled',
-	};
-
-	const statusLabel = statusLabels[normalizedStatus] || normalizedStatus.charAt(0).toUpperCase() + normalizedStatus.slice(1);
 	const totalAssigned = Number(assignedPlayers) || 0;
 	const totalCapacity = isPolarity ? 50 : (Number(maxPlayers) || 60);
 	const fillPercentage = Math.round((totalAssigned / (totalCapacity || 1)) * 100);
 
-	// Why this exists: Tailors field names and battle context specifically to the event format
+	// Why this exists: Simple and direct lineup broadcast without unnecessary flavor text per user request
 	const fields = [];
 
-	// Field 1: Event/Match/War Date
-	fields.push({
-		name: isWoe ? '📅 War Date' : isPolarity ? '📅 Event Date' : '📅 Match Date',
-		value: `**${date}**`,
-		inline: true,
-	});
-
-	// Field 2: Target / Opponent
-	fields.push({
-		name: isWoe
-			? '🏰 Target Castle / Objective'
-			: isPolarity
-			? '🎯 Objective / Arena'
-			: '⚔️ Opponent Guild',
-		value: opponent ? `**${opponent}**` : isWoe ? '*Prontera Castle / TBA*' : isPolarity ? '*Polarity Sanctuary / TBA*' : '*TBA*',
-		inline: true,
-	});
-
-	// Field 3: Status
-	fields.push({
-		name: isWoe ? '📌 War Status' : '📌 Match Status',
-		value: `**${statusLabel}**`,
-		inline: true,
-	});
-
-	// Field 4: Capacity
-	fields.push({
-		name: '👥 Roster Capacity',
-		value: `${totalAssigned} / ${totalCapacity} Players (${fillPercentage}%)`,
-		inline: true,
-	});
-
-	// Field 5: Team Formations
-	fields.push({
-		name: isPolarity ? '🛡️ Squad Structure' : isWoe ? '🛡️ Squad Formations' : '🛡️ Team Formations',
-		value: isPolarity
-			? `${Number(activeTeams) || 10} / 10 Teams (5 Players/Team)`
-			: `${Number(activeTeams) || 0} / ${Number(maxTeams) || 12} Teams`,
-		inline: true,
-	});
-
-	// Field 6: Tactical Mode Badge
-	fields.push({
-		name: isPolarity ? '💠 Battle Mode' : isWoe ? '🏰 Siege Mode' : '⚔️ Lane Format',
-		value: isPolarity
-			? 'Fixed 10 Parties (50 Players Max)'
-			: isWoe
-			? 'Unified Formations (No Lane Division)'
-			: '3 Tactical Lanes (Top, Mid, Bot)',
-		inline: true,
-	});
-
-	if (notes && String(notes).trim()) {
+	if (isPolarity) {
+		// POLARITY: Cukup bagikan lineup 10 tim
 		fields.push({
-			name: '📝 Tactical Notes / Briefing',
-			value: String(notes).slice(0, 1024),
+			name: '📅 Tanggal',
+			value: `**${date}**`,
+			inline: true,
+		});
+
+		fields.push({
+			name: '👥 Total Roster',
+			value: `${totalAssigned} / 50 Pemain (${fillPercentage}%)`,
+			inline: true,
+		});
+
+		if (notes && String(notes).trim()) {
+			fields.push({
+				name: '📝 Catatan',
+				value: String(notes).slice(0, 1024),
+				inline: false,
+			});
+		}
+
+		if (Array.isArray(teams) && teams.length > 0) {
+			const activeTeamsList = teams.filter((t) => (t.members && t.members.length > 0) || t.memberCount > 0);
+			if (activeTeamsList.length > 0) {
+				const teamLines = activeTeamsList.slice(0, 10).map((t) => {
+					const count = t.members ? t.members.length : (t.memberCount || 0);
+					return `• **Party ${t.teamNumber}: ${t.name || `Party ${t.teamNumber}`}** (${count}/5 pemain)`;
+				});
+
+				fields.push({
+					name: '📋 Pembagian Lineup (10 Tim)',
+					value: teamLines.join('\n').slice(0, 1024),
+					inline: false,
+				});
+			}
+		}
+
+		fields.push({
+			name: '🌐 Link Roster',
+			value: `👉 **[Klik untuk Buka Lineup Roster Lengkap](${rosterUrl})**`,
+			inline: false,
+		});
+	} else if (isWoe) {
+		// WOE: Cukup bagikan lineup squad
+		fields.push({
+			name: '📅 Tanggal',
+			value: `**${date}**`,
+			inline: true,
+		});
+
+		if (opponent && String(opponent).trim()) {
+			fields.push({
+				name: '🏰 Target Kastil',
+				value: `**${opponent}**`,
+				inline: true,
+			});
+		}
+
+		fields.push({
+			name: '👥 Total Roster',
+			value: `${totalAssigned} / ${totalCapacity} Pemain (${fillPercentage}%)`,
+			inline: true,
+		});
+
+		if (notes && String(notes).trim()) {
+			fields.push({
+				name: '📝 Catatan',
+				value: String(notes).slice(0, 1024),
+				inline: false,
+			});
+		}
+
+		if (Array.isArray(teams) && teams.length > 0) {
+			const activeTeamsList = teams.filter((t) => (t.members && t.members.length > 0) || t.memberCount > 0);
+			if (activeTeamsList.length > 0) {
+				const teamLines = activeTeamsList.slice(0, 12).map((t) => {
+					const count = t.members ? t.members.length : (t.memberCount || 0);
+					return `• **${t.name || `Team ${t.teamNumber}`}** (${count} pemain)`;
+				});
+
+				if (activeTeamsList.length > 12) {
+					teamLines.push(`*...dan ${activeTeamsList.length - 12} tim lainnya*`);
+				}
+
+				fields.push({
+					name: '📋 Pembagian Lineup',
+					value: teamLines.join('\n').slice(0, 1024),
+					inline: false,
+				});
+			}
+		}
+
+		fields.push({
+			name: '🌐 Link Roster',
+			value: `👉 **[Klik untuk Buka Lineup Roster Lengkap](${rosterUrl})**`,
+			inline: false,
+		});
+	} else {
+		// GUILD LEAGUE: Lineup 3 Lane
+		fields.push({
+			name: '📅 Tanggal Match',
+			value: `**${date}**`,
+			inline: true,
+		});
+
+		fields.push({
+			name: '⚔️ Lawan',
+			value: opponent ? `**${opponent}**` : '*TBA*',
+			inline: true,
+		});
+
+		fields.push({
+			name: '👥 Total Roster',
+			value: `${totalAssigned} / ${totalCapacity} Pemain (${fillPercentage}%)`,
+			inline: true,
+		});
+
+		if (notes && String(notes).trim()) {
+			fields.push({
+				name: '📝 Catatan',
+				value: String(notes).slice(0, 1024),
+				inline: false,
+			});
+		}
+
+		if (Array.isArray(teams) && teams.length > 0) {
+			const activeTeamsList = teams.filter((t) => (t.members && t.members.length > 0) || t.memberCount > 0);
+			if (activeTeamsList.length > 0) {
+				const teamLines = activeTeamsList.slice(0, 8).map((t) => {
+					const count = t.members ? t.members.length : (t.memberCount || 0);
+					const laneText = t.lane ? ` • *Lane: ${t.lane}*` : '';
+					return `• **${t.name || `Team ${t.teamNumber}`}** (${count} pemain)${laneText}`;
+				});
+
+				if (activeTeamsList.length > 8) {
+					teamLines.push(`*...dan ${activeTeamsList.length - 8} tim lainnya*`);
+				}
+
+				fields.push({
+					name: '📋 Pembagian Lineup (3 Lane)',
+					value: teamLines.join('\n').slice(0, 1024),
+					inline: false,
+				});
+			}
+		}
+
+		fields.push({
+			name: '🌐 Link Roster',
+			value: `👉 **[Klik untuk Buka Lineup Roster Lengkap](${rosterUrl})**`,
 			inline: false,
 		});
 	}
 
-	// Add team overview if teams data is available
-	if (Array.isArray(teams) && teams.length > 0) {
-		const activeTeamsList = teams.filter((t) => (t.members && t.members.length > 0) || t.memberCount > 0);
-		if (activeTeamsList.length > 0) {
-			const teamLines = activeTeamsList.slice(0, isPolarity ? 10 : 8).map((t) => {
-				const count = t.members ? t.members.length : (t.memberCount || 0);
-				if (isPolarity) {
-					return `• **Party ${t.teamNumber}: ${t.name || `Party ${t.teamNumber}`}** (${count}/5 players)`;
-				}
-				if (isWoe) {
-					return `• **${t.name || `Squad ${t.teamNumber}`}** (${count} players)`;
-				}
-				const laneText = t.lane ? ` • *Lane: ${t.lane}*` : '';
-				return `• **${t.name || `Team ${t.teamNumber}`}** (${count} players)${laneText}`;
-			});
-
-			const limit = isPolarity ? 10 : 8;
-			if (activeTeamsList.length > limit) {
-				teamLines.push(`*...and ${activeTeamsList.length - limit} more teams*`);
-			}
-
-			fields.push({
-				name: isPolarity ? '📋 Deployed Parties Breakdown' : '📋 Deployed Teams Breakdown',
-				value: teamLines.join('\n').slice(0, 1024),
-				inline: false,
-			});
-		}
-	}
-
-	// Field: Public Roster link
-	fields.push({
-		name: '🌐 Public Roster Portal',
-		value: isPolarity
-			? `👉 **[Click Here to Open Polarity Roster](${rosterUrl})**\n*Interactive view with 10 party compositions, element synergy, and live gear scores.*`
-			: isWoe
-			? `👉 **[Click Here to Open WOE Siege Roster](${rosterUrl})**\n*Interactive view with castle siege squads, barricade defense, and player gear scores.*`
-			: `👉 **[Click Here to Open Public Roster](${rosterUrl})**\n*Interactive view with live class composition, gear scores, and lane assignments.*`,
-		inline: false,
-	});
-
 	// Embed Header Description & Color tailoring
 	const embedConfig = isPolarity
 		? {
-				title: `💠 [POLARITY] 10-Team Formation: ${name}`,
+				title: `💠 Lineup Polarity: ${name}`,
 				color: 2339316, // Cyan / Aqua
 				description: [
-					'📢 **Polarity Protocol Active!**',
-					`The fixed 10-team lineup (5 players per squad, 50 players capacity) for **${name}** is locked in!`,
-					'',
-					`🔗 **[👉 View Live Public Roster & Strategy](${rosterUrl})**`,
-					'',
-					'🌀 Please coordinate element attunement, party buff synergies, and objective assignments before battle!',
+					'📢 **Lineup Polarity telah diperbarui.**',
+					'Silakan cek pembagian tim dan slot kalian:',
+					`🔗 **[👉 Lihat Lineup Roster](${rosterUrl})**`,
 				].join('\n'),
-				buttonLabel: 'View Polarity Roster 💠',
+				buttonLabel: 'Lihat Lineup Roster 💠',
 		  }
 		: isWoe
 		? {
-				title: `🏰 [WAR OF EMPERIUM] Siege Roster: ${name}`,
+				title: `🏰 Lineup War of Emperium: ${name}`,
 				color: 15844367, // Gold / Amber
 				description: [
-					'📢 **Sound the Horns, Guild Members!**',
-					`The War of Emperium (WOE) castle siege and defense roster for **${name}** has been assembled!`,
-					'',
-					`🔗 **[👉 View Live Public Roster & Strategy](${rosterUrl})**`,
-					'',
-					'🏰 Review your squad assignment, Emperium assault teams, castle barricade defense, and supplies!',
+					'📢 **Lineup WOE telah diperbarui.**',
+					'Silakan cek pembagian squad dan slot kalian:',
+					`🔗 **[👉 Lihat Lineup Roster](${rosterUrl})**`,
 				].join('\n'),
-				buttonLabel: 'View WOE Siege Roster 🏰',
+				buttonLabel: 'Lihat Lineup Roster 🏰',
 		  }
 		: {
-				title: `⚔️ [GUILD LEAGUE] Lineup & Tactics: ${name}`,
+				title: `⚔️ Lineup Guild League: ${name}`,
 				color: 15158332, // Crimson / Red
 				description: [
-					'📢 **Attention Guild Members!**',
-					`The tactical lineup for **${name}** has been updated on our guild hub.`,
-					'',
-					`🔗 **[👉 View Live Public Roster & Strategy](${rosterUrl})**`,
-					'',
-					'⚔️ Please check your team slot, lane assignment (Top / Mid / Bot), and gear requirements before match time.',
+					'📢 **Lineup Guild League telah diperbarui.**',
+					'Silakan periksa lane assignment (Top/Mid/Bot) dan slot kalian:',
+					`🔗 **[👉 Lihat Lineup Roster](${rosterUrl})**`,
 				].join('\n'),
-				buttonLabel: 'View Guild League Roster ⚔️',
+				buttonLabel: 'Lihat Lineup Roster ⚔️',
 		  };
 
 	const discordPayload = {

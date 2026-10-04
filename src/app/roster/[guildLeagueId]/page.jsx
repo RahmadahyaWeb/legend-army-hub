@@ -250,12 +250,8 @@ export default function PublicRosterPage() {
           }
         />
 
-        {/* TACTICAL DIRECTIVES BAR */}
-        <TacticalDirectivesBar
-          eventType={eventType}
-          isWoe={isWoe}
-          isPolarity={isPolarity}
-        />
+        {/* TACTICAL DIRECTIVES BAR (Hanya untuk Guild League 3-lane format) */}
+        {!isUnified && <TacticalDirectivesBar eventType={eventType} />}
 
         {/* BATTLEFIELD TEAMS / LANE SECTIONS */}
         {isPolarity ? (
