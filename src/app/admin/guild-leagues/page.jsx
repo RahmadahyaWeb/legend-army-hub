@@ -164,6 +164,10 @@ export default function GuildLeaguesPage() {
                         <span className="rounded-md border border-amber-200 bg-amber-50 px-1.5 py-0.5 text-[10px] font-bold text-amber-800">
                           🏰 WOE
                         </span>
+                      ) : gl.eventType === "polarity" ? (
+                        <span className="rounded-md border border-cyan-200 bg-cyan-50 px-1.5 py-0.5 text-[10px] font-bold text-cyan-800">
+                          💠 Polarity
+                        </span>
                       ) : (
                         <span className="rounded-md border border-zinc-200 bg-zinc-100 px-1.5 py-0.5 text-[10px] font-bold text-zinc-700">
                           ⚔️ Guild League

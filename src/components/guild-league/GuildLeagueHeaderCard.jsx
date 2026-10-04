@@ -44,6 +44,10 @@ export default function GuildLeagueHeaderCard({
               <span className="rounded-md bg-amber-50 border border-amber-200 px-2 py-0.5 text-[10px] font-bold text-amber-700 normal-case tracking-normal">
                 🏰 War of Emperium (WOE)
               </span>
+            ) : guildLeague.eventType === "polarity" ? (
+              <span className="rounded-md bg-cyan-50 border border-cyan-200 px-2 py-0.5 text-[10px] font-bold text-cyan-700 normal-case tracking-normal">
+                💠 Polarity (10 Teams • 5/Team)
+              </span>
             ) : (
               <span className="rounded-md bg-zinc-100 border border-zinc-200 px-2 py-0.5 text-[10px] font-bold text-zinc-700 normal-case tracking-normal">
                 ⚔️ Guild League (3 Lanes)
@@ -63,7 +67,14 @@ export default function GuildLeagueHeaderCard({
 
             {guildLeague.opponent && (
               <div className="flex items-center gap-1 font-bold text-zinc-900">
-                <span>{guildLeague.eventType === "woe" ? "Target:" : "Opponent:"} {guildLeague.opponent}</span>
+                <span>
+                  {guildLeague.eventType === "woe"
+                    ? "Target:"
+                    : guildLeague.eventType === "polarity"
+                    ? "Objective:"
+                    : "Opponent:"}{" "}
+                  {guildLeague.opponent}
+                </span>
               </div>
             )}
           </div>
@@ -97,13 +108,17 @@ export default function GuildLeagueHeaderCard({
 
           <div className="rounded-xl sm:rounded-2xl border border-zinc-200 bg-zinc-50/75 p-2.5 sm:p-4 text-center sm:text-left min-w-0">
             <div className="text-[9px] sm:text-[10px] uppercase font-bold text-zinc-400 tracking-wider truncate">
-              Active Teams
+              {guildLeague.eventType === "polarity" ? "Parties" : "Active Teams"}
             </div>
             <div className="mt-0.5 text-sm sm:text-xl font-black text-zinc-900 truncate">
-              {maxTeams} Teams
+              {guildLeague.eventType === "polarity" ? "10 Teams" : `${maxTeams} Teams`}
             </div>
             <div className="text-[9px] sm:text-[11px] text-zinc-500 mt-0.5 font-medium truncate">
-              3 Lanes
+              {guildLeague.eventType === "polarity"
+                ? "5 Players/Team"
+                : guildLeague.eventType === "woe"
+                ? "Unified"
+                : "3 Lanes"}
             </div>
           </div>
         </div>

@@ -223,6 +223,10 @@ export default function PublicDashboard() {
                             <span className="rounded-md bg-amber-50 border border-amber-200 px-2 py-0.5 text-[10px] font-bold text-amber-700">
                               🏰 WOE
                             </span>
+                          ) : gl.eventType === "polarity" ? (
+                            <span className="rounded-md bg-cyan-50 border border-cyan-200 px-2 py-0.5 text-[10px] font-bold text-cyan-700">
+                              💠 Polarity
+                            </span>
                           ) : (
                             <span className="rounded-md bg-red-50 border border-red-200 px-2 py-0.5 text-[10px] font-bold text-red-700">
                               ⚔️ Guild League

@@ -20,6 +20,8 @@ import RosterSlotItem from "./RosterSlotItem";
  * @param {number} [props.membersPerTeam=10] - Capacity per team
  * @param {boolean} [props.readOnly=false] - Whether in public view
  * @param {boolean} [props.isWoe=false] - Whether this is a War of Emperium event (no lanes)
+ * @param {boolean} [props.isPolarity=false] - Whether this is a Polarity event (10 squads, 5 players, no lanes)
+ * @param {boolean} [props.hideLane=false] - Whether to hide lane selector
  * @param {(teamNumber: number, newLane: string) => void} [props.onLaneChange]
  * @param {(slot: { teamNumber: number, slotNumber: number }) => void} [props.onAssignSlot]
  * @param {(member: Object) => void} [props.onSelectMember]
@@ -32,6 +34,8 @@ export default function TeamCard({
   membersPerTeam = 10,
   readOnly = false,
   isWoe = false,
+  isPolarity = false,
+  hideLane = false,
   onLaneChange,
   onAssignSlot,
   onSelectMember,
@@ -50,18 +54,23 @@ export default function TeamCard({
     (teamMembers.length / (membersPerTeam || 1)) * 100
   );
   const laneConfig = getLaneConfig(team?.lane);
+  const shouldHideLane = isWoe || isPolarity || hideLane;
 
   return (
     <div className="flex flex-col overflow-hidden rounded-2xl border border-zinc-200/90 bg-white shadow-xs hover:shadow-md transition-all duration-200">
       {/* TEAM CARD HEADER - ROW 1 */}
       <div className="flex items-center justify-between gap-2.5 border-b border-zinc-100 bg-zinc-50/80 px-3.5 py-3 sm:px-4.5 sm:py-3.5">
         <div className="flex min-w-0 items-center gap-2.5">
-          <div className="flex size-7.5 sm:size-8 shrink-0 items-center justify-center rounded-xl bg-zinc-900 text-xs font-black text-white shadow-xs">
-            T{teamNumber}
+          <div
+            className={`flex size-7.5 sm:size-8 shrink-0 items-center justify-center rounded-xl text-xs font-black text-white shadow-xs ${
+              isPolarity ? "bg-cyan-700" : "bg-zinc-900"
+            }`}
+          >
+            {isPolarity ? `P${teamNumber}` : `T${teamNumber}`}
           </div>
           <div className="min-w-0">
             <h3 className="truncate text-xs sm:text-sm font-bold text-zinc-900">
-              {team?.name || `Team ${teamNumber}`}
+              {team?.name || (isPolarity ? `Party ${teamNumber}` : `Team ${teamNumber}`)}
             </h3>
             <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] text-zinc-500 font-medium">
               <span className="text-zinc-700 font-semibold">
@@ -81,8 +90,8 @@ export default function TeamCard({
         )}
       </div>
 
-      {/* LANE & ROLE SELECTOR - ROW 2 (Guild League only, hidden in WOE) */}
-      {!isWoe && (
+      {/* LANE & ROLE SELECTOR - ROW 2 (Guild League only, hidden in WOE & Polarity) */}
+      {!shouldHideLane && (
         <div className="flex items-center justify-between gap-2 border-b border-zinc-100 bg-zinc-50/40 px-3.5 py-2 sm:px-4.5">
           <span className="text-[10px] uppercase font-bold tracking-wider text-zinc-400 shrink-0">
             Battle Role

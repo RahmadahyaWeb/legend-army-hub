@@ -7,12 +7,84 @@
  * Communicates standard battle protocols:
  * - Guild League: MVP Strike timing, Lane Defense portal holding, Lane Assault siege.
  * - WOE: Emperium Strike, Castle Throne Defense, Chokepoint Intercept.
+ * - Polarity: Polarity Attunement, 5-Man Squad Synergy, Sanctuary Node Control.
  *
  * @param {Object} props
+ * @param {string} [props.eventType="guild_league"]
  * @param {boolean} [props.isWoe=false]
+ * @param {boolean} [props.isPolarity=false]
  */
-export default function TacticalDirectivesBar({ isWoe = false }) {
-  if (isWoe) {
+export default function TacticalDirectivesBar({
+  eventType = "guild_league",
+  isWoe = false,
+  isPolarity = false,
+}) {
+  const currentType = isPolarity || eventType === "polarity"
+    ? "polarity"
+    : isWoe || eventType === "woe"
+    ? "woe"
+    : "guild_league";
+
+  if (currentType === "polarity") {
+    return (
+      <div className="overflow-hidden rounded-2xl border border-cyan-200 bg-white shadow-xs">
+        <div className="grid grid-cols-1 divide-y divide-zinc-100 md:grid-cols-3 md:divide-x md:divide-y-0 text-xs">
+          <div className="flex items-center gap-3 p-3 sm:p-4">
+            <span className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-cyan-50 text-cyan-800 text-sm border border-cyan-200">
+              🌀
+            </span>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center justify-between gap-2 font-bold text-zinc-900">
+                <span>Polarity Attunement</span>
+                <span className="shrink-0 font-mono text-[10px] text-cyan-700 bg-cyan-50 px-1.5 py-0.2 rounded border border-cyan-200 uppercase font-bold">
+                  Buff Sync
+                </span>
+              </div>
+              <p className="text-[11px] text-zinc-500 leading-snug mt-0.5">
+                Coordinate light & dark polarity state, element shifts, and party buff cycles.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 p-3 sm:p-4">
+            <span className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-indigo-50 text-indigo-800 text-sm border border-indigo-200">
+              🛡️
+            </span>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center justify-between gap-2 font-bold text-zinc-900">
+                <span>5-Man Squad Synergy</span>
+                <span className="shrink-0 text-[10px] text-indigo-700 bg-indigo-50 px-1.5 py-0.2 rounded border border-indigo-200 uppercase font-bold">
+                  Party Role
+                </span>
+              </div>
+              <p className="text-[11px] text-zinc-500 leading-snug mt-0.5">
+                Strict 5-player role balance: Frontline Tank, Priest/Support, and Burst DPS/CC.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 p-3 sm:p-4">
+            <span className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-800 text-sm border border-emerald-200">
+              🎯
+            </span>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center justify-between gap-2 font-bold text-zinc-900">
+                <span>Sanctuary Nodes</span>
+                <span className="shrink-0 text-[10px] text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200 uppercase font-bold">
+                  Hold Shrines
+                </span>
+              </div>
+              <p className="text-[11px] text-zinc-500 leading-snug mt-0.5">
+                Capture arena crystals, maintain node dominance, and focus priority targets.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (currentType === "woe") {
     return (
       <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-xs">
         <div className="grid grid-cols-1 divide-y divide-zinc-100 md:grid-cols-3 md:divide-x md:divide-y-0 text-xs">

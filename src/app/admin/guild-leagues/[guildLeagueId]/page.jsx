@@ -120,8 +120,11 @@ export default function GuildLeagueDetailPage() {
 
   const eventType = guildLeague?.eventType || "guild_league";
   const isWoe = eventType === "woe";
-  const maxTeams = Number(guildLeague?.maxTeams) || 2;
-  const membersPerTeam = Number(guildLeague?.membersPerTeam) || 10;
+  // Why this exists: Polarity requires a unified 10-team structure without 3-lane division
+  const isPolarity = eventType === "polarity";
+  const isUnified = isWoe || isPolarity;
+  const maxTeams = Number(guildLeague?.maxTeams) || (isPolarity ? 10 : 2);
+  const membersPerTeam = Number(guildLeague?.membersPerTeam) || (isPolarity ? 5 : 10);
   const maxRoster = Number(guildLeague?.maxRoster) || maxTeams * membersPerTeam;
   const totalAssigned = roster.length;
   const assignedMemberIds = roster.map((r) => r.memberId || r.id).filter(Boolean);
@@ -445,6 +448,13 @@ export default function GuildLeagueDetailPage() {
     setSendingDiscord(true);
     setDiscordMsg("");
 
+    const eventLabel =
+      eventType === "woe"
+        ? "War of Emperium"
+        : eventType === "polarity"
+        ? "Polarity (10 Teams)"
+        : "Guild League";
+
     try {
       await sendGuildLeagueToDiscord({
         guildLeagueId,
@@ -458,8 +468,8 @@ export default function GuildLeagueDetailPage() {
         teamCount: maxTeams,
         formattedDate: formatDate(guildLeague.matchDate || guildLeague.date),
       });
-      success("Discord broadcast sent", "Roster lineup pushed to Discord channel.");
-      setDiscordMsg("Successfully pushed roster to Discord channel!");
+      success("Discord broadcast sent", `${eventLabel} lineup pushed to Discord channel.`);
+      setDiscordMsg(`Successfully pushed ${eventLabel} roster to Discord channel!`);
     } catch (err) {
       console.error("Discord error:", err);
       toastError("Discord push failed", err.message);
@@ -601,7 +611,7 @@ export default function GuildLeagueDetailPage() {
         averageGearScore={averageGearScore}
         maxTeams={maxTeams}
         actions={
-          !isWoe && (
+          !isUnified && (
             <div className="mt-4 border-t border-zinc-100 pt-3.5">
               <Tabs
                 tabs={tabsList}
@@ -614,10 +624,58 @@ export default function GuildLeagueDetailPage() {
       />
 
       {/* TACTICAL DIRECTIVES BAR */}
-      <TacticalDirectivesBar isWoe={isWoe} />
+      <TacticalDirectivesBar
+        eventType={eventType}
+        isWoe={isWoe}
+        isPolarity={isPolarity}
+      />
 
       {/* BATTLEFIELD TEAMS / LANE SECTIONS */}
-      {isWoe ? (
+      {isPolarity ? (
+        <div className="space-y-4 animate-in fade-in duration-200">
+          <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between rounded-2xl border border-cyan-200 bg-white p-3.5 sm:p-4 shadow-xs">
+            <div className="flex items-center gap-2.5 sm:gap-3">
+              <div className="flex size-8 sm:size-9 shrink-0 items-center justify-center rounded-xl bg-cyan-50 border border-cyan-200 text-cyan-700">
+                <Layers className="size-4" />
+              </div>
+              <div>
+                <h2 className="text-sm sm:text-base font-bold text-zinc-900">
+                  Polarity Battle Formations
+                </h2>
+                <p className="text-[11px] text-zinc-500">
+                  Fixed 10 Squads (5 Players / Squad) • Coordinated 50-Player Lineup
+                </p>
+              </div>
+            </div>
+            <span className="rounded-md border border-cyan-200 bg-cyan-50 px-2 py-0.5 text-[10px] sm:text-[11px] font-bold text-cyan-700 self-start sm:self-center">
+              {totalAssigned}/50 Players Deployed
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
+            {allTeamNumbers.map((tNum) => {
+              const team = teams.find((t) => Number(t.teamNumber) === tNum);
+              const teamMembers = roster.filter(
+                (r) => Number(r.teamNumber) === tNum
+              );
+
+              return (
+                <TeamCard
+                  key={tNum}
+                  teamNumber={tNum}
+                  team={team}
+                  teamMembers={teamMembers}
+                  membersPerTeam={membersPerTeam}
+                  isPolarity={true}
+                  onAssignSlot={(slot) => setAssignSlot(slot)}
+                  onSelectMember={(member) => setSelectedMember(member)}
+                  onRemoveMember={handleRemoveMember}
+                />
+              );
+            })}
+          </div>
+        </div>
+      ) : isWoe ? (
         <div className="space-y-4 animate-in fade-in duration-200">
           <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between rounded-2xl border border-zinc-200 bg-white p-3.5 sm:p-4 shadow-xs">
             <div className="flex items-center gap-2.5 sm:gap-3">

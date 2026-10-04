@@ -68,10 +68,12 @@ export async function POST(request) {
     const opponent = body.opponent?.trim() || "TBA";
     const notes = body.notes?.trim() || "";
     const matchDate = body.matchDate || body.date || new Date().toISOString();
-    const status = body.status || "draft";
-    const eventType = body.eventType === "woe" ? "woe" : "guild_league";
-    const maxTeams = Number(body.maxTeams) || 2;
-    const membersPerTeam = Number(body.membersPerTeam) || 10;
+    const rawEventType = String(body.eventType || "").toLowerCase().trim();
+    // Why this exists: Supports three distinct event categories (Guild League, War of Emperium, Polarity)
+    // Polarity requires a strict fixed structure of exactly 10 teams with 5 players each (50 max capacity).
+    const eventType = rawEventType === "woe" ? "woe" : rawEventType === "polarity" ? "polarity" : "guild_league";
+    const maxTeams = eventType === "polarity" ? 10 : (Number(body.maxTeams) || 2);
+    const membersPerTeam = eventType === "polarity" ? 5 : (Number(body.membersPerTeam) || 10);
     const maxRoster = maxTeams * membersPerTeam;
 
     const [league] = await sql`

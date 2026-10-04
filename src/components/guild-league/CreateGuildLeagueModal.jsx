@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Castle, Swords } from "lucide-react";
+import { Castle, Layers, Swords } from "lucide-react";
 import { createGuildLeague } from "@/lib/api";
 import Modal from "@/components/ui/Modal";
 import Input from "@/components/ui/Input";
@@ -14,7 +14,7 @@ const INITIAL_FORM = {
   opponent: "",
   matchDate: "",
   status: "draft",
-  eventType: "guild_league", // "guild_league" (default) or "woe"
+  eventType: "guild_league", // "guild_league" (default), "woe", or "polarity"
   maxTeams: 2,
   membersPerTeam: 10,
   notes: "",
@@ -27,7 +27,7 @@ const INITIAL_FORM = {
  * Setup dialog for creating a new Guild Event:
  * 1. Guild League (Default: divided into 3 tactical lanes: Top, Mid, Bot)
  * 2. WOE / War of Emperium (Unified team formation without 3-lane division)
- * Supports up to 30 teams and custom player capacity per team.
+ * 3. Polarity (Fixed 10 teams with exactly 5 players per team = 50 total roster capacity)
  *
  * @param {Object} props - Component props
  * @param {boolean} props.open - Modal visibility
@@ -46,18 +46,33 @@ export default function CreateGuildLeagueModal({ open, onClose, onSuccess }) {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
+  /**
+   * Switches event category and enforces default or locked parameters
+   * @param {"guild_league" | "woe" | "polarity"} type - Selected event type
+   */
   const handleSelectType = (type) => {
-    setForm((prev) => ({
-      ...prev,
-      eventType: type,
-      // If user hasn't typed a custom name, auto-suggest based on type
-      name:
-        !prev.name || prev.name.startsWith("Guild League") || prev.name.startsWith("WOE")
-          ? type === "woe"
-            ? "WOE Castle War"
-            : "Guild League Match"
-          : prev.name,
-    }));
+    setForm((prev) => {
+      const isPolarity = type === "polarity";
+      return {
+        ...prev,
+        eventType: type,
+        // Why this logic exists: Polarity requires exactly 10 teams of 5 players (50 capacity)
+        maxTeams: isPolarity ? 10 : prev.eventType === "polarity" ? 2 : prev.maxTeams,
+        membersPerTeam: isPolarity ? 5 : prev.eventType === "polarity" ? 10 : prev.membersPerTeam,
+        // Auto-suggest event name if title wasn't manually customized
+        name:
+          !prev.name ||
+          prev.name.startsWith("Guild League") ||
+          prev.name.startsWith("WOE") ||
+          prev.name.startsWith("Polarity")
+            ? type === "woe"
+              ? "WOE Castle War"
+              : type === "polarity"
+              ? "Polarity Battle"
+              : "Guild League Match"
+            : prev.name,
+      };
+    });
   };
 
   const handleClose = () => {
@@ -80,14 +95,15 @@ export default function CreateGuildLeagueModal({ open, onClose, onSuccess }) {
     setError("");
 
     try {
+      const isPolarity = form.eventType === "polarity";
       await createGuildLeague({
         name: form.name.trim(),
-        opponent: form.opponent.trim() || "TBA",
+        opponent: form.opponent.trim() || (isPolarity ? "Polarity Sanctuary" : "TBA"),
         matchDate: form.matchDate || new Date().toISOString(),
         status: form.status,
         eventType: form.eventType || "guild_league",
-        maxTeams: Number(form.maxTeams) || 2,
-        membersPerTeam: Number(form.membersPerTeam) || 10,
+        maxTeams: isPolarity ? 10 : Number(form.maxTeams) || 2,
+        membersPerTeam: isPolarity ? 5 : Number(form.membersPerTeam) || 10,
         notes: form.notes.trim(),
       });
 
@@ -100,6 +116,9 @@ export default function CreateGuildLeagueModal({ open, onClose, onSuccess }) {
       setSaving(false);
     }
   };
+
+  const isPolarity = form.eventType === "polarity";
+  const isWoe = form.eventType === "woe";
 
   return (
     <Modal
@@ -130,12 +149,12 @@ export default function CreateGuildLeagueModal({ open, onClose, onSuccess }) {
       }
     >
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* EVENT TYPE SELECTOR (GUILD LEAGUE VS WOE) */}
+        {/* EVENT TYPE SELECTOR (GUILD LEAGUE VS WOE VS POLARITY) */}
         <div>
           <label className="text-xs font-bold text-zinc-900 mb-1.5 block">
             Event Type <span className="text-red-500">*</span>
           </label>
-          <div className="grid grid-cols-2 gap-2.5">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
             <button
               type="button"
               onClick={() => handleSelectType("guild_league")}
@@ -147,7 +166,7 @@ export default function CreateGuildLeagueModal({ open, onClose, onSuccess }) {
             >
               <div className="flex items-center gap-2">
                 <Swords className={`size-4 ${form.eventType === "guild_league" ? "text-red-600" : "text-zinc-500"}`} />
-                <span className="text-xs font-bold">Guild League (Default)</span>
+                <span className="text-xs font-bold">Guild League</span>
               </div>
               <p className="text-[11px] text-zinc-500 mt-1">
                 3-lane tactical format (Top, Mid, Bot)
@@ -159,20 +178,50 @@ export default function CreateGuildLeagueModal({ open, onClose, onSuccess }) {
               onClick={() => handleSelectType("woe")}
               className={`flex flex-col text-left p-3 rounded-xl border transition cursor-pointer ${
                 form.eventType === "woe"
-                  ? "border-red-600 bg-red-50/50 ring-1 ring-red-600 text-red-950"
+                  ? "border-amber-600 bg-amber-50/50 ring-1 ring-amber-600 text-amber-950"
                   : "border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-700"
               }`}
             >
               <div className="flex items-center gap-2">
-                <Castle className={`size-4 ${form.eventType === "woe" ? "text-red-600" : "text-zinc-500"}`} />
-                <span className="text-xs font-bold">WOE (War of Emperium)</span>
+                <Castle className={`size-4 ${form.eventType === "woe" ? "text-amber-600" : "text-zinc-500"}`} />
+                <span className="text-xs font-bold">WOE (Castle War)</span>
               </div>
               <p className="text-[11px] text-zinc-500 mt-1">
                 Unified team format (No lane division)
               </p>
             </button>
+
+            <button
+              type="button"
+              onClick={() => handleSelectType("polarity")}
+              className={`flex flex-col text-left p-3 rounded-xl border transition cursor-pointer ${
+                form.eventType === "polarity"
+                  ? "border-cyan-600 bg-cyan-50/50 ring-1 ring-cyan-600 text-cyan-950"
+                  : "border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-700"
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <Layers className={`size-4 ${form.eventType === "polarity" ? "text-cyan-600" : "text-zinc-500"}`} />
+                <span className="text-xs font-bold">Polarity</span>
+              </div>
+              <p className="text-[11px] text-zinc-500 mt-1">
+                Fixed 10 teams • 5 players/team (50 max)
+              </p>
+            </button>
           </div>
         </div>
+
+        {isPolarity && (
+          <div className="rounded-xl border border-cyan-200 bg-cyan-50/80 p-3 text-xs text-cyan-900 flex items-start gap-2.5 animate-in fade-in duration-150">
+            <span className="text-base leading-none">💠</span>
+            <div>
+              <p className="font-bold">Fixed Polarity Formation</p>
+              <p className="text-[11px] text-cyan-800 mt-0.5">
+                Polarity matches are locked to exactly 10 teams with 5 players per team (50 players total capacity).
+              </p>
+            </div>
+          </div>
+        )}
 
         <Input
           label="Event / Match Title"
@@ -180,16 +229,34 @@ export default function CreateGuildLeagueModal({ open, onClose, onSuccess }) {
           required
           value={form.name}
           onChange={handleChange}
-          placeholder={form.eventType === "woe" ? "e.g. WOE Castle Defense - Saturday" : "e.g. Guild League Season 4 - Match 1"}
+          placeholder={
+            isPolarity
+              ? "e.g. Polarity Sanctuary - Saturday Match"
+              : isWoe
+              ? "e.g. WOE Castle Defense - Saturday"
+              : "e.g. Guild League Season 4 - Match 1"
+          }
         />
 
         <div className="grid grid-cols-2 gap-4">
           <Input
-            label={form.eventType === "woe" ? "Target Castle / Objective" : "Opponent Guild"}
+            label={
+              isPolarity
+                ? "Objective / Arena"
+                : isWoe
+                ? "Target Castle / Objective"
+                : "Opponent Guild"
+            }
             name="opponent"
             value={form.opponent}
             onChange={handleChange}
-            placeholder={form.eventType === "woe" ? "e.g. Prontera Castle 1 / TBA" : "e.g. Invictus / TBA"}
+            placeholder={
+              isPolarity
+                ? "e.g. Polarity Sanctuary / TBA"
+                : isWoe
+                ? "e.g. Prontera Castle 1 / TBA"
+                : "e.g. Invictus / TBA"
+            }
           />
 
           <Input
@@ -214,25 +281,41 @@ export default function CreateGuildLeagueModal({ open, onClose, onSuccess }) {
             <option value="cancelled">Cancelled</option>
           </Select>
 
-          <Input
-            label="Total Teams (Up to 30)"
-            name="maxTeams"
-            type="number"
-            min="1"
-            max="30"
-            value={form.maxTeams}
-            onChange={handleChange}
-          />
+          <div>
+            <Input
+              label="Total Teams"
+              name="maxTeams"
+              type="number"
+              min="1"
+              max={isPolarity ? 10 : 30}
+              disabled={isPolarity}
+              value={isPolarity ? 10 : form.maxTeams}
+              onChange={handleChange}
+            />
+            {isPolarity && (
+              <span className="text-[10px] text-cyan-600 font-bold block mt-1">
+                Fixed 10 Teams
+              </span>
+            )}
+          </div>
 
-          <Input
-            label="Players / Team"
-            name="membersPerTeam"
-            type="number"
-            min="1"
-            max="50"
-            value={form.membersPerTeam}
-            onChange={handleChange}
-          />
+          <div>
+            <Input
+              label="Players / Team"
+              name="membersPerTeam"
+              type="number"
+              min="1"
+              max={isPolarity ? 5 : 50}
+              disabled={isPolarity}
+              value={isPolarity ? 5 : form.membersPerTeam}
+              onChange={handleChange}
+            />
+            {isPolarity && (
+              <span className="text-[10px] text-cyan-600 font-bold block mt-1">
+                Fixed 5 Players
+              </span>
+            )}
+          </div>
         </div>
 
         <Textarea
