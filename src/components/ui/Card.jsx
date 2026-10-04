@@ -4,14 +4,14 @@
  * Standard Card container and subcomponents.
  *
  * Why this exists:
- * Enforces unified border radiuses, shadows, border colors, and padding
- * to eliminate disparate custom cards across pages.
+ * Enforces unified border radiuses (rounded-xl), borders (border-zinc-200),
+ * clean backgrounds, and padding to eliminate disparate custom cards across pages.
  */
 
 export function Card({ children, className = "", ...rest }) {
   return (
     <div
-      className={`rounded-2xl border border-zinc-200 bg-white shadow-xs transition ${className}`}
+      className={`rounded-xl border border-zinc-200 bg-white transition-colors ${className}`}
       {...rest}
     >
       {children}
@@ -33,7 +33,7 @@ export function CardHeader({ children, className = "", ...rest }) {
 export function CardTitle({ children, className = "", as: Component = "h3", ...rest }) {
   return (
     <Component
-      className={`text-sm sm:text-base font-bold text-zinc-900 tracking-tight ${className}`}
+      className={`text-sm sm:text-base font-semibold text-zinc-900 tracking-tight ${className}`}
       {...rest}
     >
       {children}
@@ -60,7 +60,7 @@ export function CardContent({ children, className = "", ...rest }) {
 export function CardFooter({ children, className = "", ...rest }) {
   return (
     <div
-      className={`flex items-center justify-end gap-2.5 border-t border-zinc-100 p-3.5 sm:p-4 bg-zinc-50/50 rounded-b-2xl ${className}`}
+      className={`border-t border-zinc-100 p-4 sm:p-5 bg-zinc-50/50 ${className}`}
       {...rest}
     >
       {children}

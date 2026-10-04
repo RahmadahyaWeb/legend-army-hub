@@ -212,14 +212,11 @@ export default function CreateGuildLeagueModal({ open, onClose, onSuccess }) {
         </div>
 
         {isPolarity && (
-          <div className="rounded-xl border border-cyan-200 bg-cyan-50/80 p-3 text-xs text-cyan-900 flex items-start gap-2.5 animate-in fade-in duration-150">
-            <span className="text-base leading-none">💠</span>
-            <div>
-              <p className="font-bold">Fixed Polarity Formation</p>
-              <p className="text-[11px] text-cyan-800 mt-0.5">
-                Polarity matches are locked to exactly 10 teams with 5 players per team (50 players total capacity).
-              </p>
-            </div>
+          <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-3 text-xs text-zinc-700">
+            <p className="font-semibold text-zinc-900">Fixed Polarity Formation</p>
+            <p className="text-[11px] text-zinc-500 mt-0.5">
+              Polarity matches are fixed to 10 teams of 5 players (50 total capacity).
+            </p>
           </div>
         )}
 

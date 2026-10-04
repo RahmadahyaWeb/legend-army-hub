@@ -12,6 +12,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import Button from "@/components/ui/Button";
+import Loading from "@/components/ui/Loading";
 
 /**
  * Administrator Login Authentication Page
@@ -77,107 +78,78 @@ export default function LoginPage() {
   };
 
   if (checkingAuth) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-zinc-950">
-        <div className="flex flex-col items-center gap-4">
-          <div className="flex size-12 items-center justify-center rounded-2xl bg-brand-700/20 border border-brand-500/30">
-            <ShieldCheck className="size-6 text-brand-500" />
-          </div>
-          <div className="size-5 animate-spin rounded-full border-2 border-zinc-700 border-t-brand-600" />
-        </div>
-      </div>
-    );
+    return <Loading fullScreen message="Checking authentication..." />;
   }
 
   return (
-    <main className="min-h-screen bg-white">
-      <div className="grid min-h-screen lg:grid-cols-[1.05fr_0.95fr]">
-        {/* LEFT BRAND SECTION */}
-        <section className="relative hidden overflow-hidden bg-zinc-950 lg:flex lg:flex-col">
-          <div className="absolute -left-40 -top-40 size-[500px] rounded-full bg-brand-700/20 blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-48 -right-32 size-[520px] rounded-full bg-brand-700/10 blur-3xl pointer-events-none" />
-
-          <div className="relative z-10 flex h-full flex-col p-10 xl:p-14">
-            <Link href="/" className="flex w-fit items-center gap-3">
+    <main className="min-h-screen bg-zinc-50">
+      <div className="grid min-h-screen lg:grid-cols-[1fr_1fr]">
+        {/* Left Brand Section */}
+        <section className="relative hidden bg-zinc-950 lg:flex lg:flex-col justify-between p-12 xl:p-16 border-r border-zinc-900">
+          <div>
+            <Link href="/" className="flex items-center gap-3">
               <img
                 src="/logo.png"
                 alt="Legend Army"
-                className="size-12 rounded-xl object-contain"
+                className="size-10 rounded-lg object-contain"
               />
               <div>
-                <div className="text-sm font-bold tracking-wide text-white">
+                <div className="text-sm font-bold tracking-tight text-white">
                   LEGEND ARMY
                 </div>
-                <div className="mt-0.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-zinc-500">
-                  Guild Hub
+                <div className="text-[10px] font-medium uppercase tracking-wider text-zinc-500">
+                  Command Hub
                 </div>
               </div>
             </Link>
+          </div>
 
-            <div className="my-auto max-w-xl">
-              <div className="mb-6 flex size-12 items-center justify-center rounded-xl border border-white/10 bg-white/5">
-                <ShieldCheck className="size-5 text-brand-500" />
-              </div>
+          <div className="max-w-md">
+            <h1 className="text-3xl font-semibold tracking-tight text-white xl:text-4xl">
+              Guild Operations Management
+            </h1>
+            <p className="mt-4 text-sm leading-relaxed text-zinc-400">
+              Access administrative tools for member rosters, event setups, strategic planning, and automated Discord integrations.
+            </p>
+          </div>
 
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-500">
-                Command Administration
-              </p>
-
-              <h1 className="mt-5 text-4xl font-semibold leading-tight tracking-tight text-white xl:text-5xl">
-                Legend Army
-                <br />
-                Guild Hub
-              </h1>
-
-              <p className="mt-6 max-w-lg text-base leading-7 text-zinc-400">
-                Manage members, Guild League rosters, tactical strategies, and guild
-                operations from one unified command center.
-              </p>
-            </div>
-
-            <div className="border-t border-white/10 pt-6">
-              <div className="flex items-center justify-between text-xs text-zinc-600">
-                <p>© {new Date().getFullYear()} Legend Army</p>
-                <p>
-                  Made by <span className="font-semibold text-zinc-400">XKG</span>
-                </p>
-              </div>
-            </div>
+          <div className="text-xs text-zinc-600">
+            © {new Date().getFullYear()} Legend Army. All rights reserved.
           </div>
         </section>
 
-        {/* RIGHT FORM SECTION */}
-        <section className="flex items-center justify-center p-6 sm:p-12 lg:p-16">
-          <div className="w-full max-w-md">
+        {/* Right Form Section */}
+        <section className="flex items-center justify-center p-6 sm:p-12 lg:p-16 bg-white">
+          <div className="w-full max-w-sm">
             <div className="mb-8">
               <Link
                 href="/"
-                className="inline-flex items-center gap-2 text-xs font-semibold text-zinc-500 hover:text-zinc-900 transition"
+                className="inline-flex items-center gap-2 text-xs font-medium text-zinc-500 hover:text-zinc-900 transition"
               >
                 <ArrowLeft className="size-3.5" />
                 <span>Back to Hub</span>
               </Link>
             </div>
 
-            <div className="mb-8">
-              <h2 className="text-2xl font-bold tracking-tight text-zinc-900">
-                Sign in to Guild Hub
+            <div className="mb-6">
+              <h2 className="text-2xl font-semibold tracking-tight text-zinc-900">
+                Sign in
               </h2>
-              <p className="mt-1.5 text-xs text-zinc-500">
-                Enter your administrative credentials to access command settings.
+              <p className="mt-1 text-xs text-zinc-500">
+                Enter your administrative credentials to continue.
               </p>
             </div>
 
             {error && (
-              <div className="mb-6 rounded-xl border border-red-200 bg-red-50 p-4 text-xs font-semibold text-red-700 animate-in fade-in duration-150">
+              <div className="mb-5 rounded-lg border border-red-200 bg-red-50 p-3 text-xs font-medium text-red-700">
                 {error}
               </div>
             )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-zinc-700">
-                  Email Address
+                <label className="block text-xs font-medium text-zinc-700">
+                  Email
                 </label>
                 <div className="relative mt-1.5 flex items-center">
                   <div className="pointer-events-none absolute left-3 flex items-center justify-center text-zinc-400">
@@ -189,13 +161,13 @@ export default function LoginPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="admin@legendarmy.com"
-                    className="h-10 w-full rounded-xl border border-zinc-200 pl-10 pr-3.5 text-xs sm:text-sm placeholder:text-zinc-400 focus:border-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition"
+                    className="h-10 w-full rounded-lg border border-zinc-200 pl-10 pr-3.5 text-sm placeholder:text-zinc-400 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900 transition"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-zinc-700">
+                <label className="block text-xs font-medium text-zinc-700">
                   Password
                 </label>
                 <div className="relative mt-1.5 flex items-center">
@@ -208,7 +180,7 @@ export default function LoginPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="h-10 w-full rounded-xl border border-zinc-200 pl-10 pr-10 text-xs sm:text-sm placeholder:text-zinc-400 focus:border-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition"
+                    className="h-10 w-full rounded-lg border border-zinc-200 pl-10 pr-10 text-sm placeholder:text-zinc-400 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900 transition"
                   />
                   <button
                     type="button"
@@ -231,9 +203,9 @@ export default function LoginPage() {
                   variant="primary"
                   size="md"
                   loading={loading}
-                  className="w-full !h-11"
+                  className="w-full !h-10 font-medium"
                 >
-                  Sign in to Dashboard
+                  Sign in
                 </Button>
               </div>
             </form>

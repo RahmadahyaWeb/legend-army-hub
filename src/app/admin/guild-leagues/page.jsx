@@ -2,18 +2,10 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import {
-  CalendarDays,
-  ChevronRight,
-  ExternalLink,
-  Plus,
-  Swords,
-  Trash2,
-  Users,
-} from "lucide-react";
+import { ExternalLink, Trash2 } from "lucide-react";
 import { fetchGuildLeagues, deleteGuildLeague } from "@/lib/api";
 import { formatDate } from "@/utils/formatters";
-import { SkeletonGrid } from "@/components/ui/LoadingState";
+import Loading from "@/components/ui/Loading";
 import EmptyState from "@/components/ui/EmptyState";
 import Button from "@/components/ui/Button";
 import Select from "@/components/ui/Select";
@@ -23,11 +15,11 @@ import { useToast } from "@/components/ui/ToastProvider";
 import CreateGuildLeagueModal from "@/components/guild-league/CreateGuildLeagueModal";
 
 /**
- * Guild League Matches Index Page
+ * Guild Events Index Page
  *
  * Why this exists:
- * Lists all past and upcoming Guild League battle events, allowing guild leaders
- * to filter by status, initiate new matches, or jump to match lineup management.
+ * Lists all past and upcoming Guild Events (Guild League, War of Emperium, Polarity),
+ * allowing officers to filter by status, schedule new events, or manage team lineups.
  */
 export default function GuildLeaguesPage() {
   const { success, error: toastError } = useToast();
@@ -44,7 +36,7 @@ export default function GuildLeaguesPage() {
       setGuildLeagues(data);
     } catch (err) {
       console.error("Guild Leagues error:", err);
-      toastError("Failed to load matches", err.message);
+      toastError("Failed to load events", err.message);
     } finally {
       setLoading(false);
     }
@@ -59,16 +51,15 @@ export default function GuildLeaguesPage() {
     e.stopPropagation();
     if (!confirm(`Are you sure you want to delete "${name}"?`)) return;
 
-    // Optimistic removal
     setGuildLeagues((prev) => prev.filter((m) => m.id !== id));
 
     try {
       await deleteGuildLeague(id);
-      success("Match deleted", `"${name}" removed successfully.`);
+      success("Event deleted", `"${name}" removed successfully.`);
       loadMatches(true);
     } catch (err) {
       console.error("Delete error:", err);
-      toastError("Failed to delete match", err.message);
+      toastError("Failed to delete event", err.message);
       loadMatches(true);
     }
   };
@@ -79,23 +70,23 @@ export default function GuildLeaguesPage() {
   }, [guildLeagues, statusFilter]);
 
   return (
-    <div className="space-y-4 sm:space-y-6">
+    <div className="space-y-6">
       {/* HEADER */}
-      <div className="flex flex-col gap-3.5 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-xl sm:text-2xl font-black text-zinc-900 tracking-tight">
+          <h1 className="text-xl sm:text-2xl font-bold text-zinc-900 tracking-tight">
             Guild Events
           </h1>
-          <p className="mt-1 text-xs text-zinc-500">
-            Create guild events & matches, organize up to 30 teams, and assign tactical lineups
+          <p className="mt-0.5 text-xs text-zinc-500">
+            Create events, organize teams, and assign tactical lineups
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
+        <div className="flex flex-wrap items-center gap-2">
           <Select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="!h-8.5 !py-0 !text-xs font-semibold"
+            className="!h-8.5 !py-0 !text-xs font-medium"
           >
             <option value="all">All Events ({guildLeagues.length})</option>
             <option value="draft">Draft Only</option>
@@ -106,7 +97,6 @@ export default function GuildLeaguesPage() {
           <Button
             variant="primary"
             size="sm"
-            icon={Plus}
             onClick={() => setCreateModalOpen(true)}
           >
             New Event
@@ -115,22 +105,20 @@ export default function GuildLeaguesPage() {
       </div>
 
       {/* MATCHES LIST */}
-      {loading && guildLeagues.length === 0 ? (
-        <SkeletonGrid count={6} />
+      {loading ? (
+        <Loading message="Loading events..." />
       ) : filteredMatches.length === 0 ? (
         <EmptyState
-          icon={Swords}
-          title="No Guild Events found"
+          title="No events found"
           description={
             statusFilter !== "all"
               ? "No events match the selected status filter."
-              : "Create your first guild event to start organizing teams and assigning rosters."
+              : "Create an event to start assigning lineups."
           }
           action={
             <Button
               variant="primary"
               size="sm"
-              icon={Plus}
               onClick={() => setCreateModalOpen(true)}
             >
               Create Event
@@ -144,7 +132,7 @@ export default function GuildLeaguesPage() {
             const maxRoster = gl.maxRoster || 20;
             const statusVariant =
               gl.status === "completed"
-                ? "info"
+                ? "neutral"
                 : gl.status === "published"
                 ? "success"
                 : "brand";
@@ -152,7 +140,7 @@ export default function GuildLeaguesPage() {
             return (
               <Card
                 key={gl.id}
-                className="flex flex-col justify-between p-4 sm:p-5 hover:border-zinc-300"
+                className="flex flex-col justify-between p-4 sm:p-5 hover:border-zinc-300 transition-colors"
               >
                 <div>
                   <div className="flex items-start justify-between gap-3">
@@ -161,17 +149,17 @@ export default function GuildLeaguesPage() {
                         {(gl.status || "DRAFT").toUpperCase()}
                       </Badge>
                       {gl.eventType === "woe" ? (
-                        <span className="rounded-md border border-amber-200 bg-amber-50 px-1.5 py-0.5 text-[10px] font-bold text-amber-800">
-                          🏰 WOE
-                        </span>
+                        <Badge variant="warning" size="xs">
+                          WOE
+                        </Badge>
                       ) : gl.eventType === "polarity" ? (
-                        <span className="rounded-md border border-cyan-200 bg-cyan-50 px-1.5 py-0.5 text-[10px] font-bold text-cyan-800">
-                          💠 Polarity
-                        </span>
+                        <Badge variant="info" size="xs">
+                          Polarity
+                        </Badge>
                       ) : (
-                        <span className="rounded-md border border-zinc-200 bg-zinc-100 px-1.5 py-0.5 text-[10px] font-bold text-zinc-700">
-                          ⚔️ Guild League
-                        </span>
+                        <Badge variant="neutral" size="xs">
+                          Guild League
+                        </Badge>
                       )}
                     </div>
 
@@ -179,42 +167,37 @@ export default function GuildLeaguesPage() {
                       type="button"
                       onClick={(e) => handleDelete(gl.id, gl.name, e)}
                       className="text-zinc-400 hover:text-red-600 transition p-1"
-                      title="Delete match"
+                      title="Delete event"
                     >
                       <Trash2 className="size-3.5" />
                     </button>
                   </div>
 
-                  <h3 className="mt-3 text-sm sm:text-base font-bold text-zinc-900 tracking-tight">
+                  <h3 className="mt-3 text-sm sm:text-base font-semibold text-zinc-900 tracking-tight line-clamp-1">
                     {gl.name}
                   </h3>
 
-                  <div className="mt-3 space-y-2 text-xs text-zinc-600">
-                    <div className="flex items-center gap-2">
-                      <CalendarDays className="size-3.5 text-zinc-400" />
-                      <span>{formatDate(gl.matchDate || gl.date)}</span>
-                    </div>
+                  <div className="mt-2.5 space-y-1 text-xs text-zinc-500">
+                    <div>{formatDate(gl.matchDate || gl.date)}</div>
 
                     {gl.opponent && (
-                      <div className="font-semibold text-zinc-800">
-                        VS: {gl.opponent}
+                      <div className="text-zinc-700">
+                        {gl.eventType === "woe" ? "Target: " : "Opponent: "}
+                        <span className="font-medium text-zinc-900">{gl.opponent}</span>
                       </div>
                     )}
 
-                    <div className="flex items-center gap-2">
-                      <Users className="size-3.5 text-zinc-400" />
-                      <span>
-                        Roster: {rosterCount} / {maxRoster} players
-                      </span>
+                    <div>
+                      Roster: {rosterCount} / {maxRoster} players
                     </div>
                   </div>
                 </div>
 
-                <div className="mt-5 flex items-center justify-between gap-2 pt-3.5 border-t border-zinc-100">
+                <div className="mt-4 flex items-center justify-between gap-2 pt-3 border-t border-zinc-100">
                   <Link
                     href={`/roster/${gl.id}`}
                     target="_blank"
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-zinc-500 hover:text-zinc-900 transition"
+                    className="inline-flex items-center gap-1 text-xs text-zinc-500 hover:text-zinc-900 transition-colors"
                   >
                     <span>Public</span>
                     <ExternalLink className="size-3" />
@@ -222,10 +205,9 @@ export default function GuildLeaguesPage() {
 
                   <Link
                     href={`/admin/guild-leagues/${gl.id}`}
-                    className="inline-flex h-8.5 items-center gap-1.5 rounded-xl bg-zinc-900 px-3.5 text-xs font-bold text-white shadow-2xs transition hover:bg-zinc-800"
+                    className="inline-flex h-8 items-center rounded-lg bg-zinc-900 px-3 text-xs font-medium text-white hover:bg-zinc-800 transition-colors"
                   >
-                    <span>Manage Roster</span>
-                    <ChevronRight className="size-3.5" />
+                    Manage Lineup
                   </Link>
                 </div>
               </Card>

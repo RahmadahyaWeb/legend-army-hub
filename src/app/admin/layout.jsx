@@ -15,6 +15,7 @@ import {
   Users,
   X,
 } from "lucide-react";
+import Loading from "@/components/ui/Loading";
 
 const navigation = [
   {
@@ -52,23 +53,19 @@ const navigation = [
 
 function Brand() {
   return (
-    <div className="flex min-w-0 items-center gap-3">
-      <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-brand-600">
-        <img
-          src="/logo.png"
-          alt="Legend Army"
-          className="size-9 object-contain"
-        />
-      </div>
-
+    <div className="flex min-w-0 items-center gap-2.5">
+      <img
+        src="/logo.png"
+        alt="Legend Army"
+        className="size-8 object-contain"
+      />
       <div className="min-w-0">
-        <div className="truncate text-sm font-bold text-content-strong">
+        <span className="truncate text-sm font-bold tracking-tight text-zinc-900 block leading-tight">
           LEGEND ARMY
-        </div>
-
-        <div className="truncate text-[10px] font-semibold uppercase tracking-[0.14em] text-content-subtle">
+        </span>
+        <span className="truncate text-[10px] font-medium uppercase tracking-wider text-zinc-400 block leading-tight">
           Guild Hub
-        </div>
+        </span>
       </div>
     </div>
   );
@@ -76,7 +73,7 @@ function Brand() {
 
 function Navigation({ onNavigate, pathname }) {
   return (
-    <nav className="flex-1 space-y-1 overflow-y-auto p-3">
+    <nav className="flex-1 space-y-0.5 overflow-y-auto p-3">
       {navigation.map((item) => {
         const Icon = item.icon;
         const isActive = item.exact
@@ -89,29 +86,18 @@ function Navigation({ onNavigate, pathname }) {
             href={item.href}
             onClick={onNavigate}
             className={[
-              "flex h-10 items-center gap-3 rounded-lg px-3 text-sm font-medium transition-colors duration-150",
+              "flex h-9 items-center gap-3 rounded-lg px-3 text-xs font-medium transition-colors",
               isActive
-                ? "bg-brand-50 text-brand-700 font-semibold"
-                : "text-content-muted hover:bg-surface-100 hover:text-content-strong",
+                ? "bg-zinc-100 text-zinc-900 font-semibold"
+                : "text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900",
             ].join(" ")}
           >
-            <Icon className="size-4 shrink-0" />
+            <Icon className="size-4 shrink-0 text-zinc-500" />
             <span className="truncate">{item.name}</span>
           </Link>
         );
       })}
     </nav>
-  );
-}
-
-function MadeBy() {
-  return (
-    <div className="px-6 py-4 text-center">
-      <p className="text-[10px] uppercase tracking-wider text-content-subtle">
-        Made by
-      </p>
-      <p className="mt-0.5 text-xs font-semibold text-content-muted">XKG</p>
-    </div>
   );
 }
 
@@ -122,12 +108,10 @@ export default function AdminLayout({ children }) {
   const [checkingAuth, setCheckingAuth] = useState(true);
 
   useEffect(() => {
-    // Check authentication
     const checkAuth = async () => {
       try {
         const res = await fetch("/api/auth");
         const data = await res.json();
-        // If unauthenticated, allow redirect or check localStorage fallback
         const localAuth = typeof window !== "undefined" && localStorage.getItem("la_auth");
         if (!data.authenticated && !localAuth) {
           router.replace("/login");
@@ -177,51 +161,28 @@ export default function AdminLayout({ children }) {
   };
 
   if (checkingAuth) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-zinc-50">
-        <div className="flex flex-col items-center gap-4">
-          <div className="flex size-11 items-center justify-center rounded-xl bg-red-700">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="size-5 text-white"
-            >
-              <path d="M20 13c0 5-3.5 7.5-8 9-4.5-1.5-8-4-8-9V5l8-3 8 3z" />
-            </svg>
-          </div>
-          <div className="size-5 animate-spin rounded-full border-2 border-zinc-300 border-t-red-700" />
-        </div>
-      </div>
-    );
+    return <Loading fullScreen message="Authenticating..." />;
   }
 
   return (
-    <div className="min-h-screen bg-surface-100">
+    <div className="min-h-screen bg-zinc-50">
       {/* DESKTOP SIDEBAR */}
-      <aside className="fixed inset-y-0 left-0 z-50 hidden w-64 border-r border-line bg-white lg:flex lg:flex-col">
-        <div className="flex h-16 shrink-0 items-center border-b border-line px-5">
+      <aside className="fixed inset-y-0 left-0 z-50 hidden w-60 border-r border-zinc-200 bg-white lg:flex lg:flex-col">
+        <div className="flex h-14 shrink-0 items-center border-b border-zinc-200 px-4">
           <Brand />
         </div>
 
         <Navigation pathname={pathname} />
 
-        <div className="shrink-0 border-t border-line bg-white">
-          <MadeBy />
-
-          <div className="border-t border-line p-3">
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="flex h-10 w-full items-center gap-3 rounded-lg px-3 text-sm font-medium text-content-muted transition-colors duration-150 hover:bg-red-50 hover:text-red-700"
-            >
-              <LogOut className="size-4 shrink-0" />
-              <span>Sign out</span>
-            </button>
-          </div>
+        <div className="shrink-0 border-t border-zinc-200 p-3">
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="flex h-9 w-full items-center gap-2.5 rounded-lg px-3 text-xs font-medium text-zinc-600 transition-colors hover:bg-red-50 hover:text-red-700"
+          >
+            <LogOut className="size-4 shrink-0" />
+            <span>Sign out</span>
+          </button>
         </div>
       </aside>
 
@@ -230,7 +191,7 @@ export default function AdminLayout({ children }) {
         aria-hidden="true"
         onClick={closeMobileMenu}
         className={[
-          "fixed inset-0 z-40 bg-black/40 transition-opacity duration-200 lg:hidden",
+          "fixed inset-0 z-40 bg-black/30 transition-opacity duration-150 lg:hidden",
           mobileMenuOpen
             ? "pointer-events-auto opacity-100"
             : "pointer-events-none opacity-0",
@@ -240,65 +201,52 @@ export default function AdminLayout({ children }) {
       {/* MOBILE DRAWER */}
       <aside
         className={[
-          "fixed inset-y-0 left-0 z-50 flex w-[280px] max-w-[85vw] flex-col border-r border-line bg-white shadow-xl transition-transform duration-200 ease-out will-change-transform lg:hidden",
+          "fixed inset-y-0 left-0 z-50 flex w-64 max-w-[85vw] flex-col border-r border-zinc-200 bg-white shadow-lg transition-transform duration-150 ease-out will-change-transform lg:hidden",
           mobileMenuOpen ? "translate-x-0" : "-translate-x-full",
         ].join(" ")}
       >
-        <div className="flex h-16 shrink-0 items-center justify-between border-b border-line px-4">
+        <div className="flex h-14 shrink-0 items-center justify-between border-b border-zinc-200 px-4">
           <Brand />
 
           <button
             type="button"
             onClick={closeMobileMenu}
-            className="flex size-9 shrink-0 items-center justify-center rounded-lg text-content-muted transition-colors duration-150 hover:bg-surface-100 hover:text-content-strong"
+            className="flex size-8 shrink-0 items-center justify-center rounded-lg text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700 transition"
             aria-label="Close menu"
           >
-            <X className="size-5" />
+            <X className="size-4" />
           </button>
         </div>
 
         <Navigation pathname={pathname} onNavigate={closeMobileMenu} />
 
-        <div className="shrink-0 border-t border-line bg-white">
-          <MadeBy />
-
-          <div className="border-t border-line p-3">
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="flex h-10 w-full items-center gap-3 rounded-lg px-3 text-sm font-medium text-content-muted transition-colors duration-150 hover:bg-red-50 hover:text-red-700"
-            >
-              <LogOut className="size-4 shrink-0" />
-              <span>Sign out</span>
-            </button>
-          </div>
+        <div className="shrink-0 border-t border-zinc-200 p-3">
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="flex h-9 w-full items-center gap-2.5 rounded-lg px-3 text-xs font-medium text-zinc-600 transition-colors hover:bg-red-50 hover:text-red-700"
+          >
+            <LogOut className="size-4 shrink-0" />
+            <span>Sign out</span>
+          </button>
         </div>
       </aside>
 
-      {/* ADMIN AREA */}
-      <div className="min-h-screen lg:pl-64">
-        {/* FIXED HEADER */}
-        <header className="fixed left-0 right-0 top-0 z-30 h-16 border-b border-line bg-white lg:left-64">
-          <div className="flex h-full items-center justify-between px-4 sm:px-6 lg:px-8">
-            <div className="flex min-w-0 items-center gap-3 lg:hidden">
+      {/* MAIN CONTENT AREA */}
+      <div className="min-h-screen lg:pl-60">
+        {/* TOP BAR */}
+        <header className="fixed left-0 right-0 top-0 z-30 h-14 border-b border-zinc-200 bg-white/95 backdrop-blur-xs lg:left-60">
+          <div className="flex h-full items-center justify-between px-4 sm:px-6">
+            <div className="flex items-center gap-3 lg:hidden">
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(true)}
-                className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-line-strong bg-white text-content-muted transition-colors duration-150 hover:bg-surface-100 hover:text-content-strong"
+                className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-50"
                 aria-label="Open menu"
               >
-                <Menu className="size-5" />
+                <Menu className="size-4" />
               </button>
-
-              <div className="min-w-0">
-                <div className="truncate text-sm font-bold text-content-strong">
-                  LEGEND ARMY
-                </div>
-
-                <div className="truncate text-[9px] font-semibold uppercase tracking-[0.14em] text-content-subtle">
-                  Guild Hub
-                </div>
-              </div>
+              <Brand />
             </div>
 
             <div className="hidden lg:block" />
@@ -307,36 +255,19 @@ export default function AdminLayout({ children }) {
               href="/"
               target="_blank"
               rel="noreferrer"
-              className="inline-flex h-9 shrink-0 items-center justify-center gap-2 rounded-lg border border-line-strong bg-white px-3 text-xs font-medium text-content-muted transition-colors duration-150 hover:bg-surface-100 hover:text-content-strong"
+              className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-3 text-xs font-medium text-zinc-700 hover:bg-zinc-50 transition-colors"
             >
-              <ExternalLink className="size-3.5 shrink-0" />
-              <span className="hidden sm:inline">Public Site</span>
-              <span className="sm:hidden">Public</span>
+              <ExternalLink className="size-3.5" />
+              <span>Public Site</span>
             </Link>
           </div>
         </header>
 
-        {/* HEADER OFFSET */}
-        <div className="h-16" />
+        {/* TOP BAR OFFSET */}
+        <div className="h-14" />
 
-        {/* PAGE CONTENT */}
-        <main className="min-w-0 p-4 sm:p-6 lg:p-8">
-          {children}
-        </main>
-
-        {/* FOOTER */}
-        <footer className="border-t border-line px-4 py-5 sm:px-6 lg:px-8">
-          <div className="flex flex-col items-center justify-between gap-2 sm:flex-row">
-            <p className="text-xs text-content-subtle">
-              © {new Date().getFullYear()} Legend Army
-            </p>
-
-            <p className="text-xs text-content-subtle">
-              Made by{" "}
-              <span className="font-semibold text-content-muted">XKG</span>
-            </p>
-          </div>
-        </footer>
+        {/* PAGE BODY */}
+        <main className="min-w-0 p-4 sm:p-6 lg:p-8">{children}</main>
       </div>
     </div>
   );

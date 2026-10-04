@@ -25,10 +25,10 @@ export default function StrategyList({
   onNew,
 }) {
   return (
-    <div className="flex flex-col rounded-2xl border border-zinc-200 bg-white overflow-hidden shadow-xs h-[680px]">
+    <div className="flex flex-col rounded-xl border border-zinc-200 bg-white overflow-hidden shadow-xs h-[680px]">
       <div className="flex items-center justify-between border-b border-zinc-100 p-4 bg-zinc-50/50">
         <div>
-          <h2 className="text-sm font-bold text-zinc-900">Battle Playbooks</h2>
+          <h2 className="text-sm font-semibold text-zinc-900">Battle Playbooks</h2>
           <p className="text-[11px] text-zinc-500 mt-0.5">
             {strategies.length} documents
           </p>

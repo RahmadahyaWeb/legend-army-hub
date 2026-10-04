@@ -13,6 +13,7 @@ import Input from "@/components/ui/Input";
 import Modal from "@/components/ui/Modal";
 import Badge from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
+import Loading from "@/components/ui/Loading";
 import { useToast } from "@/components/ui/ToastProvider";
 
 /**
@@ -111,83 +112,61 @@ export default function AdminUsersPage() {
   };
 
   return (
-    <div className="space-y-4 sm:space-y-6">
+    <div className="space-y-6">
       {/* HEADER */}
-      <div className="flex flex-col gap-3.5 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-xl sm:text-2xl font-black text-zinc-900 tracking-tight">
+            <h1 className="text-xl sm:text-2xl font-bold text-zinc-900 tracking-tight">
               Admin Accounts
             </h1>
-            <Badge variant="brand" size="sm">
+            <Badge variant="neutral" size="sm">
               {users.length} Active
             </Badge>
           </div>
-          <p className="mt-1 text-xs text-zinc-500">
-            Manage administrative credentials with access to Guild Hub dashboard & controls
+          <p className="mt-0.5 text-xs text-zinc-500">
+            Authorized administrator credentials for Legend Army Hub
           </p>
         </div>
 
         <Button
           variant="primary"
           size="sm"
-          icon={UserPlus}
           onClick={() => setModalOpen(true)}
         >
-          Add Admin User
+          Add Admin
         </Button>
       </div>
 
       {/* ADMIN USERS LIST */}
       <Card className="overflow-hidden">
-        <div className="border-b border-zinc-100 bg-zinc-50/75 px-4 sm:px-6 py-3.5">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-500">
+        <div className="border-b border-zinc-100 bg-zinc-50/75 px-4 sm:px-6 py-3">
+          <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
             Registered Administrators ({users.length})
           </h3>
         </div>
 
         <div className="divide-y divide-zinc-100">
           {loading ? (
-            <div className="animate-pulse divide-y divide-zinc-100">
-              {Array.from({ length: 3 }, (_, i) => (
-                <div key={i} className="flex items-center justify-between p-4 sm:px-6">
-                  <div className="flex items-center gap-3">
-                    <div className="size-9 rounded-xl bg-zinc-200" />
-                    <div className="space-y-1">
-                      <div className="h-4 w-32 rounded bg-zinc-200" />
-                      <div className="h-3 w-44 rounded bg-zinc-100" />
-                    </div>
-                  </div>
-                  <div className="h-7 w-20 rounded-lg bg-zinc-100" />
-                </div>
-              ))}
-            </div>
+            <Loading message="Loading admins..." />
           ) : users.length === 0 ? (
             <div className="p-8 text-center text-xs text-zinc-500">
-              No custom admin accounts registered yet. Default admin credentials active.
+              No administrator accounts registered yet.
             </div>
           ) : (
             users.map((u) => (
               <div
                 key={u.id}
-                className="flex items-center justify-between p-4 sm:px-6 hover:bg-zinc-50/70 transition gap-3"
+                className="flex items-center justify-between p-4 sm:px-6 hover:bg-zinc-50/70 transition-colors gap-3"
               >
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-700">
-                    <ShieldCheck className="size-5" />
+                <div className="min-w-0">
+                  <div className="text-sm font-semibold text-zinc-900 truncate">
+                    {u.displayName || "Admin"}
                   </div>
-                  <div className="min-w-0">
-                    <div className="text-sm font-bold text-zinc-900 truncate">
-                      {u.displayName || "Admin"}
-                    </div>
-                    <div className="text-xs text-zinc-500 flex flex-wrap items-center gap-1.5 mt-0.5">
-                      <span className="flex items-center gap-1 truncate max-w-[200px] sm:max-w-none">
-                        <Mail className="size-3 text-zinc-400 shrink-0" />
-                        <span className="truncate">{u.email}</span>
-                      </span>
-                      <span>•</span>
-                      <span className="shrink-0">Added {formatDate(u.createdAt)}</span>
-                    </div>
+                  <div className="text-xs text-zinc-500 flex flex-wrap items-center gap-2 mt-0.5">
+                    <span className="truncate">{u.email}</span>
+                    <span className="text-zinc-300">•</span>
+                    <span className="shrink-0 text-zinc-400">Created {formatDate(u.createdAt)}</span>
                   </div>
                 </div>
 

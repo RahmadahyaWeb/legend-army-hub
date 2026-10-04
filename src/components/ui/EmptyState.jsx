@@ -1,26 +1,33 @@
 "use client";
 
-import { Inbox } from "lucide-react";
-
+/**
+ * Standard Minimal Empty State Component
+ *
+ * Why this exists:
+ * Presents a calm, uncluttered empty state without oversized illustrations
+ * or decorative icons, keeping focus on clarity and actionable next steps.
+ *
+ * @param {Object} props - Component props
+ * @param {string} [props.title="No data found"] - Primary empty state message
+ * @param {string} [props.description=""] - Optional brief secondary text
+ * @param {React.ReactNode} [props.action] - Optional CTA button
+ * @param {string} [props.className=""] - Additional custom classes
+ */
 export default function EmptyState({
-  icon: Icon = Inbox,
   title = "No data found",
-  description = "There are currently no items to display.",
+  description = "",
   action,
   className = "",
 }) {
   return (
     <div
-      className={`flex flex-col items-center justify-center rounded-2xl border border-dashed border-zinc-300 bg-white p-10 text-center ${className}`}
+      className={`flex flex-col items-center justify-center rounded-xl border border-dashed border-zinc-200 bg-white py-12 px-4 text-center ${className}`}
     >
-      <div className="flex size-12 items-center justify-center rounded-2xl bg-zinc-50 text-zinc-400 border border-zinc-100">
-        <Icon className="size-6 text-zinc-500" />
-      </div>
-
-      <h3 className="mt-4 text-sm font-bold text-zinc-900">{title}</h3>
-      <p className="mt-1 text-xs text-zinc-500 max-w-sm">{description}</p>
-
-      {action && <div className="mt-5">{action}</div>}
+      <p className="text-sm font-semibold text-zinc-900">{title}</p>
+      {description && (
+        <p className="mt-1 text-xs text-zinc-500 max-w-sm">{description}</p>
+      )}
+      {action && <div className="mt-4">{action}</div>}
     </div>
   );
 }

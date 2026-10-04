@@ -15,7 +15,7 @@ import {
   fetchAttendance,
   saveAttendance,
 } from "@/lib/api";
-import { SkeletonTable } from "@/components/ui/LoadingState";
+import Loading from "@/components/ui/Loading";
 import EmptyState from "@/components/ui/EmptyState";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
@@ -279,7 +279,7 @@ export default function AttendancePage() {
       )}
 
       {/* FILTER BAR */}
-      <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between rounded-2xl border border-zinc-200 bg-white p-3.5 sm:p-4 shadow-xs">
+      <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between rounded-xl border border-zinc-200 bg-white p-3 sm:p-4">
         <div className="flex flex-1 items-center gap-2 sm:max-w-md">
           <Input
             icon={Search}
@@ -295,7 +295,7 @@ export default function AttendancePage() {
           <Select
             value={selectedTeam}
             onChange={(e) => setSelectedTeam(e.target.value)}
-            className="!h-9 !py-0 text-xs font-semibold"
+            className="!h-9 !py-0 text-xs font-medium"
           >
             <option value="all">All Teams</option>
             {matchTeams.map((team) => (
@@ -308,7 +308,7 @@ export default function AttendancePage() {
           <Select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="!h-9 !py-0 text-xs font-semibold"
+            className="!h-9 !py-0 text-xs font-medium"
           >
             <option value="all">All Status</option>
             <option value="present">Present ({summaryCounts.present})</option>
@@ -321,16 +321,15 @@ export default function AttendancePage() {
 
       {/* ATTENDANCE TABLE */}
       {loadingLeagues || loadingMatch ? (
-        <SkeletonTable rows={8} />
+        <Loading message="Loading attendance records..." />
       ) : matchRoster.length === 0 ? (
         <EmptyState
-          icon={Users}
-          title="No roster members in this match"
-          description="Assign players to this guild league lineup to start recording attendance."
+          title="No players in this event"
+          description="Assign players to this lineup to start tracking attendance."
           action={
             <Link href={`/admin/guild-leagues/${selectedLeagueId}`}>
-              <Button variant="primary" size="sm" icon={UserCheck}>
-                Assign Lineup Roster
+              <Button variant="primary" size="sm">
+                Assign Lineup
               </Button>
             </Link>
           }

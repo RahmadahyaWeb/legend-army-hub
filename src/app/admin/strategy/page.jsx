@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { fetchStrategies, saveStrategy, deleteStrategy } from "@/lib/api";
 import { sendStrategyToDiscord } from "@/services/strategy/strategyDiscordService";
-import { PageLoading } from "@/components/ui/LoadingState";
+import Loading from "@/components/ui/Loading";
 import { useToast } from "@/components/ui/ToastProvider";
 import StrategyList from "@/components/strategy/StrategyList";
 import StrategyEditor from "@/components/strategy/StrategyEditor";
@@ -135,17 +135,17 @@ export default function StrategyPage() {
   };
 
   if (loading) {
-    return <PageLoading message="Loading battle playbooks..." />;
+    return <Loading message="Loading playbooks..." />;
   }
 
   return (
-    <div className="space-y-4 sm:space-y-6">
+    <div className="space-y-6">
       <div>
-        <h1 className="text-xl sm:text-2xl font-black text-zinc-900 tracking-tight">
+        <h1 className="text-xl sm:text-2xl font-bold text-zinc-900 tracking-tight">
           Tactical Strategies
         </h1>
-        <p className="mt-1 text-xs text-zinc-500">
-          Create, edit, and broadcast strategic guidelines, barricade maneuvers, and boss rotations
+        <p className="mt-0.5 text-xs text-zinc-500">
+          Create, edit, and broadcast strategic guidelines and rotations
         </p>
       </div>
 

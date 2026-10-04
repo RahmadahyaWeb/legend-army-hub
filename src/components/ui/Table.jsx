@@ -10,7 +10,7 @@
 
 export function Table({ children, className = "", ...rest }) {
   return (
-    <div className="w-full overflow-x-auto rounded-2xl border border-zinc-200 bg-white shadow-2xs">
+    <div className="w-full overflow-x-auto rounded-xl border border-zinc-200 bg-white shadow-2xs">
       <table className={`w-full text-left text-xs sm:text-sm ${className}`} {...rest}>
         {children}
       </table>

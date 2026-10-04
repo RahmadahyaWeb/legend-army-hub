@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { fetchMembers, saveMember } from "@/lib/api";
 import { formatNumber } from "@/utils/formatters";
-import { SkeletonTable } from "@/components/ui/LoadingState";
+import Loading from "@/components/ui/Loading";
 import EmptyState from "@/components/ui/EmptyState";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
@@ -231,11 +231,11 @@ export default function MembersPage() {
       </div>
 
       {/* FILTER CONTROLS BAR */}
-      <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between rounded-2xl border border-zinc-200 bg-white p-3.5 sm:p-4 shadow-xs">
+      <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between rounded-xl border border-zinc-200 bg-white p-3 sm:p-4">
         <div className="flex flex-1 items-center gap-2 sm:max-w-md">
           <Input
             icon={Search}
-            placeholder="Search by nickname, class, or role..."
+            placeholder="Search nickname, class, or role..."
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
@@ -253,12 +253,12 @@ export default function MembersPage() {
               setStatusFilter(e.target.value);
               setPage(1);
             }}
-            className="!h-9 !py-0 text-xs font-semibold"
+            className="!h-9 !py-0 text-xs font-medium"
           >
             <option value="all">All Status ({members.length})</option>
-            <option value="active">Active Only ({activeCount})</option>
+            <option value="active">Active ({activeCount})</option>
             <option value="inactive">
-              Inactive Only ({members.length - activeCount})
+              Inactive ({members.length - activeCount})
             </option>
           </Select>
 
@@ -268,11 +268,11 @@ export default function MembersPage() {
               setPageSize(Number(e.target.value));
               setPage(1);
             }}
-            className="!h-9 !py-0 text-xs font-semibold"
+            className="!h-9 !py-0 text-xs font-medium"
           >
             {PAGE_SIZE_OPTIONS.map((size) => (
               <option key={size} value={size}>
-                {size} per page
+                {size} / page
               </option>
             ))}
           </Select>
@@ -281,21 +281,19 @@ export default function MembersPage() {
 
       {/* MEMBERS TABLE */}
       {loading ? (
-        <SkeletonTable rows={10} />
+        <Loading message="Loading members..." />
       ) : sortedMembers.length === 0 ? (
         <EmptyState
-          icon={Users}
-          title="No guild members found"
+          title="No members found"
           description={
             search || statusFilter !== "all"
               ? "No characters match your search filters."
-              : "Start by importing member CSV data or manually adding members."
+              : "Import members via CSV or add a member to get started."
           }
           action={
             <Button
               variant="primary"
               size="sm"
-              icon={UserPlus}
               onClick={() => setImportModalOpen(true)}
             >
               Import Members

@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo } from "react";
-import { Trophy } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/Card";
 import { ClassBadge } from "@/utils/classColors";
 import { formatNumber } from "@/utils/formatters";
@@ -26,14 +25,9 @@ export default function GearLeaderboardCard({ members = [] }) {
   return (
     <Card className="overflow-hidden">
       <CardHeader>
-        <div className="flex items-center gap-3">
-          <div className="flex size-9 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
-            <Trophy className="size-4.5" />
-          </div>
-          <div>
-            <CardTitle>Top Gear Rating</CardTitle>
-            <CardDescription>Highest Gear Score among active members</CardDescription>
-          </div>
+        <div>
+          <CardTitle>Top Gear Score</CardTitle>
+          <CardDescription>Highest rating among active members</CardDescription>
         </div>
       </CardHeader>
 
@@ -43,50 +37,35 @@ export default function GearLeaderboardCard({ members = [] }) {
             {topMembers.map((member, index) => (
               <div
                 key={member.id || index}
-                className="flex items-center gap-3 px-4 py-3 sm:px-6 hover:bg-zinc-50/70 transition"
+                className="flex items-center gap-3 px-4 py-2.5 sm:px-5 hover:bg-zinc-50/70 transition-colors"
               >
-                <div
-                  className={`flex size-6.5 shrink-0 items-center justify-center rounded-full text-[11px] font-black font-mono select-none ${
-                    index === 0
-                      ? "bg-amber-100 text-amber-800"
-                      : index === 1
-                      ? "bg-zinc-200 text-zinc-800"
-                      : index === 2
-                      ? "bg-orange-100 text-orange-800"
-                      : "bg-zinc-100 text-zinc-500"
-                  }`}
-                >
+                <span className="w-5 text-center text-xs font-mono font-medium text-zinc-400">
                   {index + 1}
-                </div>
+                </span>
 
-                <div className="min-w-0 flex-1">
-                  <div className="truncate text-xs sm:text-sm font-bold text-zinc-900">
-                    {member.nickname}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="truncate text-xs font-medium text-zinc-900">
+                      {member.nickname}
+                    </span>
+                    <ClassBadge className={member.className || member.class} size="xs" />
                   </div>
-                  <div className="mt-0.5 flex flex-wrap items-center gap-1.5 text-xs text-zinc-500">
-                    <ClassBadge className={member.className} size="xs" />
-                    {Number(member.level) > 0 && (
-                      <span className="text-[10px] text-zinc-400 font-medium">
-                        Lv. {member.level}
-                      </span>
-                    )}
+                  <div className="text-[11px] text-zinc-400">
+                    Lv. {member.level || 0}
                   </div>
                 </div>
 
-                <div className="shrink-0 text-right">
-                  <div className="text-xs sm:text-sm font-bold tabular-nums font-mono text-zinc-900">
+                <div className="text-right shrink-0">
+                  <span className="font-mono text-xs font-semibold text-zinc-900">
                     {formatNumber(member.gearScore)}
-                  </div>
-                  <div className="text-[9px] font-bold uppercase tracking-wider text-zinc-400">
-                    GS
-                  </div>
+                  </span>
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          <div className="px-5 py-10 text-center text-xs text-zinc-400">
-            No gear score data recorded.
+          <div className="py-8 text-center text-xs text-zinc-400">
+            No member gear scores recorded yet.
           </div>
         )}
       </CardContent>

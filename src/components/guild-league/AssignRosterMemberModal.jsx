@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import {
   Loader2,
   Search,
-  Sparkles,
   UserPlus,
   Users,
   X,
@@ -252,16 +251,16 @@ export default function AssignRosterMemberModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-3 sm:p-4 animate-in fade-in duration-150">
-      <div className="flex max-h-[92vh] w-full max-w-xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl border border-zinc-200">
+      <div className="flex max-h-[92vh] w-full max-w-xl flex-col overflow-hidden rounded-xl bg-white shadow-xl border border-zinc-200">
         {/* HEADER */}
         <div className="flex shrink-0 items-center justify-between border-b border-zinc-200 px-4 sm:px-6 py-3.5 bg-zinc-50/70">
           <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
-            <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-red-600 text-xs font-black text-white shadow-xs">
+            <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-zinc-900 text-xs font-semibold text-white">
               T{teamNumber}
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-2">
-                <h3 className="text-sm sm:text-base font-bold text-zinc-900 truncate">
+                <h3 className="text-sm sm:text-base font-semibold text-zinc-900 truncate">
                   Assign to Team {teamNumber}
                 </h3>
                 <span className="rounded-md border border-red-200 bg-red-50 px-2 py-0.5 text-[11px] font-bold text-red-700 shrink-0">
@@ -445,23 +444,20 @@ export default function AssignRosterMemberModal({
 
         {/* FOOTER */}
         <div className="flex items-center justify-between border-t border-zinc-200 bg-zinc-50 px-4 sm:px-6 py-3">
-          <label className="flex items-center gap-2 text-xs font-semibold text-zinc-700 cursor-pointer select-none">
+          <label className="flex items-center gap-2 text-xs font-medium text-zinc-700 cursor-pointer select-none">
             <input
               type="checkbox"
               checked={autoAdvance}
               onChange={(e) => setAutoAdvance(e.target.checked)}
-              className="size-3.5 rounded border-zinc-300 text-red-600 focus:ring-red-500"
+              className="size-3.5 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-900"
             />
-            <span className="flex items-center gap-1">
-              <Sparkles className="size-3 text-amber-500" />
-              <span>Auto-advance to next empty slot</span>
-            </span>
+            <span>Auto-advance to next empty slot</span>
           </label>
 
           <button
             type="button"
             onClick={onClose}
-            className="rounded-xl border border-zinc-300 bg-white px-4 py-1.5 text-xs font-bold text-zinc-700 hover:bg-zinc-50 transition shadow-xs"
+            className="rounded-lg border border-zinc-300 bg-white px-4 py-1.5 text-xs font-medium text-zinc-700 hover:bg-zinc-50 transition"
           >
             Done
           </button>

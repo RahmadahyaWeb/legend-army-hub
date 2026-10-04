@@ -29,36 +29,36 @@ export default function LaneSection({
     laneConfig?.description ?? "Assign these teams to Top, Mid or Bot Lane.";
 
   return (
-    <section className="overflow-hidden rounded-2xl border border-line bg-surface-100">
+    <section className="overflow-hidden rounded-xl border border-zinc-200 bg-white">
       <div
         className={[
           "border-b px-5 py-4 sm:px-6",
-          laneConfig ? laneConfig.headerClassName : "border-line bg-zinc-50",
+          laneConfig ? laneConfig.headerClassName : "border-zinc-200 bg-zinc-50",
         ].join(" ")}
       >
         <div className="flex items-center justify-between gap-4">
           <div className="flex min-w-0 items-center gap-3">
             <div
               className={[
-                "flex size-10 shrink-0 items-center justify-center rounded-xl",
+                "flex size-9 shrink-0 items-center justify-center rounded-lg",
                 laneConfig
                   ? laneConfig.iconClassName
-                  : "bg-zinc-200 text-zinc-600",
+                  : "bg-zinc-100 text-zinc-600",
               ].join(" ")}
             >
               <MapPin className="size-4" />
             </div>
 
             <div>
-              <h2 className="text-sm font-bold uppercase tracking-wider text-content-strong">
+              <h2 className="text-sm font-semibold uppercase tracking-wider text-zinc-900">
                 {title}
               </h2>
 
-              <p className="mt-1 text-xs text-content-muted">{description}</p>
+              <p className="mt-0.5 text-xs text-zinc-500">{description}</p>
             </div>
           </div>
 
-          <div className="shrink-0 rounded-lg bg-white/70 px-3 py-1.5 text-xs font-semibold text-content">
+          <div className="shrink-0 rounded-md border border-zinc-200 bg-white px-2.5 py-1 text-xs font-medium text-zinc-700">
             {teamNumbers.length} {teamNumbers.length === 1 ? "Team" : "Teams"}
           </div>
         </div>

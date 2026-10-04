@@ -26,10 +26,10 @@ export default function Tabs({ tabs, activeTab, onChange, className = "" }) {
             key={tab.id}
             type="button"
             onClick={() => onChange(tab.id)}
-            className={`inline-flex shrink-0 items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold transition-all shadow-2xs select-none ${
+            className={`inline-flex shrink-0 items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-xs font-medium transition select-none ${
               isActive
-                ? "bg-zinc-900 text-white shadow-xs"
-                : "bg-white border border-zinc-200 text-zinc-700 hover:bg-zinc-50"
+                ? "bg-zinc-900 text-white"
+                : "bg-white border border-zinc-200 text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900"
             }`}
           >
             {Icon && <Icon className="size-3.5 shrink-0" />}

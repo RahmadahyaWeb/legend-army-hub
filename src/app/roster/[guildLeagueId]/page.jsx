@@ -12,7 +12,7 @@ import {
   Zap,
 } from "lucide-react";
 import { fetchGuildLeagueDetail } from "@/lib/api";
-import { RosterDetailSkeleton } from "@/components/ui/LoadingState";
+import Loading from "@/components/ui/Loading";
 import GuildLeagueHeaderCard from "@/components/guild-league/GuildLeagueHeaderCard";
 import TacticalDirectivesBar from "@/components/guild-league/TacticalDirectivesBar";
 import LaneGroupSection from "@/components/guild-league/LaneGroupSection";
@@ -140,31 +140,22 @@ export default function PublicRosterPage() {
   }, [laneGroups, roster, membersPerTeam]);
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-zinc-50 p-4 sm:p-6 lg:p-8">
-        <div className="mx-auto max-w-7xl">
-          <RosterDetailSkeleton />
-        </div>
-      </div>
-    );
+    return <Loading fullScreen message="Loading roster lineup..." />;
   }
 
   if (error || !guildLeague) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-zinc-50 p-4">
-        <div className="w-full max-w-md rounded-2xl border border-zinc-200 bg-white p-6 text-center shadow-xs">
-          <div className="flex size-12 mx-auto items-center justify-center rounded-2xl bg-red-50 text-red-700">
-            <Swords className="size-6" />
-          </div>
-          <h2 className="mt-4 text-base font-bold text-zinc-900">
-            Match Lineup Not Found
+        <div className="w-full max-w-sm rounded-xl border border-zinc-200 bg-white p-6 text-center">
+          <h2 className="text-base font-semibold text-zinc-900">
+            Event Not Found
           </h2>
           <p className="mt-1 text-xs text-zinc-500">
-            {error || "The requested guild league roster could not be loaded."}
+            {error || "The requested event lineup could not be found."}
           </p>
           <Link
             href="/"
-            className="mt-5 inline-flex items-center gap-2 rounded-xl bg-brand-600 px-4 py-2 text-xs font-bold text-white shadow-xs hover:bg-brand-700 transition"
+            className="mt-4 inline-flex items-center gap-1.5 rounded-lg bg-zinc-900 px-3.5 py-2 text-xs font-medium text-white hover:bg-zinc-800 transition"
           >
             <ArrowLeft className="size-3.5" />
             <span>Return to Hub</span>
@@ -256,13 +247,13 @@ export default function PublicRosterPage() {
         {/* BATTLEFIELD TEAMS / LANE SECTIONS */}
         {isPolarity ? (
           <div className="space-y-4 animate-in fade-in duration-200">
-            <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between rounded-2xl border border-cyan-200 bg-white p-3.5 sm:p-4 shadow-xs">
+            <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between rounded-xl border border-zinc-200 bg-white p-3.5 sm:p-4 shadow-xs">
               <div className="flex items-center gap-2.5 sm:gap-3">
-                <div className="flex size-8 sm:size-9 shrink-0 items-center justify-center rounded-xl bg-cyan-50 border border-cyan-200 text-cyan-700">
+                <div className="flex size-8 sm:size-9 shrink-0 items-center justify-center rounded-lg bg-zinc-100 text-zinc-700">
                   <Layers className="size-4" />
                 </div>
                 <div>
-                  <h2 className="text-sm sm:text-base font-bold text-zinc-900">
+                  <h2 className="text-sm sm:text-base font-semibold text-zinc-900">
                     Polarity Battle Formations
                   </h2>
                   <p className="text-[11px] text-zinc-500">
@@ -270,7 +261,7 @@ export default function PublicRosterPage() {
                   </p>
                 </div>
               </div>
-              <span className="rounded-md border border-cyan-200 bg-cyan-50 px-2 py-0.5 text-[10px] sm:text-[11px] font-bold text-cyan-700 self-start sm:self-center">
+              <span className="rounded-md border border-zinc-200 bg-zinc-50 px-2 py-0.5 text-[10px] sm:text-[11px] font-medium text-zinc-700 self-start sm:self-center">
                 {totalAssigned}/50 Players Deployed
               </span>
             </div>
@@ -298,13 +289,13 @@ export default function PublicRosterPage() {
           </div>
         ) : isWoe ? (
           <div className="space-y-4 animate-in fade-in duration-200">
-            <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between rounded-2xl border border-zinc-200 bg-white p-3.5 sm:p-4 shadow-xs">
+            <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between rounded-xl border border-zinc-200 bg-white p-3.5 sm:p-4 shadow-xs">
               <div className="flex items-center gap-2.5 sm:gap-3">
-                <div className="flex size-8 sm:size-9 shrink-0 items-center justify-center rounded-xl bg-amber-50 border border-amber-200 text-amber-700">
+                <div className="flex size-8 sm:size-9 shrink-0 items-center justify-center rounded-lg bg-zinc-100 text-zinc-700">
                   <Castle className="size-4" />
                 </div>
                 <div>
-                  <h2 className="text-sm sm:text-base font-bold text-zinc-900">
+                  <h2 className="text-sm sm:text-base font-semibold text-zinc-900">
                     WOE Battle Formations
                   </h2>
                   <p className="text-[11px] text-zinc-500">
@@ -312,7 +303,7 @@ export default function PublicRosterPage() {
                   </p>
                 </div>
               </div>
-              <span className="rounded-md border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] sm:text-[11px] font-bold text-amber-700 self-start sm:self-center">
+              <span className="rounded-md border border-zinc-200 bg-zinc-50 px-2 py-0.5 text-[10px] sm:text-[11px] font-medium text-zinc-700 self-start sm:self-center">
                 {totalAssigned}/{maxRoster} Players Deployed
               </span>
             </div>
