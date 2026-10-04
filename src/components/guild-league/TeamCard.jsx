@@ -118,7 +118,7 @@ export default function TeamCard({
       <div className="divide-y divide-zinc-50 p-1 flex-1">
         {slots.map((slotNum) => {
           const occupant = teamMembers.find(
-            (m) => Number(m.slotNumber) === slotNum
+            (m) => Number(m.slotNumber) === Number(slotNum)
           );
 
           return (
@@ -126,9 +126,11 @@ export default function TeamCard({
               key={slotNum}
               slotNumber={slotNum}
               teamNumber={teamNumber}
+              member={occupant}
               occupant={occupant}
               readOnly={readOnly}
-              onAssign={() => onAssignSlot?.({ teamNumber, slotNumber: slotNum })}
+              onAssign={(slot) => onAssignSlot?.(slot || { teamNumber, slotNumber: slotNum })}
+              onSelect={() => onSelectMember?.(occupant)}
               onManage={() => onSelectMember?.(occupant)}
               onRemove={() => onRemoveMember?.(occupant)}
             />
