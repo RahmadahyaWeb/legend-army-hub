@@ -68,6 +68,7 @@ export async function POST(request) {
     const opponent = body.opponent?.trim() || "TBA";
     const notes = body.notes?.trim() || "";
     const matchDate = body.matchDate || body.date || new Date().toISOString();
+    const status = body.status || "draft";
     const rawEventType = String(body.eventType || "").toLowerCase().trim();
     // Why this exists: Supports three distinct event categories (Guild League, War of Emperium, Polarity)
     // Polarity requires a strict fixed structure of exactly 10 teams with 5 players each (50 max capacity).
