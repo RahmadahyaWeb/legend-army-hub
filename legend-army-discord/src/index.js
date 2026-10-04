@@ -268,22 +268,22 @@ async function handleGuildLeague(request, env, corsHeaders) {
 	const fields = [];
 
 	if (isPolarity) {
-		// POLARITY: Cukup bagikan lineup 10 party
+		// POLARITY: Share 10-party lineup
 		fields.push({
-			name: '📅 Tanggal',
+			name: '📅 Match Date',
 			value: `**${date}**`,
 			inline: true,
 		});
 
 		fields.push({
-			name: '👥 Total Roster Polarity',
-			value: `${totalAssigned} / 50 Pemain (${fillPercentage}%)`,
+			name: '👥 Polarity Roster',
+			value: `${totalAssigned} / 50 Players (${fillPercentage}%)`,
 			inline: true,
 		});
 
 		if (notes && String(notes).trim()) {
 			fields.push({
-				name: '📝 Catatan',
+				name: '📝 Notes',
 				value: String(notes).slice(0, 1024),
 				inline: false,
 			});
@@ -294,11 +294,11 @@ async function handleGuildLeague(request, env, corsHeaders) {
 			if (activeTeamsList.length > 0) {
 				const teamLines = activeTeamsList.slice(0, 10).map((t) => {
 					const count = t.members ? t.members.length : (t.memberCount || 0);
-					return `• **Party ${t.teamNumber}: ${t.name || `Party ${t.teamNumber}`}** (${count}/5 pemain)`;
+					return `• **Party ${t.teamNumber}: ${t.name || `Party ${t.teamNumber}`}** (${count}/5 players)`;
 				});
 
 				fields.push({
-					name: '📋 Pembagian Lineup (10 Tim)',
+					name: '📋 Squad Formations (10 Parties)',
 					value: teamLines.join('\n').slice(0, 1024),
 					inline: false,
 				});
@@ -306,35 +306,35 @@ async function handleGuildLeague(request, env, corsHeaders) {
 		}
 
 		fields.push({
-			name: '🌐 Link Lineup Polarity',
-			value: `👉 **[Klik untuk Buka Lineup Polarity](${rosterUrl})**`,
+			name: '🌐 Polarity Lineup Link',
+			value: `👉 **[View Polarity Lineup](${rosterUrl})**`,
 			inline: false,
 		});
 	} else if (isWoe) {
-		// WOE: Cukup bagikan lineup squad kastil
+		// WOE: Share castle squad lineup
 		fields.push({
-			name: '📅 Tanggal',
+			name: '📅 Match Date',
 			value: `**${date}**`,
 			inline: true,
 		});
 
 		if (opponent && String(opponent).trim()) {
 			fields.push({
-				name: '🏰 Target Kastil',
+				name: '🏰 Target Castle',
 				value: `**${opponent}**`,
 				inline: true,
 			});
 		}
 
 		fields.push({
-			name: '👥 Total Roster WOE',
-			value: `${totalAssigned} / ${totalCapacity} Pemain (${fillPercentage}%)`,
+			name: '👥 WOE Roster',
+			value: `${totalAssigned} / ${totalCapacity} Players (${fillPercentage}%)`,
 			inline: true,
 		});
 
 		if (notes && String(notes).trim()) {
 			fields.push({
-				name: '📝 Catatan',
+				name: '📝 Notes',
 				value: String(notes).slice(0, 1024),
 				inline: false,
 			});
@@ -345,15 +345,15 @@ async function handleGuildLeague(request, env, corsHeaders) {
 			if (activeTeamsList.length > 0) {
 				const teamLines = activeTeamsList.slice(0, 12).map((t) => {
 					const count = t.members ? t.members.length : (t.memberCount || 0);
-					return `• **${t.name || `Squad ${t.teamNumber}`}** (${count} pemain)`;
+					return `• **${t.name || `Squad ${t.teamNumber}`}** (${count} players)`;
 				});
 
 				if (activeTeamsList.length > 12) {
-					teamLines.push(`*...dan ${activeTeamsList.length - 12} tim lainnya*`);
+					teamLines.push(`*...and ${activeTeamsList.length - 12} more squads*`);
 				}
 
 				fields.push({
-					name: '📋 Pembagian Squad WOE',
+					name: '📋 WOE Squad Formations',
 					value: teamLines.join('\n').slice(0, 1024),
 					inline: false,
 				});
@@ -361,33 +361,33 @@ async function handleGuildLeague(request, env, corsHeaders) {
 		}
 
 		fields.push({
-			name: '🌐 Link Lineup WOE',
-			value: `👉 **[Klik untuk Buka Lineup WOE](${rosterUrl})**`,
+			name: '🌐 WOE Lineup Link',
+			value: `👉 **[View WOE Lineup](${rosterUrl})**`,
 			inline: false,
 		});
 	} else {
 		// GUILD LEAGUE: Lineup 3 Lane
 		fields.push({
-			name: '📅 Tanggal Match',
+			name: '📅 Match Date',
 			value: `**${date}**`,
 			inline: true,
 		});
 
 		fields.push({
-			name: '⚔️ Lawan',
+			name: '⚔️ Opponent',
 			value: opponent ? `**${opponent}**` : '*TBA*',
 			inline: true,
 		});
 
 		fields.push({
-			name: '👥 Total Roster Guild League',
-			value: `${totalAssigned} / ${totalCapacity} Pemain (${fillPercentage}%)`,
+			name: '👥 Guild League Roster',
+			value: `${totalAssigned} / ${totalCapacity} Players (${fillPercentage}%)`,
 			inline: true,
 		});
 
 		if (notes && String(notes).trim()) {
 			fields.push({
-				name: '📝 Catatan',
+				name: '📝 Notes',
 				value: String(notes).slice(0, 1024),
 				inline: false,
 			});
@@ -399,15 +399,15 @@ async function handleGuildLeague(request, env, corsHeaders) {
 				const teamLines = activeTeamsList.slice(0, 8).map((t) => {
 					const count = t.members ? t.members.length : (t.memberCount || 0);
 					const laneText = t.lane ? ` • *Lane: ${t.lane}*` : '';
-					return `• **${t.name || `Team ${t.teamNumber}`}** (${count} pemain)${laneText}`;
+					return `• **${t.name || `Team ${t.teamNumber}`}** (${count} players)${laneText}`;
 				});
 
 				if (activeTeamsList.length > 8) {
-					teamLines.push(`*...dan ${activeTeamsList.length - 8} tim lainnya*`);
+					teamLines.push(`*...and ${activeTeamsList.length - 8} more teams*`);
 				}
 
 				fields.push({
-					name: '📋 Pembagian Lineup (3 Lane)',
+					name: '📋 Team Formations (3 Lanes)',
 					value: teamLines.join('\n').slice(0, 1024),
 					inline: false,
 				});
@@ -415,8 +415,8 @@ async function handleGuildLeague(request, env, corsHeaders) {
 		}
 
 		fields.push({
-			name: '🌐 Link Lineup Guild League',
-			value: `👉 **[Klik untuk Buka Lineup Guild League](${rosterUrl})**`,
+			name: '🌐 Guild League Lineup Link',
+			value: `👉 **[View Guild League Lineup](${rosterUrl})**`,
 			inline: false,
 		});
 	}
@@ -424,35 +424,35 @@ async function handleGuildLeague(request, env, corsHeaders) {
 	// Embed Header Description & Color tailoring
 	const embedConfig = isPolarity
 		? {
-				title: `💠 Lineup Polarity: ${name}`,
+				title: `💠 Polarity Lineup: ${name}`,
 				color: 2339316, // Cyan / Aqua
 				description: [
-					'📢 **Lineup Polarity telah diperbarui.**',
-					'Silakan cek pembagian tim dan slot kalian:',
-					`🔗 **[👉 Lihat Lineup Polarity](${rosterUrl})**`,
+					'📢 **Polarity lineup has been updated.**',
+					'Please check your assigned squad and slot position:',
+					`🔗 **[👉 View Polarity Lineup](${rosterUrl})**`,
 				].join('\n'),
-				buttonLabel: 'Buka Lineup Polarity 💠',
+				buttonLabel: 'View Polarity Lineup',
 		  }
 		: isWoe
 		? {
-				title: `🏰 Lineup War of Emperium: ${name}`,
+				title: `🏰 War of Emperium Lineup: ${name}`,
 				color: 15844367, // Gold / Amber
 				description: [
-					'📢 **Lineup WOE telah diperbarui.**',
-					'Silakan cek pembagian squad dan slot kalian:',
-					`🔗 **[👉 Lihat Lineup WOE](${rosterUrl})**`,
+					'📢 **WOE lineup has been updated.**',
+					'Please check your assigned squad and slot position:',
+					`🔗 **[👉 View WOE Lineup](${rosterUrl})**`,
 				].join('\n'),
-				buttonLabel: 'Buka Lineup WOE 🏰',
+				buttonLabel: 'View WOE Lineup',
 		  }
 		: {
-				title: `⚔️ Lineup Guild League: ${name}`,
+				title: `⚔️ Guild League Lineup: ${name}`,
 				color: 15158332, // Crimson / Red
 				description: [
-					'📢 **Lineup Guild League telah diperbarui.**',
-					'Silakan periksa lane assignment (Top/Mid/Bot) dan slot kalian:',
-					`🔗 **[👉 Lihat Lineup Guild League](${rosterUrl})**`,
+					'📢 **Guild League lineup has been updated.**',
+					'Please check your lane assignment (Top/Mid/Bot) and slot position:',
+					`🔗 **[👉 View Guild League Lineup](${rosterUrl})**`,
 				].join('\n'),
-				buttonLabel: 'Buka Lineup Guild League ⚔️',
+				buttonLabel: 'View Guild League Lineup',
 		  };
 
 	const discordPayload = {
