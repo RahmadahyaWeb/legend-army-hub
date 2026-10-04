@@ -11,8 +11,8 @@ import { requireAdmin } from "@/lib/auth";
  * @returns {Promise<NextResponse>} Upserted team record
  */
 export async function PUT(request, { params }) {
-  const authError = await requireAdmin(request);
-  if (authError) return authError;
+  const authCheck = await requireAdmin(request);
+  if (authCheck instanceof NextResponse) return authCheck;
 
   try {
     const { id: guildLeagueId } = await params;

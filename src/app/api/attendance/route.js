@@ -74,8 +74,8 @@ export async function GET(request) {
  * @returns {Promise<NextResponse>} Recorded attendance row
  */
 export async function POST(request) {
-  const authError = await requireAdmin(request);
-  if (authError) return authError;
+  const authCheck = await requireAdmin(request);
+  if (authCheck instanceof NextResponse) return authCheck;
 
   try {
     const sql = getDb();

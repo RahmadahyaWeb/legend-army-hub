@@ -205,7 +205,10 @@ export async function copyRoster(targetLeagueId, sourceLeagueId, overwrite = tru
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ sourceLeagueId, overwrite }),
   });
-  if (!res.ok) throw new Error("Failed to copy roster");
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || "Failed to copy roster");
+  }
   clearCache(`guild_league_detail_${targetLeagueId}`);
   clearCache("guild_leagues");
   return await res.json();

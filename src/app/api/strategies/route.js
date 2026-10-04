@@ -48,8 +48,8 @@ export async function GET() {
  * @returns {Promise<NextResponse>} Created strategy record
  */
 export async function POST(request) {
-  const authError = await requireAdmin(request);
-  if (authError) return authError;
+  const authCheck = await requireAdmin(request);
+  if (authCheck instanceof NextResponse) return authCheck;
 
   try {
     const sql = getDb();
@@ -87,8 +87,8 @@ export async function POST(request) {
  * @returns {Promise<NextResponse>} Updated strategy record
  */
 export async function PUT(request) {
-  const authError = await requireAdmin(request);
-  if (authError) return authError;
+  const authCheck = await requireAdmin(request);
+  if (authCheck instanceof NextResponse) return authCheck;
 
   try {
     const sql = getDb();
@@ -133,8 +133,8 @@ export async function PUT(request) {
  * @returns {Promise<NextResponse>} Confirmation of deletion
  */
 export async function DELETE(request) {
-  const authError = await requireAdmin(request);
-  if (authError) return authError;
+  const authCheck = await requireAdmin(request);
+  if (authCheck instanceof NextResponse) return authCheck;
 
   try {
     const sql = getDb();
