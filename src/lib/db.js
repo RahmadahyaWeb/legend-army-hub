@@ -137,6 +137,61 @@ export async function initDatabase() {
     );
   `;
 
+  // Valkyrie Cup Tournament Tables
+  // Why this exists:
+  // Stores tournament registration records, reviews, and 8-player team rosters
+  // with normalized structure and cascade deletion when registrations are removed.
+  await sql`
+    CREATE TABLE IF NOT EXISTS valkyrie_cup_registrations (
+      id VARCHAR(64) PRIMARY KEY,
+      user_id VARCHAR(64) NOT NULL,
+      team_name VARCHAR(128) NOT NULL,
+      guild VARCHAR(32) NOT NULL,
+      status VARCHAR(32) NOT NULL DEFAULT 'pending',
+      reviewed_by VARCHAR(128),
+      reviewed_at TIMESTAMPTZ,
+      rejection_reason TEXT DEFAULT '',
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      updated_at TIMESTAMPTZ DEFAULT NOW(),
+      CONSTRAINT chk_vc_guild CHECK (guild IN ('LegendArmy1', 'LegendArmy2')),
+      CONSTRAINT chk_vc_status CHECK (status IN ('pending', 'approved', 'rejected'))
+    );
+  `;
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS valkyrie_cup_members (
+      id VARCHAR(64) PRIMARY KEY,
+      valkyrie_cup_registration_id VARCHAR(64) NOT NULL REFERENCES valkyrie_cup_registrations(id) ON DELETE CASCADE,
+      nickname VARCHAR(128) NOT NULL,
+      discord_id VARCHAR(128) NOT NULL,
+      role VARCHAR(32) NOT NULL DEFAULT 'member',
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      updated_at TIMESTAMPTZ DEFAULT NOW(),
+      CONSTRAINT chk_vc_member_role CHECK (role IN ('captain', 'member'))
+    );
+  `;
+
+  // Tricky logic: Partial unique index guarantees no duplicate team names among active (pending/approved) registrations,
+  // while permitting a rejected team name to be re-registered later.
+  await sql`
+    CREATE UNIQUE INDEX IF NOT EXISTS uq_vc_active_team_name 
+      ON valkyrie_cup_registrations (LOWER(TRIM(team_name))) 
+      WHERE status IN ('pending', 'approved');
+  `;
+
+  await sql`
+    CREATE INDEX IF NOT EXISTS idx_vc_registrations_status ON valkyrie_cup_registrations(status);
+  `;
+  await sql`
+    CREATE INDEX IF NOT EXISTS idx_vc_registrations_guild ON valkyrie_cup_registrations(guild);
+  `;
+  await sql`
+    CREATE INDEX IF NOT EXISTS idx_vc_registrations_user_id ON valkyrie_cup_registrations(user_id);
+  `;
+  await sql`
+    CREATE INDEX IF NOT EXISTS idx_vc_members_reg_id ON valkyrie_cup_members(valkyrie_cup_registration_id);
+  `;
+
   return { success: true, message: "Database schema initialized successfully." };
 }
 

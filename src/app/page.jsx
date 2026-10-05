@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { Lock } from "lucide-react";
+import { Lock, Trophy } from "lucide-react";
 import { fetchMembers, fetchGuildLeagues } from "@/lib/api";
 import { formatDate, formatNumber, isMemberActive } from "@/utils/formatters";
 import Loading from "@/components/ui/Loading";
@@ -87,26 +87,58 @@ export default function PublicDashboard() {
             </div>
           </Link>
 
-          <Link
-            href="/login"
-            className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-3 text-xs font-medium text-zinc-700 hover:bg-zinc-50 transition-colors"
-          >
-            <Lock className="size-3.5 text-zinc-400" />
-            <span>Admin Sign In</span>
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/valkyrie-cup"
+              className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-amber-200 bg-amber-50/80 px-3 text-xs font-semibold text-amber-900 hover:bg-amber-100/80 transition-colors"
+            >
+              <Trophy className="size-3.5 text-amber-600" />
+              <span>Valkyrie Cup</span>
+            </Link>
+
+            <Link
+              href="/login"
+              className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-3 text-xs font-medium text-zinc-700 hover:bg-zinc-50 transition-colors"
+            >
+              <Lock className="size-3.5 text-zinc-400" />
+              <span>Admin Sign In</span>
+            </Link>
+          </div>
         </div>
       </header>
 
       {/* HERO SECTION */}
       <section className="border-b border-zinc-200 bg-white">
         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
-          <div className="max-w-2xl">
-            <h1 className="text-2xl sm:text-4xl font-bold tracking-tight text-zinc-950">
-              Legend Army Hub
-            </h1>
-            <p className="mt-2 text-xs sm:text-sm text-zinc-500 leading-relaxed">
-              Guild roster lineups, class balance, and tactical battle preparations.
-            </p>
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+            <div className="max-w-2xl">
+              <div className="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-2.5 py-0.5 text-[11px] font-semibold text-amber-900 mb-3">
+                <Trophy className="size-3 text-amber-600" />
+                <span>Featured Event: Valkyrie Cup 8v8 Tournament</span>
+              </div>
+              <h1 className="text-2xl sm:text-4xl font-bold tracking-tight text-zinc-950">
+                Legend Army Hub
+              </h1>
+              <p className="mt-2 text-xs sm:text-sm text-zinc-500 leading-relaxed">
+                Guild roster lineups, class balance, tactical battle preparations, and tournament operations.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+              <Link
+                href="/valkyrie-cup"
+                className="inline-flex h-9 items-center gap-2 rounded-lg bg-zinc-900 px-4 text-xs font-semibold text-white hover:bg-zinc-800 transition-colors"
+              >
+                <Trophy className="size-3.5 text-amber-400" />
+                <span>Enter Valkyrie Cup</span>
+              </Link>
+              <Link
+                href="/valkyrie-cup/teams"
+                className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-3.5 text-xs font-medium text-zinc-700 hover:bg-zinc-50 transition-colors"
+              >
+                <span>View Teams</span>
+              </Link>
+            </div>
           </div>
         </div>
       </section>

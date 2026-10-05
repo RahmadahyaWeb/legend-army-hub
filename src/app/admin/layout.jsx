@@ -11,6 +11,7 @@ import {
   ScrollText,
   ShieldCheck,
   Swords,
+  Trophy,
   UserCheck,
   Users,
   X,
@@ -23,6 +24,11 @@ const navigation = [
     href: "/admin",
     icon: LayoutDashboard,
     exact: true,
+  },
+  {
+    name: "Valkyrie Cup",
+    href: "/admin/valkyrie-cup",
+    icon: Trophy,
   },
   {
     name: "Members",

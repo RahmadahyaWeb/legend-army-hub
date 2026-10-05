@@ -281,3 +281,263 @@ export async function saveAttendance(payload) {
   clearCache("attendance");
   return await res.json();
 }
+
+// ==========================================
+// VALKYRIE CUP TOURNAMENT API CLIENT
+// ==========================================
+
+/**
+ * Fetches public registered teams and tournament summary metrics.
+ *
+ * Why this exists:
+ * Provides client components with cached, filtered lists of tournament teams (pending & approved).
+ *
+ * @param {Object} [filters={}] - Optional filters (guild, status, search)
+ * @param {boolean} [force=false] - Bypass client cache if true
+ * @returns {Promise<{ teams: Array, summary: Object }>} List of teams and summary metrics
+ */
+export async function fetchValkyrieTeams(filters = {}, force = false) {
+  const query = new URLSearchParams();
+  if (filters.guild && filters.guild !== "all") query.set("guild", filters.guild);
+  if (filters.status && filters.status !== "all") query.set("status", filters.status);
+  if (filters.search) query.set("search", filters.search);
+
+  const queryString = query.toString();
+  const cacheKey = `valkyrie_teams_${queryString || "all"}`;
+
+  if (!force) {
+    const cached = getCached(cacheKey);
+    if (cached) return cached;
+  }
+
+  const url = queryString
+    ? `/api/valkyrie-cup/teams?${queryString}`
+    : "/api/valkyrie-cup/teams";
+
+  const res = await fetch(url, { cache: "no-store" });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || "Failed to fetch tournament teams");
+  }
+
+  const data = await res.json();
+  setCached(cacheKey, data);
+  return data;
+}
+
+/**
+ * Fetches public detail and sanitized roster of a single team.
+ *
+ * Why this exists:
+ * Powers the public team roster inspection modal or detail page.
+ *
+ * @param {string} id - Team registration ID
+ * @param {boolean} [force=false] - Bypass client cache if true
+ * @returns {Promise<{ team: Object, roster: Array }>} Team details and member list
+ */
+export async function fetchValkyrieTeamDetail(id, force = false) {
+  const cacheKey = `valkyrie_team_${id}`;
+  if (!force) {
+    const cached = getCached(cacheKey);
+    if (cached) return cached;
+  }
+
+  const res = await fetch(`/api/valkyrie-cup/teams/${encodeURIComponent(id)}`, {
+    cache: "no-store",
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || "Failed to fetch team details");
+  }
+
+  const data = await res.json();
+  setCached(cacheKey, data);
+  return data;
+}
+
+/**
+ * Submits a new Valkyrie Cup team registration.
+ *
+ * Why this exists:
+ * Sends the team details and 8-player roster to the server to establish a pending registration.
+ * Automatically busts cached team lists.
+ *
+ * @param {Object} payload - Team name, guild, captain, and 7 members
+ * @returns {Promise<Object>} Creation confirmation and registration ID
+ */
+export async function submitValkyrieRegistration(payload) {
+  const res = await fetch("/api/valkyrie-cup/registrations", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(data.error || "Failed to submit tournament registration");
+  }
+
+  clearCache("valkyrie_teams");
+  clearCache("valkyrie_admin");
+  clearCache("valkyrie_my");
+  return data;
+}
+
+/**
+ * Fetches user's own registration records including private Discord IDs and rejection feedback.
+ *
+ * Why this exists:
+ * Supplies data to the "My Registration" tab.
+ *
+ * @param {Object} [params={}] - Optional lookup parameters (userId, teamName, captainDiscordId)
+ * @param {boolean} [force=false] - Bypass client cache if true
+ * @returns {Promise<Array>} List of registrations owned by the user
+ */
+export async function fetchMyValkyrieRegistrations(params = {}, force = false) {
+  const query = new URLSearchParams();
+  if (params.userId) query.set("userId", params.userId);
+  if (params.teamName) query.set("teamName", params.teamName);
+  if (params.captainDiscordId) query.set("captainDiscordId", params.captainDiscordId);
+
+  const queryString = query.toString();
+  const cacheKey = `valkyrie_my_${queryString || "self"}`;
+
+  if (!force) {
+    const cached = getCached(cacheKey);
+    if (cached) return cached;
+  }
+
+  const url = queryString
+    ? `/api/valkyrie-cup/my-registration?${queryString}`
+    : "/api/valkyrie-cup/my-registration";
+
+  const res = await fetch(url, { cache: "no-store" });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || "Failed to fetch user registrations");
+  }
+
+  const data = await res.json();
+  const registrations = data.registrations || [];
+  setCached(cacheKey, registrations);
+  return registrations;
+}
+
+/**
+ * Admin: Fetches all tournament registrations across all statuses.
+ *
+ * Why this exists:
+ * Powers the administrative management table with review audit data.
+ *
+ * @param {Object} [filters={}] - Optional filters (status, guild, search)
+ * @param {boolean} [force=false] - Bypass client cache if true
+ * @returns {Promise<{ registrations: Array, summary: Object }>} Registrations list and summary
+ */
+export async function fetchAdminValkyrieRegistrations(filters = {}, force = false) {
+  const query = new URLSearchParams();
+  if (filters.status && filters.status !== "all") query.set("status", filters.status);
+  if (filters.guild && filters.guild !== "all") query.set("guild", filters.guild);
+  if (filters.search) query.set("search", filters.search);
+
+  const queryString = query.toString();
+  const cacheKey = `valkyrie_admin_${queryString || "all"}`;
+
+  if (!force) {
+    const cached = getCached(cacheKey);
+    if (cached) return cached;
+  }
+
+  const url = queryString
+    ? `/api/admin/valkyrie-cup/registrations?${queryString}`
+    : "/api/admin/valkyrie-cup/registrations";
+
+  const res = await fetch(url, { cache: "no-store" });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || "Failed to fetch tournament registrations");
+  }
+
+  const data = await res.json();
+  setCached(cacheKey, data);
+  return data;
+}
+
+/**
+ * Admin: Fetches full registration detail with complete roster and Discord IDs.
+ *
+ * Why this exists:
+ * Supplies complete roster contact details inside the admin review drawer/modal.
+ *
+ * @param {string} id - Registration ID
+ * @returns {Promise<{ registration: Object, roster: Array }>} Full registration record
+ */
+export async function fetchAdminValkyrieRegistrationDetail(id) {
+  const res = await fetch(`/api/admin/valkyrie-cup/registrations/${encodeURIComponent(id)}`, {
+    cache: "no-store",
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || "Failed to fetch registration details");
+  }
+  return await res.json();
+}
+
+/**
+ * Admin: Approves or rejects a team registration.
+ *
+ * Why this exists:
+ * Dispatches administrative review decisions with reviewer attribution and optional feedback.
+ *
+ * @param {string} id - Registration ID
+ * @param {Object} reviewData - { action: 'approve' | 'reject', rejectionReason?: string }
+ * @returns {Promise<Object>} Updated registration confirmation
+ */
+export async function reviewValkyrieRegistration(id, reviewData) {
+  const res = await fetch(
+    `/api/admin/valkyrie-cup/registrations/${encodeURIComponent(id)}/review`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(reviewData),
+    }
+  );
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(data.error || "Failed to process review");
+  }
+
+  clearCache("valkyrie_admin");
+  clearCache("valkyrie_teams");
+  clearCache(`valkyrie_team_${id}`);
+  clearCache("valkyrie_my");
+  return data;
+}
+
+/**
+ * Admin: Deletes a team registration and its roster members.
+ *
+ * Why this exists:
+ * Allows administrative cleanup of unwanted or invalid submissions.
+ *
+ * @param {string} id - Registration ID
+ * @returns {Promise<Object>} Deletion result
+ */
+export async function deleteValkyrieRegistration(id) {
+  const res = await fetch(
+    `/api/admin/valkyrie-cup/registrations/${encodeURIComponent(id)}`,
+    { method: "DELETE" }
+  );
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(data.error || "Failed to delete registration");
+  }
+
+  clearCache("valkyrie_admin");
+  clearCache("valkyrie_teams");
+  clearCache(`valkyrie_team_${id}`);
+  clearCache("valkyrie_my");
+  return data;
+}
+
