@@ -70,7 +70,7 @@ export default function ValkyrieCupPage() {
               Valkyrie Cup
             </h1>
             <p className="mt-3 text-sm sm:text-base text-zinc-600 leading-relaxed max-w-2xl">
-              Competitive 8v8 team tournament between Legend Army combatants. Assemble your 8-player roster,
+              Competitive team tournament between Legend Army combatants. Assemble your squad (minimum 5, maximum 8 players),
               designate your Captain, select your guild, and battle for guild supremacy.
             </p>
 
@@ -174,15 +174,15 @@ export default function ValkyrieCupPage() {
                 <Users className="size-4.5" />
               </div>
               <h3 className="text-sm font-bold text-zinc-900">
-                Strict 8-Player Roster
+                5 to 8 Players Roster
               </h3>
               <p className="mt-2 text-xs text-zinc-500 leading-relaxed">
-                Each team must submit exactly 8 players: 1 designated Team Captain and 7 active team members.
-                Submissions with fewer or more players will be rejected.
+                Each team must submit between 5 and 8 players: 1 designated Team Captain and 4 to 7 active team members.
+                Submissions with fewer than 5 or more than 8 players will be rejected.
               </p>
             </div>
             <div className="mt-4 pt-3 border-t border-zinc-100 text-xs font-semibold text-zinc-700">
-              1 Captain + 7 Members = 8 Total
+              1 Captain + 4 to 7 Members = 5 to 8 Total
             </div>
           </Card>
 

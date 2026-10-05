@@ -48,36 +48,55 @@ function validateRegistrationPayload(body) {
     return "Captain Discord ID is required.";
   }
 
-  if (!Array.isArray(members) || members.length !== 7) {
-    return "Exactly 7 team members must be provided (total 8 players including captain).";
+  if (!Array.isArray(members)) {
+    return "Team members list is required.";
   }
 
-  // Validate each team member
-  const allNicknames = [captainNick.toLowerCase()];
-
+  // Filter filled members while ensuring partial entries (e.g. nickname without Discord ID) are caught
+  const filledMembers = [];
   for (let i = 0; i < members.length; i++) {
     const member = members[i];
     const nick = (member?.nickname || "").trim();
     const discordId = (member?.discordId || "").trim();
 
+    // If neither is filled, skip (for optional slots 5, 6, 7)
+    if (!nick && !discordId) {
+      // If index is within the mandatory first 4 members, require it
+      if (i < 4) {
+        return `Member #${i + 1} is required (minimum 5 total players including Captain).`;
+      }
+      continue;
+    }
+
     if (!nick) {
-      return `Member #${i + 1} Nickname is required.`;
+      return `Member #${i + 1} Nickname is required when Discord ID is provided.`;
     }
 
     if (!discordId) {
-      return `Member #${i + 1} Discord ID is required.`;
+      return `Member #${i + 1} Discord ID is required when Nickname is provided.`;
     }
 
-    const lowerNick = nick.toLowerCase();
-    if (allNicknames.includes(lowerNick)) {
-      return `Duplicate nickname "${nick}" detected. All players in the roster must have unique nicknames.`;
-    }
-
-    allNicknames.push(lowerNick);
+    filledMembers.push({ index: i, nickname: nick, discordId });
   }
 
-  if (allNicknames.length !== 8) {
-    return "The team roster must consist of exactly 8 players.";
+  // Enforce 1 Captain + 4 to 7 Members (Total 5 to 8 players)
+  if (filledMembers.length < 4) {
+    return "At least 4 team members are required (minimum 5 total players including Captain).";
+  }
+
+  if (filledMembers.length > 7) {
+    return "A maximum of 7 team members is allowed (maximum 8 total players including Captain).";
+  }
+
+  // Validate nickname uniqueness across Captain and all filled members
+  const allNicknames = [captainNick.toLowerCase()];
+
+  for (const m of filledMembers) {
+    const lowerNick = m.nickname.toLowerCase();
+    if (allNicknames.includes(lowerNick)) {
+      return `Duplicate nickname "${m.nickname}" detected. All players in the roster must have unique nicknames.`;
+    }
+    allNicknames.push(lowerNick);
   }
 
   return null;
@@ -205,9 +224,15 @@ export async function POST(request) {
       `
     );
 
-    // Queries 3-9: Insert 7 Members
+    // Queries for Members (minimum 4, maximum 7)
     for (let i = 0; i < members.length; i++) {
       const m = members[i];
+      const nick = (m?.nickname || "").trim();
+      const discordId = (m?.discordId || "").trim();
+
+      // Skip empty optional member slots
+      if (!nick && !discordId) continue;
+
       const memId = `vc_mem_${crypto.randomUUID()}`;
       memberQueries.push(
         sql`
@@ -222,8 +247,8 @@ export async function POST(request) {
           ) VALUES (
             ${memId},
             ${registrationId},
-            ${m.nickname.trim()},
-            ${m.discordId.trim()},
+            ${nick},
+            ${discordId},
             'member',
             NOW(),
             NOW()

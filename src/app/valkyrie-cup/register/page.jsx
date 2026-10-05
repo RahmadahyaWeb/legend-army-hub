@@ -130,32 +130,55 @@ export default function ValkyrieRegisterPage() {
       return;
     }
 
-    for (let i = 0; i < members.length; i++) {
+    // Members 1 to 4 are strictly mandatory (1 Captain + 4 Members = 5 players minimum)
+    for (let i = 0; i < 4; i++) {
       if (!members[i].nickname.trim()) {
-        setErrorMessage(`Member #${i + 1} Nickname is required.`);
+        setErrorMessage(`Member #${i + 1} Nickname is required (minimum 5 total players including Captain).`);
         return;
       }
       if (!members[i].discordId.trim()) {
-        setErrorMessage(`Member #${i + 1} Discord ID is required.`);
+        setErrorMessage(`Member #${i + 1} Discord ID is required (minimum 5 total players including Captain).`);
+        return;
+      }
+    }
+
+    // Members 5 to 7 are optional, but if one field is filled, both must be provided
+    for (let i = 4; i < members.length; i++) {
+      const nick = members[i].nickname.trim();
+      const discord = members[i].discordId.trim();
+      if (nick && !discord) {
+        setErrorMessage(`Member #${i + 1} Discord ID is required when Nickname is filled.`);
+        return;
+      }
+      if (!nick && discord) {
+        setErrorMessage(`Member #${i + 1} Nickname is required when Discord ID is filled.`);
         return;
       }
     }
 
     if (duplicateNicknames.size > 0) {
       setErrorMessage(
-        "Duplicate nicknames detected. All 8 players must have unique nicknames within the team."
+        "Duplicate nicknames detected. All players in the roster must have unique nicknames within the team."
       );
       return;
     }
 
-    if (filledCount !== 8) {
-      setErrorMessage("The team roster must consist of exactly 8 players (1 Captain + 7 Members).");
+    if (filledCount < 5 || filledCount > 8) {
+      setErrorMessage("The team roster must consist of between 5 and 8 players (1 Captain and 4 to 7 Members).");
       return;
     }
 
     setLoading(true);
 
     try {
+      const validMembers = members
+        .filter((m) => m.nickname.trim() && m.discordId.trim())
+        .map((m) => ({
+          nickname: m.nickname.trim(),
+          discordId: m.discordId.trim(),
+          role: "member",
+        }));
+
       const payload = {
         teamName: teamName.trim(),
         guild,
@@ -164,11 +187,7 @@ export default function ValkyrieRegisterPage() {
           discordId: captainDiscordId.trim(),
           role: "captain",
         },
-        members: members.map((m) => ({
-          nickname: m.nickname.trim(),
-          discordId: m.discordId.trim(),
-          role: "member",
-        })),
+        members: validMembers,
       };
 
       const res = await submitValkyrieRegistration(payload);
@@ -348,16 +367,16 @@ export default function ValkyrieRegisterPage() {
                   3. Team Members (Players 2 – 8)
                 </h2>
                 <p className="text-xs text-zinc-500">
-                  Enter 7 additional squad members to complete the 8-player roster
+                  Enter between 4 and 7 squad members (minimum 5, maximum 8 total players including Captain)
                 </p>
               </div>
 
               <div className="flex items-center gap-2">
                 <Badge
-                  variant={filledCount === 8 ? "success" : "neutral"}
+                  variant={filledCount >= 5 ? "success" : "neutral"}
                   size="sm"
                 >
-                  {filledCount} / 8 Completed
+                  {filledCount} / 8 Players (Min. 5)
                 </Badge>
               </div>
             </div>
@@ -365,6 +384,7 @@ export default function ValkyrieRegisterPage() {
             <div className="space-y-3.5">
               {members.map((member, index) => {
                 const playerNumber = index + 2;
+                const isMandatory = index < 4;
                 const isDuplicate =
                   member.nickname.trim() &&
                   duplicateNicknames.has(member.nickname.trim().toLowerCase());
@@ -389,8 +409,11 @@ export default function ValkyrieRegisterPage() {
                         </span>
                       </div>
 
-                      <Badge variant="neutral" size="xs">
-                        Member
+                      <Badge
+                        variant={isMandatory ? "neutral" : "outline"}
+                        size="xs"
+                      >
+                        {isMandatory ? "Required" : "Optional"}
                       </Badge>
                     </div>
 
@@ -398,8 +421,10 @@ export default function ValkyrieRegisterPage() {
                       <div>
                         <input
                           type="text"
-                          required
-                          placeholder={`Player ${playerNumber} Nickname`}
+                          required={isMandatory}
+                          placeholder={`Player ${playerNumber} Nickname ${
+                            isMandatory ? "(Required)" : "(Optional)"
+                          }`}
                           value={member.nickname}
                           onChange={(e) =>
                             handleMemberChange(index, "nickname", e.target.value)
@@ -421,8 +446,10 @@ export default function ValkyrieRegisterPage() {
                       <div>
                         <input
                           type="text"
-                          required
-                          placeholder={`Player ${playerNumber} Discord ID`}
+                          required={isMandatory}
+                          placeholder={`Player ${playerNumber} Discord ID ${
+                            isMandatory ? "(Required)" : "(Optional)"
+                          }`}
                           value={member.discordId}
                           onChange={(e) =>
                             handleMemberChange(index, "discordId", e.target.value)
@@ -440,9 +467,10 @@ export default function ValkyrieRegisterPage() {
           {/* SUBMIT BUTTON */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 rounded-xl border border-zinc-200 bg-white p-4">
             <div className="text-xs text-zinc-500">
-              By submitting, your roster of 8 players will enter{" "}
-              <strong className="text-zinc-900 font-semibold">Pending</strong> review by
-              guild leadership.
+              By submitting, your roster of{" "}
+              <strong className="text-zinc-900 font-semibold">{filledCount}</strong> players
+              will enter <strong className="text-zinc-900 font-semibold">Pending</strong> review
+              by guild leadership.
             </div>
 
             <Button
@@ -450,11 +478,11 @@ export default function ValkyrieRegisterPage() {
               variant="primary"
               size="md"
               loading={loading}
-              disabled={filledCount !== 8 || duplicateNicknames.size > 0}
+              disabled={filledCount < 5 || filledCount > 8 || duplicateNicknames.size > 0}
               icon={UserPlus}
               className="w-full sm:w-auto"
             >
-              Submit Registration
+              Submit Registration ({filledCount}/8 Players)
             </Button>
           </div>
         </form>
