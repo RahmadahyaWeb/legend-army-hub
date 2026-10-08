@@ -48,10 +48,10 @@ export default function LaneGroupSection({
       <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between border-2 border-zinc-950 bg-white p-3 sm:p-4 pixel-shadow-sm">
         <div className="flex items-center justify-between sm:justify-start gap-2.5 sm:gap-3">
           <div className="flex items-center gap-2.5 sm:gap-3">
-            <div className="flex size-8 shrink-0 items-center justify-center border-2 border-zinc-950 bg-zinc-100 text-zinc-950 pixel-shadow-sm">
+            <div className="flex size-8 shrink-0 items-center justify-center border-2 border-zinc-950 bg-zinc-100 text-zinc-950 comic-shadow-sm">
               <Icon className="size-4" />
             </div>
-            <h2 className="text-sm sm:text-base font-bold font-pixel text-zinc-950 uppercase tracking-wide">
+            <h2 className="text-sm sm:text-base font-black font-sans text-zinc-950 uppercase tracking-wide">
               {name}
             </h2>
           </div>

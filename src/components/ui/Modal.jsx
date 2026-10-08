@@ -4,11 +4,11 @@ import { useEffect } from "react";
 import { X } from "lucide-react";
 
 /**
- * Accessible Retro Pixel Modal Dialog Container
+ * Accessible Comic Pixel Modal Dialog Container
  *
  * Why this exists:
- * Presents modal dialogs styled after classic Ragnarok Online windows:
- * sharp rectangular silhouettes, 2px solid outlines, retro window headers,
+ * Presents modal dialogs styled after classic Ragnarok Online windows and modern comic panels:
+ * sharp rectangular silhouettes, 2px solid ink outlines, window headers,
  * and tactile close controls, while properly locking scroll and supporting Escape key dismissal.
  *
  * @param {Object} props - Modal configuration
@@ -72,30 +72,30 @@ export default function Modal({
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-100"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-100 font-sans"
     >
       {/* RETRO BACKDROP */}
       <div
-        className="fixed inset-0 bg-black/50 transition-opacity"
+        className="fixed inset-0 bg-black/40 transition-opacity"
         onClick={onClose}
         aria-hidden="true"
       />
 
       {/* PIXEL DIALOG CONTAINER */}
       <div
-        className={`relative flex max-h-[92vh] w-full flex-col overflow-hidden border-2 border-zinc-950 bg-white pixel-shadow-lg animate-in zoom-in-95 duration-100 ${maxWidthClass} ${className}`}
+        className={`relative flex max-h-[92vh] w-full flex-col overflow-hidden border-2 border-zinc-950 bg-white shadow-[4px_4px_0px_#18181b] animate-in zoom-in-95 duration-100 ${maxWidthClass} ${className}`}
       >
         {/* RETRO WINDOW HEADER */}
         {title && (
-          <div className="flex shrink-0 items-center justify-between border-b-2 border-zinc-950 bg-zinc-100 px-4 py-2.5 sm:px-5">
-            <div className="flex items-center gap-2 min-w-0 pr-3">
-              {Icon && <Icon className="size-4 shrink-0 text-zinc-900" />}
+          <div className="flex shrink-0 items-center justify-between border-b-2 border-zinc-950 bg-zinc-100 px-4 py-3 sm:px-5">
+            <div className="flex items-center gap-2.5 min-w-0 pr-3">
+              {Icon && <Icon className="size-4 shrink-0 text-zinc-950" />}
               <div>
-                <h2 className="text-sm sm:text-base font-bold text-zinc-950 tracking-tight leading-tight">
+                <h2 className="text-sm sm:text-base font-bold text-zinc-950 tracking-tight leading-tight font-sans">
                   {title}
                 </h2>
                 {description && (
-                  <p className="text-[11px] text-zinc-600 leading-tight mt-0.5">
+                  <p className="text-[11px] text-zinc-600 leading-tight mt-0.5 font-sans">
                     {description}
                   </p>
                 )}
@@ -105,7 +105,7 @@ export default function Modal({
             <button
               type="button"
               onClick={onClose}
-              className="flex size-7 shrink-0 items-center justify-center border-2 border-zinc-900 bg-white text-zinc-900 hover:bg-red-50 hover:text-red-700 active:translate-x-[1px] active:translate-y-[1px] transition-colors"
+              className="flex size-7 shrink-0 items-center justify-center border-2 border-zinc-950 bg-white text-zinc-950 hover:bg-red-50 hover:text-red-700 active:translate-x-[1px] active:translate-y-[1px] transition-colors cursor-pointer"
               aria-label="Close dialog"
             >
               <X className="size-3.5 stroke-[2.5]" />
@@ -114,11 +114,11 @@ export default function Modal({
         )}
 
         {/* BODY */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-5">{children}</div>
+        <div className="flex-1 overflow-y-auto p-4 sm:p-5 font-sans">{children}</div>
 
         {/* FOOTER */}
         {footer && (
-          <div className="flex shrink-0 items-center justify-end gap-2 border-t-2 border-zinc-950 bg-zinc-50 px-4 py-3 sm:px-5">
+          <div className="flex shrink-0 items-center justify-end gap-2 border-t-2 border-zinc-950 bg-zinc-50 px-4 py-3 sm:px-5 font-sans">
             {footer}
           </div>
         )}
@@ -126,3 +126,4 @@ export default function Modal({
     </div>
   );
 }
+

@@ -38,7 +38,7 @@ export default function ClassCompositionCard({ members = [] }) {
     <Card className="overflow-hidden bg-white">
       <CardHeader>
         <div>
-          <CardTitle pixel>Class Composition</CardTitle>
+          <CardTitle>Class Composition</CardTitle>
           <CardDescription>Active characters by Ragnarok job path</CardDescription>
         </div>
       </CardHeader>

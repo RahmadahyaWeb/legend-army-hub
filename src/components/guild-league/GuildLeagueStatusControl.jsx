@@ -10,12 +10,12 @@ export function GuildLeagueStatusBadge({ status }) {
   return (
     <span
       className={[
-        "inline-flex items-center gap-1.5 border-2 border-zinc-950 px-2.5 py-0.5 text-xs font-mono font-bold uppercase shadow-[1px_1px_0px_#09090b]",
+        "inline-flex items-center gap-1.5 border-2 border-zinc-900 px-2.5 py-0.5 text-xs font-sans font-bold uppercase comic-shadow-sm",
         config.className,
       ].join(" ")}
     >
       <span
-        className={["size-2 rounded-none border border-zinc-950", config.dotClassName].join(" ")}
+        className={["size-2 rounded-none border border-zinc-900", config.dotClassName].join(" ")}
       />
       {config.label}
     </span>
@@ -34,18 +34,18 @@ export default function GuildLeagueStatusControl({
   const config = STATUS_CONFIG[status] ?? STATUS_CONFIG.draft;
 
   return (
-    <div className="border-2 border-zinc-950 bg-white p-4 shadow-[3px_3px_0px_#09090b]">
+    <div className="border-2 border-zinc-900 bg-white p-4 comic-shadow">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="font-pixel text-sm font-bold text-zinc-950">
+            <span className="font-sans text-sm font-bold text-zinc-950">
               Event Status
             </span>
 
             <GuildLeagueStatusBadge status={status} />
           </div>
 
-          <p className="mt-1 text-xs font-mono text-zinc-600">
+          <p className="mt-1 text-xs font-sans text-zinc-600">
             {config.description}
           </p>
         </div>
@@ -56,7 +56,7 @@ export default function GuildLeagueStatusControl({
               type="button"
               onClick={() => onChange("open")}
               disabled={updating}
-              className="inline-flex h-9 items-center justify-center gap-2 border-2 border-zinc-950 bg-emerald-600 px-3 text-xs font-mono font-bold text-white shadow-[2px_2px_0px_#09090b] transition hover:bg-emerald-700 active:translate-x-[1px] active:translate-y-[1px] disabled:opacity-50"
+              className="inline-flex h-9 items-center justify-center gap-2 border-2 border-zinc-900 bg-emerald-600 px-3 text-xs font-sans font-semibold text-white comic-shadow-sm transition hover:bg-emerald-700 active:translate-x-[1px] active:translate-y-[1px] disabled:opacity-50"
             >
               <CheckCircle2 className="size-3.5" />
               Open Event
@@ -69,7 +69,7 @@ export default function GuildLeagueStatusControl({
                 type="button"
                 onClick={() => onChange("draft")}
                 disabled={updating}
-                className="inline-flex h-9 items-center justify-center gap-2 border-2 border-zinc-950 bg-white px-3 text-xs font-mono font-bold text-zinc-900 shadow-[2px_2px_0px_#09090b] transition hover:bg-zinc-100 active:translate-x-[1px] active:translate-y-[1px] disabled:opacity-50"
+                className="inline-flex h-9 items-center justify-center gap-2 border-2 border-zinc-900 bg-white px-3 text-xs font-sans font-semibold text-zinc-900 comic-shadow-sm transition hover:bg-zinc-50 active:translate-x-[1px] active:translate-y-[1px] disabled:opacity-50"
               >
                 <RotateCcw className="size-3.5" />
                 Back to Draft
@@ -79,7 +79,7 @@ export default function GuildLeagueStatusControl({
                 type="button"
                 onClick={() => onChange("completed")}
                 disabled={updating}
-                className="inline-flex h-9 items-center justify-center gap-2 border-2 border-zinc-950 bg-blue-600 px-3 text-xs font-mono font-bold text-white shadow-[2px_2px_0px_#09090b] transition hover:bg-blue-700 active:translate-x-[1px] active:translate-y-[1px] disabled:opacity-50"
+                className="inline-flex h-9 items-center justify-center gap-2 border-2 border-zinc-900 bg-blue-600 px-3 text-xs font-sans font-semibold text-white comic-shadow-sm transition hover:bg-blue-700 active:translate-x-[1px] active:translate-y-[1px] disabled:opacity-50"
               >
                 <CheckCircle2 className="size-3.5" />
                 Complete Event
@@ -92,7 +92,7 @@ export default function GuildLeagueStatusControl({
               type="button"
               onClick={() => onChange("open")}
               disabled={updating}
-              className="inline-flex h-9 items-center justify-center gap-2 border-2 border-zinc-950 bg-white px-3 text-xs font-mono font-bold text-zinc-900 shadow-[2px_2px_0px_#09090b] transition hover:bg-zinc-100 active:translate-x-[1px] active:translate-y-[1px] disabled:opacity-50"
+              className="inline-flex h-9 items-center justify-center gap-2 border-2 border-zinc-900 bg-white px-3 text-xs font-sans font-semibold text-zinc-900 comic-shadow-sm transition hover:bg-zinc-50 active:translate-x-[1px] active:translate-y-[1px] disabled:opacity-50"
             >
               <RotateCcw className="size-3.5" />
               Reopen Event

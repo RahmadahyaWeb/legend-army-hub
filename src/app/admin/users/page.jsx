@@ -117,14 +117,17 @@ export default function AdminUsersPage() {
       <div className="flex flex-col gap-3.5 sm:flex-row sm:items-center sm:justify-between border-b-2 border-zinc-200 pb-4">
         <div>
           <div className="flex flex-wrap items-center gap-2.5">
-            <h1 className="font-pixel text-xl sm:text-2xl font-bold text-zinc-950 tracking-wide">
+            <span className="inline-block px-1.5 py-0.5 text-[10px] font-pixel uppercase tracking-widest bg-brand-100 text-brand-700 border border-brand-300">
+              Security
+            </span>
+            <h1 className="text-xl sm:text-2xl font-bold text-zinc-950 tracking-tight font-sans">
               Admin Accounts
             </h1>
-            <span className="border-2 border-zinc-950 px-2 py-0.5 text-xs font-mono font-bold bg-zinc-100 text-zinc-950 shadow-[1px_1px_0px_#09090b]">
+            <span className="border-2 border-zinc-900 px-2 py-0.5 text-xs font-mono font-bold bg-zinc-100 text-zinc-950 comic-shadow-sm">
               {users.length} Active
             </span>
           </div>
-          <p className="mt-1 text-xs font-mono text-zinc-600">
+          <p className="mt-1 text-xs sm:text-sm text-zinc-600 font-sans">
             Authorized administrator credentials for Legend Army Hub
           </p>
         </div>
@@ -140,9 +143,9 @@ export default function AdminUsersPage() {
       </div>
 
       {/* ADMIN USERS LIST */}
-      <div className="border-2 border-zinc-950 bg-white shadow-[4px_4px_0px_#09090b] overflow-hidden">
-        <div className="border-b-2 border-zinc-950 bg-zinc-50 px-4 sm:px-6 py-3">
-          <h3 className="font-pixel text-xs sm:text-sm font-bold uppercase tracking-wider text-zinc-900">
+      <div className="border-2 border-zinc-900 bg-white comic-shadow overflow-hidden">
+        <div className="border-b-2 border-zinc-900 bg-zinc-50/80 px-4 sm:px-6 py-3">
+          <h3 className="font-sans text-xs sm:text-sm font-bold uppercase tracking-wider text-zinc-900">
             Registered Administrators ({users.length})
           </h3>
         </div>
@@ -151,7 +154,7 @@ export default function AdminUsersPage() {
           {loading ? (
             <Loading message="Loading admins..." />
           ) : users.length === 0 ? (
-            <div className="p-8 text-center text-xs font-mono text-zinc-500">
+            <div className="p-8 text-center text-xs font-sans text-zinc-500">
               No administrator accounts registered yet.
             </div>
           ) : (
@@ -161,20 +164,20 @@ export default function AdminUsersPage() {
                 className="flex items-center justify-between p-4 sm:px-6 hover:bg-zinc-50 transition-colors gap-3"
               >
                 <div className="min-w-0">
-                  <div className="font-bold text-sm text-zinc-950 truncate font-mono">
+                  <div className="font-bold text-sm text-zinc-900 truncate font-sans">
                     {u.displayName || "Admin"}
                   </div>
-                  <div className="text-xs font-mono text-zinc-600 flex flex-wrap items-center gap-2 mt-0.5">
-                    <span className="truncate">{u.email}</span>
+                  <div className="text-xs font-sans text-zinc-600 flex flex-wrap items-center gap-2 mt-0.5">
+                    <span className="truncate font-mono text-[11px]">{u.email}</span>
                     <span className="text-zinc-400">•</span>
-                    <span className="shrink-0 text-zinc-500">Created {formatDate(u.createdAt)}</span>
+                    <span className="shrink-0 text-zinc-500 text-[11px]">Created {formatDate(u.createdAt)}</span>
                   </div>
                 </div>
 
                 <button
                   type="button"
                   onClick={() => handleDelete(u.id, u.email)}
-                  className="flex size-7.5 shrink-0 items-center justify-center border border-zinc-950 bg-white text-zinc-700 hover:bg-red-50 hover:text-red-700 shadow-[1px_1px_0px_#09090b] active:translate-x-[1px] active:translate-y-[1px] transition"
+                  className="flex size-7.5 shrink-0 items-center justify-center border-2 border-zinc-900 bg-white text-zinc-700 hover:bg-red-50 hover:text-red-700 comic-shadow-sm active:translate-x-[1px] active:translate-y-[1px] transition"
                   title="Remove admin"
                 >
                   <Trash2 className="size-3.5" />
@@ -213,7 +216,7 @@ export default function AdminUsersPage() {
           </>
         }
       >
-        <form onSubmit={handleCreate} className="space-y-4">
+        <form onSubmit={handleCreate} className="space-y-4 font-sans">
           <Input
             label="Admin Display Name"
             placeholder="e.g. Lead Officer / Vice Guild Leader"
@@ -241,7 +244,7 @@ export default function AdminUsersPage() {
           />
 
           {error && (
-            <div className="border-2 border-red-600 bg-red-50 p-3 text-xs font-mono font-bold text-red-700 shadow-[2px_2px_0px_#b91c1c]">
+            <div className="border-2 border-red-600 bg-red-50 p-3 text-xs font-sans font-bold text-red-700 comic-shadow-sm">
               {error}
             </div>
           )}

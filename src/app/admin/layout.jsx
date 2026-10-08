@@ -58,13 +58,14 @@ const navigation = [
 ];
 
 /**
- * Pixel Brand Header for Admin Navigation
+ * Brand Header for Admin Navigation
+ * Features Legend Army sigil with clean typographic hierarchy.
  * @returns {JSX.Element}
  */
 function Brand() {
   return (
     <div className="flex min-w-0 items-center gap-2.5">
-      <div className="flex size-8 shrink-0 items-center justify-center border-2 border-zinc-950 bg-brand-600 pixel-shadow-sm">
+      <div className="flex size-8 shrink-0 items-center justify-center border-2 border-zinc-900 bg-brand-600 shadow-[1.5px_1.5px_0px_#18181b]">
         <img
           src="/logo.png"
           alt="Legend Army"
@@ -72,7 +73,7 @@ function Brand() {
         />
       </div>
       <div className="min-w-0">
-        <span className="truncate font-pixel text-sm font-bold text-zinc-950 block leading-tight">
+        <span className="truncate font-sans text-xs font-black tracking-wider text-zinc-900 block leading-tight uppercase">
           LEGEND ARMY
         </span>
         <span className="truncate text-[10px] font-mono font-bold uppercase tracking-wider text-brand-700 block leading-tight">
@@ -85,12 +86,15 @@ function Brand() {
 
 /**
  * Admin Navigation List
+ * Clean comic-bordered nav buttons with active brand crimson accent in light mode.
  * @param {Object} props
+ * @param {Function} [props.onNavigate]
+ * @param {string} props.pathname
  * @returns {JSX.Element}
  */
 function Navigation({ onNavigate, pathname }) {
   return (
-    <nav className="flex-1 space-y-1 overflow-y-auto p-3">
+    <nav className="flex-1 space-y-1.5 overflow-y-auto p-3">
       {navigation.map((item) => {
         const Icon = item.icon;
         const isActive = item.exact
@@ -103,13 +107,16 @@ function Navigation({ onNavigate, pathname }) {
             href={item.href}
             onClick={onNavigate}
             className={[
-              "flex h-9 items-center gap-2.5 px-3 text-xs font-semibold border-2 transition-transform select-none",
+              "flex h-9.5 items-center gap-2.5 px-3 text-xs font-bold border-2 transition-transform select-none rounded-none",
               isActive
-                ? "border-zinc-950 bg-zinc-950 text-white pixel-shadow-sm translate-x-[1px] translate-y-[1px]"
-                : "border-transparent text-zinc-700 hover:border-zinc-950 hover:bg-zinc-100 hover:text-zinc-950 active:translate-x-[1px] active:translate-y-[1px]",
+                ? "border-brand-800 bg-brand-50 text-brand-900 shadow-[2px_2px_0px_#b91c1c] translate-x-[1px] translate-y-[1px]"
+                : "border-transparent text-zinc-700 hover:border-zinc-900 hover:bg-zinc-100 hover:text-zinc-950 active:translate-x-[1px] active:translate-y-[1px]",
             ].join(" ")}
           >
-            <Icon className="size-4 shrink-0" />
+            <Icon className={[
+              "size-4 shrink-0",
+              isActive ? "text-brand-700" : "text-zinc-500",
+            ].join(" ")} />
             <span className="truncate">{item.name}</span>
           </Link>
         );
@@ -279,8 +286,8 @@ export default function AdminLayout({ children }) {
             </div>
 
             <div className="hidden lg:flex items-center gap-2">
-              <span className="font-pixel text-xs text-zinc-500 uppercase tracking-wider">
-                Ragnarok Guild Command
+              <span className="text-[11px] font-mono font-bold text-zinc-500 uppercase tracking-widest bg-zinc-100 px-2 py-0.5 border border-zinc-300">
+                Guild Command Deck
               </span>
             </div>
 

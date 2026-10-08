@@ -245,7 +245,7 @@ export default function AssignRosterMemberModal({
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-2">
-                <h3 className="text-sm sm:text-base font-bold font-pixel text-zinc-950 truncate">
+                <h3 className="text-sm sm:text-base font-bold font-sans text-zinc-950 truncate">
                   Deploy to Team {teamNumber}
                 </h3>
                 <span className="border border-brand-700 bg-brand-50 px-2 py-0.2 text-[10px] font-mono font-bold text-brand-900 shrink-0">
@@ -312,7 +312,7 @@ export default function AssignRosterMemberModal({
               onClick={() => setClassFilter("all")}
               className={`shrink-0 border-2 px-2.5 py-1 text-[11px] font-bold transition select-none ${
                 classFilter === "all"
-                  ? "border-zinc-950 bg-zinc-950 text-white"
+                  ? "border-brand-700 bg-brand-50 text-brand-900 shadow-[1px_1px_0px_#b91c1c]"
                   : "border-zinc-300 bg-white text-zinc-700 hover:border-zinc-950"
               }`}
             >
@@ -332,14 +332,14 @@ export default function AssignRosterMemberModal({
                   onClick={() => setClassFilter(cls)}
                   className={`shrink-0 inline-flex items-center gap-1 border-2 px-2.5 py-1 text-[11px] font-bold transition select-none ${
                     classFilter === cls
-                      ? "border-brand-900 bg-brand-600 text-white"
+                      ? "border-brand-700 bg-brand-50 text-brand-900 shadow-[1px_1px_0px_#b91c1c]"
                       : "border-zinc-300 bg-white text-zinc-800 hover:border-zinc-950"
                   }`}
                 >
                   <span>{cls}</span>
                   <span
                     className={`px-1 text-[9px] font-mono font-bold ${
-                      classFilter === cls ? "bg-white/20 text-white" : "text-zinc-500"
+                      classFilter === cls ? "bg-brand-200 text-brand-900" : "text-zinc-500"
                     }`}
                   >
                     {count}
@@ -361,12 +361,12 @@ export default function AssignRosterMemberModal({
           {loading ? (
             <div className="flex flex-col items-center justify-center py-16 text-zinc-400">
               <Loader2 className="size-6 animate-spin text-brand-600 mb-2" />
-              <span className="text-xs font-bold font-pixel uppercase tracking-wide">Loading available combatants...</span>
+              <span className="text-xs font-bold font-sans uppercase tracking-wide">Loading available combatants...</span>
             </div>
           ) : availableMembers.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-14 text-center text-xs text-zinc-500">
               <Users className="size-8 text-zinc-400 mb-2" />
-              <p className="font-bold text-zinc-900 font-pixel uppercase">
+              <p className="font-bold text-zinc-900 font-sans uppercase">
                 {search || classFilter !== "all"
                   ? "No matching guild combatants found"
                   : "All guild members are currently deployed"}

@@ -73,7 +73,7 @@ export default function TeamCard({
       {/* TEAM HEADER */}
       <div className="flex items-center justify-between gap-2.5 border-b-2 border-zinc-950 bg-zinc-100 px-3.5 py-2">
         <div className="flex items-center gap-1.5 min-w-0">
-          <span className="truncate text-xs font-bold font-pixel text-zinc-950">
+          <span className="truncate text-xs font-bold font-sans text-zinc-950">
             {displayName}
           </span>
           <span className="shrink-0 text-[11px] text-zinc-600 font-mono font-bold">

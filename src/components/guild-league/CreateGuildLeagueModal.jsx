@@ -152,22 +152,22 @@ export default function CreateGuildLeagueModal({ open, onClose, onSuccess }) {
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* EVENT TYPE SELECTOR (GUILD LEAGUE VS WOE VS POLARITY) */}
         <div>
-          <label className="text-xs font-bold font-pixel uppercase tracking-wide text-zinc-950 mb-1.5 block">
+          <label className="text-xs font-bold font-sans uppercase tracking-wider text-zinc-950 mb-1.5 block">
             Event Type <span className="text-brand-600">*</span>
           </label>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
             <button
               type="button"
               onClick={() => handleSelectType("guild_league")}
-              className={`flex flex-col text-left p-3 border-2 transition-transform cursor-pointer select-none ${
+              className={`flex flex-col text-left p-3 border-2 transition-transform cursor-pointer select-none rounded-none ${
                 form.eventType === "guild_league"
-                  ? "border-brand-950 bg-brand-50/70 pixel-shadow-sm text-brand-950"
+                  ? "border-brand-950 bg-brand-50/70 comic-shadow-sm text-brand-950"
                   : "border-zinc-300 bg-white hover:border-zinc-950 text-zinc-800"
               }`}
             >
               <div className="flex items-center gap-2">
                 <Swords className={`size-4 ${form.eventType === "guild_league" ? "text-brand-700" : "text-zinc-600"}`} />
-                <span className="text-xs font-bold font-pixel">Guild League</span>
+                <span className="text-xs font-bold font-sans">Guild League</span>
               </div>
               <p className="text-[11px] text-zinc-600 mt-1">
                 3-lane tactical format (Top, Mid, Bot)
@@ -177,15 +177,15 @@ export default function CreateGuildLeagueModal({ open, onClose, onSuccess }) {
             <button
               type="button"
               onClick={() => handleSelectType("woe")}
-              className={`flex flex-col text-left p-3 border-2 transition-transform cursor-pointer select-none ${
+              className={`flex flex-col text-left p-3 border-2 transition-transform cursor-pointer select-none rounded-none ${
                 form.eventType === "woe"
-                  ? "border-amber-950 bg-amber-50/70 pixel-shadow-sm text-amber-950"
+                  ? "border-amber-950 bg-amber-50/70 comic-shadow-sm text-amber-950"
                   : "border-zinc-300 bg-white hover:border-zinc-950 text-zinc-800"
               }`}
             >
               <div className="flex items-center gap-2">
                 <Castle className={`size-4 ${form.eventType === "woe" ? "text-amber-700" : "text-zinc-600"}`} />
-                <span className="text-xs font-bold font-pixel">WOE (Castle)</span>
+                <span className="text-xs font-bold font-sans">WOE (Castle)</span>
               </div>
               <p className="text-[11px] text-zinc-600 mt-1">
                 Unified team format (No lanes)
@@ -195,15 +195,15 @@ export default function CreateGuildLeagueModal({ open, onClose, onSuccess }) {
             <button
               type="button"
               onClick={() => handleSelectType("polarity")}
-              className={`flex flex-col text-left p-3 border-2 transition-transform cursor-pointer select-none ${
+              className={`flex flex-col text-left p-3 border-2 transition-transform cursor-pointer select-none rounded-none ${
                 form.eventType === "polarity"
-                  ? "border-cyan-950 bg-cyan-50/70 pixel-shadow-sm text-cyan-950"
+                  ? "border-cyan-950 bg-cyan-50/70 comic-shadow-sm text-cyan-950"
                   : "border-zinc-300 bg-white hover:border-zinc-950 text-zinc-800"
               }`}
             >
               <div className="flex items-center gap-2">
                 <Layers className={`size-4 ${form.eventType === "polarity" ? "text-cyan-700" : "text-zinc-600"}`} />
-                <span className="text-xs font-bold font-pixel">Polarity</span>
+                <span className="text-xs font-bold font-sans">Polarity</span>
               </div>
               <p className="text-[11px] text-zinc-600 mt-1">
                 Fixed 10 teams • 5 players/team

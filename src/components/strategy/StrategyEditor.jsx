@@ -56,14 +56,14 @@ export default function StrategyEditor({
   setContent,
 }) {
   return (
-    <div className="flex flex-col border-2 border-zinc-950 bg-white overflow-hidden shadow-[4px_4px_0px_#09090b] h-[680px]">
+    <div className="flex flex-col border-2 border-zinc-900 bg-white overflow-hidden comic-shadow h-[680px]">
       {/* EDITOR TOOLBAR */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b-2 border-zinc-950 p-4 bg-zinc-50">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b-2 border-zinc-900 p-4 bg-zinc-50/80">
         <div>
-          <h2 className="font-pixel text-base sm:text-lg font-bold text-zinc-950">
+          <h2 className="font-sans text-base sm:text-lg font-bold text-zinc-900 tracking-tight">
             {selectedId ? "Edit Playbook" : "New Tactical Playbook"}
           </h2>
-          <p className="text-[11px] font-mono text-zinc-600 mt-0.5">
+          <p className="text-xs font-sans text-zinc-500 mt-0.5">
             Configure battlefield plans and share with guild members
           </p>
         </div>
@@ -112,7 +112,7 @@ export default function StrategyEditor({
           placeholder="e.g. 18:00 MVP Portal Defense & Delay Routine"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="font-bold text-sm"
+          className="font-sans font-medium text-sm"
         />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -120,7 +120,7 @@ export default function StrategyEditor({
             label="Category / Battlefield Lane"
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="font-mono text-xs font-bold"
+            className="font-sans text-xs sm:text-sm font-semibold"
           >
             {STRATEGY_CATEGORIES.map((cat) => (
               <option key={cat} value={cat}>
@@ -134,7 +134,7 @@ export default function StrategyEditor({
             placeholder="e.g. Guild League Arena A"
             value={mapName}
             onChange={(e) => setMapName(e.target.value)}
-            className="font-mono text-xs"
+            className="font-sans text-xs sm:text-sm"
           />
         </div>
 
@@ -145,7 +145,7 @@ export default function StrategyEditor({
           placeholder="Write detailed tactical instructions, rotation calls, team roles, voice channel reminders..."
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          className="font-mono text-xs leading-relaxed"
+          className="font-sans text-xs sm:text-sm leading-relaxed"
         />
       </form>
     </div>

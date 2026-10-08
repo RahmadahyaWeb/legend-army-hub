@@ -4,10 +4,10 @@ import { forwardRef } from "react";
 import { ChevronDown } from "lucide-react";
 
 /**
- * Standard pixel dropdown select component.
+ * Standard comic pixel dropdown select component.
  *
  * Why this exists:
- * Delivers retro RPG select styling with crisp 2px solid borders, sharp rectangular corners,
+ * Delivers minimalist comic select styling with crisp 2px solid ink borders, sharp rectangular corners,
  * and high-contrast typography across filters, status selectors, and team lane pickers.
  *
  * @param {Object} props - Select props
@@ -17,7 +17,7 @@ import { ChevronDown } from "lucide-react";
  * @param {React.ReactNode} [props.children] - Option elements or groups
  * @param {string} [props.className] - Select element custom class
  * @param {string} [props.containerClassName] - Wrapper div custom class
- * @returns {JSX.Element} Rendered pixel select input
+ * @returns {JSX.Element} Rendered select input
  */
 const Select = forwardRef(function Select(
   {
@@ -40,7 +40,7 @@ const Select = forwardRef(function Select(
       {label && (
         <label
           htmlFor={selectId}
-          className="block text-xs font-bold text-zinc-900 select-none uppercase tracking-wide"
+          className="block text-xs font-bold text-zinc-950 select-none uppercase tracking-wider font-sans"
         >
           {label}
         </label>
@@ -51,10 +51,10 @@ const Select = forwardRef(function Select(
           ref={ref}
           id={selectId}
           disabled={disabled}
-          className={`h-9.5 w-full appearance-none border-2 bg-white px-3 pr-8 text-xs sm:text-sm text-zinc-900 focus:outline-none disabled:bg-zinc-100 disabled:text-zinc-500 disabled:cursor-not-allowed ${
+          className={`h-9.5 w-full appearance-none border-2 bg-white px-3 pr-8 text-xs sm:text-sm text-zinc-950 font-sans focus:outline-none disabled:bg-zinc-100 disabled:text-zinc-500 disabled:cursor-not-allowed transition-colors ${
             error
               ? "border-red-600 focus:border-red-700 bg-red-50/20"
-              : "border-zinc-900 focus:border-brand-600 focus:ring-1 focus:ring-brand-600/30"
+              : "border-zinc-950 focus:border-brand-600 focus:ring-2 focus:ring-brand-500/20"
           } ${className}`}
           {...rest}
         >
@@ -67,14 +67,15 @@ const Select = forwardRef(function Select(
       </div>
 
       {error ? (
-        <p className="text-[11px] font-bold text-red-600">
+        <p className="text-[11px] font-bold text-red-600 font-sans">
           {error}
         </p>
       ) : helperText ? (
-        <p className="text-[11px] text-zinc-500">{helperText}</p>
+        <p className="text-[11px] text-zinc-500 font-sans">{helperText}</p>
       ) : null}
     </div>
   );
 });
 
 export default Select;
+

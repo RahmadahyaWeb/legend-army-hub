@@ -74,7 +74,7 @@ export default function AdminDashboardPage() {
       {/* HEADER & ACTIONS */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold font-pixel text-zinc-950 tracking-tight">
+          <h1 className="text-xl sm:text-2xl font-black font-sans text-zinc-950 tracking-tight">
             Command Dashboard
           </h1>
           <p className="mt-0.5 text-xs text-zinc-600">

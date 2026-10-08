@@ -37,10 +37,10 @@ export default function GuildLeagueHeaderCard({
   const isPolarity = guildLeague.eventType === "polarity";
 
   return (
-    <div className="border-2 border-zinc-950 bg-white p-4.5 sm:p-6 pixel-shadow">
+    <div className="border-2 border-zinc-950 bg-white p-4.5 sm:p-6 comic-shadow">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <div className="flex items-center gap-2 text-xs font-bold font-pixel text-zinc-500 uppercase tracking-wide">
+          <div className="flex items-center gap-2 text-xs font-bold font-sans text-zinc-500 uppercase tracking-wide">
             <span>Event Lineup</span>
             {isWoe ? (
               <Badge variant="warning" size="xs">
@@ -57,7 +57,7 @@ export default function GuildLeagueHeaderCard({
             )}
           </div>
 
-          <h1 className="mt-1.5 text-xl sm:text-2xl font-bold font-pixel text-zinc-950 tracking-tight">
+          <h1 className="mt-1.5 text-xl sm:text-2xl font-black font-sans text-zinc-950 tracking-tight">
             {guildLeague.name}
           </h1>
 
@@ -89,7 +89,7 @@ export default function GuildLeagueHeaderCard({
         {/* METRICS ROW */}
         <div className="flex flex-wrap items-center gap-3 border-t-2 border-zinc-950 pt-3 lg:border-t-0 lg:pt-0">
           <div className="border border-zinc-900 bg-zinc-50 p-2.5 min-w-24">
-            <span className="text-[10px] font-bold font-pixel text-zinc-500 block uppercase">
+            <span className="text-[10px] font-bold font-sans text-zinc-500 block uppercase tracking-wider">
               Roster
             </span>
             <span className="text-sm sm:text-base font-bold text-zinc-950 font-mono">
@@ -101,7 +101,7 @@ export default function GuildLeagueHeaderCard({
           </div>
 
           <div className="border border-zinc-900 bg-zinc-50 p-2.5 min-w-24">
-            <span className="text-[10px] font-bold font-pixel text-zinc-500 block uppercase">
+            <span className="text-[10px] font-bold font-sans text-zinc-500 block uppercase tracking-wider">
               Average GS
             </span>
             <span className="text-sm sm:text-base font-bold text-brand-700 font-mono">
@@ -113,7 +113,7 @@ export default function GuildLeagueHeaderCard({
           </div>
 
           <div className="border border-zinc-900 bg-zinc-50 p-2.5 min-w-20">
-            <span className="text-[10px] font-bold font-pixel text-zinc-500 block uppercase">
+            <span className="text-[10px] font-bold font-sans text-zinc-500 block uppercase tracking-wider">
               Squads
             </span>
             <span className="text-sm sm:text-base font-bold text-zinc-950 font-mono">

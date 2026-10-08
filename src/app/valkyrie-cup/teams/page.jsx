@@ -139,7 +139,7 @@ export default function ValkyrieCupTeamsPage() {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-xl sm:text-2xl font-bold font-pixel text-zinc-950 tracking-tight">
+              <h1 className="text-xl sm:text-2xl font-black font-sans text-zinc-950 tracking-tight">
                 Valkyrie Cup Squads
               </h1>
               <Badge variant="neutral" size="sm">
@@ -214,7 +214,7 @@ export default function ValkyrieCupTeamsPage() {
         </div>
 
         {/* SEARCH & FILTERS BAR */}
-        <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between border-2 border-zinc-950 bg-white p-3 sm:p-4 pixel-shadow-sm">
+        <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between border-2 border-zinc-950 bg-white p-3 sm:p-4 comic-shadow-sm">
           <div className="flex flex-1 items-center gap-2 sm:max-w-md">
             <Input
               icon={Search}
@@ -324,7 +324,7 @@ export default function ValkyrieCupTeamsPage() {
                       <TableCell>
                         <Link
                           href={`/valkyrie-cup/teams/${team.id}`}
-                          className="font-bold text-zinc-950 text-xs sm:text-sm hover:text-brand-700 font-pixel"
+                          className="font-bold text-zinc-950 text-xs sm:text-sm hover:text-brand-700 font-sans"
                         >
                           {team.teamName}
                         </Link>
@@ -432,7 +432,7 @@ export default function ValkyrieCupTeamsPage() {
                 className="size-5 object-contain"
               />
             </div>
-            <span className="text-xs font-bold font-pixel text-zinc-950">
+            <span className="text-xs font-black tracking-wider text-zinc-950 font-sans uppercase">
               VALKYRIE CUP · SQUADS DIRECTORY
             </span>
           </div>

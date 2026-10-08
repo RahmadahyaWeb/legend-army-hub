@@ -9,18 +9,22 @@ import {
   EyeOff,
   LockKeyhole,
   Mail,
+  Shield,
   ShieldCheck,
+  Swords,
+  Trophy,
 } from "lucide-react";
 import Button from "@/components/ui/Button";
 import Loading from "@/components/ui/Loading";
 
 /**
- * Administrator Login Authentication Page with Retro Pixel Styling
+ * Administrator Login Authentication Page
  *
  * Why this exists:
- * Authenticates guild leadership against PostgreSQL hashed records or environment admin credentials.
- * Establishes standard session cookie (`la_session`) and redirects to `/admin`.
- * Features Ragnarok Online command console visual identity: sharp borders, retro branding, and tactile form controls.
+ * Authenticates guild leadership against PostgreSQL hashed credentials or configured officer accounts.
+ * Establishes the standard authenticated session and redirects to `/admin`.
+ * Styled using the Minimalist Comic Pixel design system: 100% light mode, warm off-white tones,
+ * crisp 2px ink outlines, tactile comic drop shadows, and modern readable typography.
  *
  * @returns {JSX.Element} Rendered admin login view
  */
@@ -85,13 +89,13 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen bg-zinc-50 font-sans">
-      <div className="grid min-h-screen lg:grid-cols-[1fr_1fr]">
-        {/* Left Brand Section */}
-        <section className="relative hidden bg-zinc-950 lg:flex lg:flex-col justify-between p-12 xl:p-16 border-r-2 border-zinc-950 pixel-grid-bg">
+    <main className="min-h-screen bg-[#faf9f6] font-sans text-zinc-950 flex flex-col justify-center">
+      <div className="grid min-h-screen lg:grid-cols-[1.1fr_0.9fr]">
+        {/* Left Brand Showcase (Light Mode Only - Warm Canvas) */}
+        <section className="relative hidden lg:flex lg:flex-col justify-between p-12 xl:p-16 border-r-2 border-zinc-950 bg-[#f7f6f2] comic-dots-bg">
           <div>
-            <Link href="/" className="flex items-center gap-3">
-              <div className="flex size-10 shrink-0 items-center justify-center border-2 border-white bg-brand-600 pixel-shadow-sm">
+            <Link href="/" className="inline-flex items-center gap-3 group">
+              <div className="flex size-10 shrink-0 items-center justify-center border-2 border-zinc-950 bg-brand-600 shadow-[2px_2px_0px_#18181b] group-hover:bg-brand-700 transition">
                 <img
                   src="/logo.png"
                   alt="Legend Army"
@@ -99,60 +103,107 @@ export default function LoginPage() {
                 />
               </div>
               <div>
-                <div className="font-pixel text-base font-bold text-white leading-tight">
+                <span className="font-pixel text-base font-bold text-zinc-950 block leading-tight">
                   LEGEND ARMY
-                </div>
-                <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-brand-400 leading-tight">
-                  Guild Command Core
-                </div>
+                </span>
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-brand-700 block leading-tight">
+                  Officer Command Core
+                </span>
               </div>
             </Link>
           </div>
 
-          <div className="max-w-md">
-            <h1 className="font-pixel text-3xl font-bold tracking-tight text-white xl:text-4xl leading-tight">
-              Guild Operations Console
+          <div className="max-w-lg space-y-6">
+            <div className="inline-flex items-center gap-2 border-2 border-zinc-950 bg-white px-3 py-1 text-xs font-bold text-zinc-900 shadow-[2px_2px_0px_#18181b]">
+              <Shield className="size-3.5 text-brand-600" />
+              <span>Administrative Operations Portal</span>
+            </div>
+
+            <h1 className="text-3xl sm:text-4xl xl:text-5xl font-black font-sans tracking-tight text-zinc-950 leading-[1.15]">
+              Guild Operations & Strategic Command
             </h1>
-            <p className="mt-4 text-xs sm:text-sm leading-relaxed text-zinc-300">
-              Access administrative controls for battlefield rosters, event deployment, tactical directives, and Discord automation.
+
+            <p className="text-sm leading-relaxed text-zinc-700 font-normal">
+              Authorize officer credentials to coordinate 60-player battlefield rosters,
+              Valkyrie Cup tournament submissions, roll-call attendance, and tactical directives.
             </p>
+
+            {/* Feature Highlights Grid */}
+            <div className="grid grid-cols-2 gap-3 pt-2">
+              <div className="border-2 border-zinc-950 bg-white p-3 shadow-[2px_2px_0px_#18181b]">
+                <div className="flex items-center gap-2 font-bold text-xs text-zinc-950">
+                  <Swords className="size-3.5 text-brand-600" />
+                  <span>War Rosters</span>
+                </div>
+                <p className="mt-1 text-[11px] text-zinc-600 leading-snug">
+                  Top, Mid, and Bot lane positioning with Gear Score balancing.
+                </p>
+              </div>
+
+              <div className="border-2 border-zinc-950 bg-white p-3 shadow-[2px_2px_0px_#18181b]">
+                <div className="flex items-center gap-2 font-bold text-xs text-zinc-950">
+                  <Trophy className="size-3.5 text-amber-600" />
+                  <span>Valkyrie Cup</span>
+                </div>
+                <p className="mt-1 text-[11px] text-zinc-600 leading-snug">
+                  Manage 8-player squad approvals and bracket seeding.
+                </p>
+              </div>
+            </div>
           </div>
 
           <div className="text-xs font-mono text-zinc-500">
-            © {new Date().getFullYear()} Legend Army. Classic Ragnarok Operations.
+            © {new Date().getFullYear()} Legend Army · Classic Ragnarok Guild Management
           </div>
         </section>
 
         {/* Right Form Section */}
-        <section className="flex items-center justify-center p-6 sm:p-12 lg:p-16 bg-white">
+        <section className="flex items-center justify-center p-6 sm:p-12 lg:p-16 bg-[#faf9f6]">
           <div className="w-full max-w-sm">
-            <div className="mb-6">
+            <div className="mb-6 flex items-center justify-between">
               <Link href="/">
                 <Button variant="secondary" size="xs" icon={ArrowLeft}>
-                  Back to Public Portal
+                  Public Hub
                 </Button>
               </Link>
+
+              <div className="lg:hidden flex items-center gap-2">
+                <div className="flex size-7 shrink-0 items-center justify-center border-2 border-zinc-950 bg-brand-600 shadow-[1px_1px_0px_#18181b]">
+                  <img
+                    src="/logo.png"
+                    alt="Legend Army"
+                    className="size-5 object-contain"
+                  />
+                </div>
+                <span className="font-pixel text-xs font-bold text-zinc-950">
+                  LEGEND ARMY
+                </span>
+              </div>
             </div>
 
-            <div className="border-2 border-zinc-950 bg-white p-6 sm:p-8 pixel-shadow">
+            <div className="border-2 border-zinc-950 bg-white p-6 sm:p-8 shadow-[4px_4px_0px_#18181b]">
               <div className="mb-6">
-                <h2 className="text-xl sm:text-2xl font-bold font-pixel text-zinc-950 tracking-tight">
-                  Officer Sign In
+                <div className="inline-flex items-center gap-1.5 border border-zinc-950 bg-brand-50 px-2 py-0.5 text-[10px] font-bold text-brand-900 uppercase font-mono mb-2">
+                  <ShieldCheck className="size-3 text-brand-600" />
+                  <span>Officer Authentication</span>
+                </div>
+                <h2 className="text-xl sm:text-2xl font-bold font-sans text-zinc-950 tracking-tight">
+                  Sign In to Console
                 </h2>
-                <p className="mt-1 text-xs text-zinc-600">
+                <p className="mt-1 text-xs text-zinc-600 font-sans">
                   Enter authorized administrator credentials.
                 </p>
               </div>
 
               {error && (
-                <div className="mb-5 border-2 border-red-700 bg-red-50 p-3 text-xs font-bold text-red-900 pixel-shadow-sm">
+                <div className="mb-5 border-2 border-red-700 bg-red-50 p-3 text-xs font-bold text-red-900 shadow-[2px_2px_0px_#b91c1c]">
                   {error}
                 </div>
               )}
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-xs font-bold font-pixel uppercase tracking-wide text-zinc-950 mb-1">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-zinc-950 mb-1.5 font-sans">
                     Email Address
                   </label>
                   <div className="relative flex items-center">
@@ -165,13 +216,13 @@ export default function LoginPage() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="admin@legendarmy.com"
-                      className="h-10 w-full border-2 border-zinc-950 bg-white pl-9 pr-3 text-xs sm:text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-brand-600 transition"
+                      className="h-10 w-full border-2 border-zinc-950 bg-white pl-9 pr-3 text-xs sm:text-sm text-zinc-950 placeholder:text-zinc-400 focus:outline-none focus:border-brand-600 focus:ring-2 focus:ring-brand-500/20 transition-colors font-sans"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold font-pixel uppercase tracking-wide text-zinc-950 mb-1">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-zinc-950 mb-1.5 font-sans">
                     Password
                   </label>
                   <div className="relative flex items-center">
@@ -184,12 +235,12 @@ export default function LoginPage() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••"
-                      className="h-10 w-full border-2 border-zinc-950 bg-white pl-9 pr-10 text-xs sm:text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-brand-600 transition"
+                      className="h-10 w-full border-2 border-zinc-950 bg-white pl-9 pr-10 text-xs sm:text-sm text-zinc-950 placeholder:text-zinc-400 focus:outline-none focus:border-brand-600 focus:ring-2 focus:ring-brand-500/20 transition-colors font-sans"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 flex items-center text-zinc-500 hover:text-zinc-900 p-0.5"
+                      className="absolute right-3 flex items-center text-zinc-500 hover:text-zinc-950 p-0.5 cursor-pointer"
                       aria-label="Toggle password visibility"
                     >
                       {showPassword ? (
@@ -207,9 +258,9 @@ export default function LoginPage() {
                     variant="primary"
                     size="md"
                     loading={loading}
-                    className="w-full !h-10"
+                    className="w-full !h-10 text-sm"
                   >
-                    Authenticate
+                    Authenticate Session
                   </Button>
                 </div>
               </form>
@@ -220,3 +271,4 @@ export default function LoginPage() {
     </main>
   );
 }
+

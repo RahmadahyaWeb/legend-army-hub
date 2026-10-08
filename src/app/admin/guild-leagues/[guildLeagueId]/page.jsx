@@ -489,7 +489,7 @@ export default function GuildLeagueDetailPage() {
         <p className="font-bold">{error || "Guild League event not found."}</p>
         <Link
           href="/admin/guild-leagues"
-          className="mt-4 inline-flex items-center gap-2 border-2 border-zinc-950 bg-zinc-950 px-4 py-2 text-xs font-mono font-bold text-white hover:bg-zinc-800 transition shadow-[2px_2px_0px_#09090b] active:translate-x-[1px] active:translate-y-[1px]"
+          className="mt-4 inline-flex items-center gap-2 border-2 border-zinc-900 bg-zinc-900 px-4 py-2 text-xs font-sans font-bold text-white hover:bg-zinc-800 transition comic-shadow-sm active:translate-x-[1px] active:translate-y-[1px]"
         >
           <ArrowLeft className="size-3.5" />
           <span>Back to Events</span>
@@ -529,21 +529,21 @@ export default function GuildLeagueDetailPage() {
         <div className="flex items-center gap-3">
           <Link
             href="/admin/guild-leagues"
-            className="flex size-9 items-center justify-center border-2 border-zinc-950 bg-white text-zinc-900 hover:bg-zinc-100 transition shadow-[2px_2px_0px_#09090b] active:translate-x-[1px] active:translate-y-[1px]"
+            className="flex size-9 items-center justify-center border-2 border-zinc-900 bg-white text-zinc-900 hover:bg-zinc-50 transition comic-shadow-sm active:translate-x-[1px] active:translate-y-[1px]"
             title="Back to matches"
           >
             <ArrowLeft className="size-4.5" />
           </Link>
           <div>
             <div className="flex flex-wrap items-center gap-2.5">
-              <h1 className="font-pixel text-xl sm:text-2xl font-bold text-zinc-950 tracking-wide">
+              <h1 className="font-sans text-xl sm:text-2xl font-black text-zinc-950 tracking-tight">
                 {guildLeague.name}
               </h1>
-              <span className="border-2 border-zinc-950 px-2 py-0.5 text-[11px] font-pixel uppercase font-bold tracking-wider bg-zinc-100 text-zinc-900 shadow-[1px_1px_0px_#09090b]">
+              <span className="border-2 border-zinc-950 px-2 py-0.5 text-[11px] font-mono uppercase font-bold tracking-wider bg-zinc-100 text-zinc-900 comic-shadow-sm">
                 {guildLeague.status || "DRAFT"}
               </span>
             </div>
-            <p className="text-xs text-zinc-600 font-mono mt-0.5">
+            <p className="text-xs text-zinc-600 mt-0.5">
               Lineup formations, team coordination, and tactical assignments
             </p>
           </div>
@@ -553,7 +553,7 @@ export default function GuildLeagueDetailPage() {
           <Link
             href={`/roster/${guildLeagueId}`}
             target="_blank"
-            className="inline-flex h-9 items-center gap-1.5 border-2 border-zinc-950 bg-white px-3 text-xs font-mono font-bold text-zinc-900 hover:bg-zinc-100 transition shadow-[2px_2px_0px_#09090b] active:translate-x-[1px] active:translate-y-[1px]"
+            className="inline-flex h-9 items-center gap-1.5 border-2 border-zinc-950 bg-white px-3 text-xs font-bold text-zinc-900 hover:bg-zinc-100 transition comic-shadow-sm active:translate-x-[1px] active:translate-y-[1px]"
           >
             <ExternalLink className="size-3.5" />
             <span>Public View</span>
@@ -579,7 +579,7 @@ export default function GuildLeagueDetailPage() {
           <Select
             value={guildLeague.status}
             onChange={(e) => handleStatusChange(e.target.value)}
-            className="!h-9 !py-0 !text-xs font-mono font-bold"
+            className="!h-9 !py-0 !text-xs font-bold"
           >
             <option value="draft">Status: Draft</option>
             <option value="published">Status: Published</option>
@@ -590,7 +590,7 @@ export default function GuildLeagueDetailPage() {
       </div>
 
       {discordMsg && (
-        <div className="border-2 border-indigo-900 bg-indigo-50 p-3 text-xs font-mono font-bold text-indigo-950 shadow-[2px_2px_0px_#1e1b4b] flex items-center justify-between">
+        <div className="border-2 border-indigo-900 bg-indigo-50 p-3 text-xs font-bold text-indigo-950 comic-shadow-sm flex items-center justify-between">
           <span>{discordMsg}</span>
           <button
             type="button"
@@ -628,21 +628,21 @@ export default function GuildLeagueDetailPage() {
       {/* BATTLEFIELD TEAMS / LANE SECTIONS */}
       {isPolarity ? (
         <div className="space-y-4">
-          <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between border-2 border-zinc-950 bg-white p-4 shadow-[3px_3px_0px_#09090b]">
+          <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between border-2 border-zinc-950 bg-white p-4 comic-shadow">
             <div className="flex items-center gap-3">
-              <div className="flex size-9 shrink-0 items-center justify-center border-2 border-zinc-950 bg-zinc-100 text-zinc-950 shadow-[1px_1px_0px_#09090b]">
+              <div className="flex size-9 shrink-0 items-center justify-center border-2 border-zinc-950 bg-zinc-100 text-zinc-950 comic-shadow-sm">
                 <Layers className="size-4.5" />
               </div>
               <div>
-                <h2 className="font-pixel text-base sm:text-lg font-bold text-zinc-950">
+                <h2 className="font-sans text-base sm:text-lg font-black text-zinc-950 uppercase tracking-wide">
                   Polarity Battle Formations
                 </h2>
-                <p className="text-xs text-zinc-600 font-mono">
+                <p className="text-xs text-zinc-600">
                   Fixed 10 Squads (5 Players / Squad) • Coordinated 50-Player Lineup
                 </p>
               </div>
             </div>
-            <span className="border-2 border-zinc-950 bg-zinc-100 px-2.5 py-1 text-xs font-mono font-bold text-zinc-950 self-start sm:self-center shadow-[1px_1px_0px_#09090b]">
+            <span className="border-2 border-zinc-950 bg-zinc-100 px-2.5 py-1 text-xs font-mono font-bold text-zinc-950 self-start sm:self-center comic-shadow-sm">
               {totalAssigned}/50 Players Deployed
             </span>
           </div>
@@ -672,13 +672,13 @@ export default function GuildLeagueDetailPage() {
         </div>
       ) : isWoe ? (
         <div className="space-y-4">
-          <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between border-2 border-zinc-950 bg-white p-4 shadow-[3px_3px_0px_#09090b]">
+          <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between border-2 border-zinc-950 bg-white p-4 comic-shadow">
             <div className="flex items-center gap-3">
-              <div className="flex size-9 shrink-0 items-center justify-center border-2 border-zinc-950 bg-zinc-100 text-zinc-950 shadow-[1px_1px_0px_#09090b]">
+              <div className="flex size-9 shrink-0 items-center justify-center border-2 border-zinc-950 bg-zinc-100 text-zinc-950 comic-shadow-sm">
                 <Castle className="size-4.5" />
               </div>
               <div>
-                <h2 className="font-pixel text-base sm:text-lg font-bold text-zinc-950">
+                <h2 className="font-sans text-base sm:text-lg font-black text-zinc-950 uppercase tracking-wide">
                   WOE Battle Formations
                 </h2>
                 <p className="text-xs text-zinc-600 font-mono">
@@ -686,7 +686,7 @@ export default function GuildLeagueDetailPage() {
                 </p>
               </div>
             </div>
-            <span className="border-2 border-zinc-950 bg-zinc-100 px-2.5 py-1 text-xs font-mono font-bold text-zinc-950 self-start sm:self-center shadow-[1px_1px_0px_#09090b]">
+            <span className="border-2 border-zinc-900 bg-zinc-100 px-2.5 py-1 text-xs font-mono font-bold text-zinc-950 self-start sm:self-center comic-shadow-sm">
               {totalAssigned}/{maxRoster} Players Deployed
             </span>
           </div>

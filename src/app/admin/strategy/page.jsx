@@ -141,10 +141,15 @@ export default function StrategyPage() {
   return (
     <div className="space-y-6">
       <div className="border-b-2 border-zinc-200 pb-4">
-        <h1 className="font-pixel text-xl sm:text-2xl font-bold text-zinc-950 tracking-wide">
-          Tactical Strategies
-        </h1>
-        <p className="mt-1 text-xs font-mono text-zinc-600">
+        <div className="flex items-center gap-2">
+          <span className="inline-block px-1.5 py-0.5 text-[10px] font-pixel uppercase tracking-widest bg-brand-100 text-brand-700 border border-brand-300">
+            Tactics
+          </span>
+          <h1 className="text-xl sm:text-2xl font-bold text-zinc-950 tracking-tight font-sans">
+            Tactical Strategies
+          </h1>
+        </div>
+        <p className="mt-1 text-xs sm:text-sm text-zinc-600 font-sans">
           Create, edit, and broadcast strategic guidelines and battlefield rotations
         </p>
       </div>

@@ -28,7 +28,7 @@ export default function GearLeaderboardCard({ members = [] }) {
     <Card className="overflow-hidden bg-white">
       <CardHeader>
         <div>
-          <CardTitle pixel>Top Gear Score</CardTitle>
+          <CardTitle>Top Gear Score</CardTitle>
           <CardDescription>Highest rating among active combatants</CardDescription>
         </div>
       </CardHeader>

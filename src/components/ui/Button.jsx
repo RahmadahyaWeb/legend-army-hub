@@ -4,42 +4,42 @@ import { forwardRef } from "react";
 import { Loader2 } from "lucide-react";
 
 /**
- * Visual variant tokens for buttons inspired by classic Ragnarok Online dialog and action buttons.
- * Uses crisp rectangular borders, bold contrast, and tactical pixel shadows.
+ * Visual variant tokens for buttons inspired by classic Ragnarok Online dialogs and modern comic UI.
+ * Uses crisp 2px rectangular borders, high-contrast ink lines, and restrained comic drop shadows.
  */
 const VARIANTS = {
   primary:
-    "bg-brand-600 text-white border-2 border-brand-950 pixel-shadow-sm hover:bg-brand-700 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none disabled:bg-zinc-200 disabled:text-zinc-500 disabled:border-zinc-400 disabled:shadow-none",
+    "bg-brand-600 text-white border-2 border-zinc-950 shadow-[2px_2px_0px_#18181b] hover:bg-brand-700 active:translate-x-[1.5px] active:translate-y-[1.5px] active:shadow-none disabled:bg-zinc-200 disabled:text-zinc-500 disabled:border-zinc-400 disabled:shadow-none",
   secondary:
-    "bg-white text-zinc-900 border-2 border-zinc-900 pixel-shadow-sm hover:bg-zinc-100 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none disabled:bg-zinc-100 disabled:text-zinc-400 disabled:border-zinc-300 disabled:shadow-none",
+    "bg-white text-zinc-950 border-2 border-zinc-950 shadow-[2px_2px_0px_#18181b] hover:bg-zinc-100 active:translate-x-[1.5px] active:translate-y-[1.5px] active:shadow-none disabled:bg-zinc-100 disabled:text-zinc-400 disabled:border-zinc-300 disabled:shadow-none",
   danger:
-    "bg-red-600 text-white border-2 border-red-950 pixel-shadow-sm hover:bg-red-700 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none disabled:bg-zinc-200 disabled:text-zinc-400 disabled:border-zinc-300 disabled:shadow-none",
+    "bg-red-600 text-white border-2 border-zinc-950 shadow-[2px_2px_0px_#18181b] hover:bg-red-700 active:translate-x-[1.5px] active:translate-y-[1.5px] active:shadow-none disabled:bg-zinc-200 disabled:text-zinc-400 disabled:border-zinc-300 disabled:shadow-none",
   dangerOutline:
-    "bg-white text-red-700 border-2 border-red-600 pixel-shadow-sm hover:bg-red-50 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none",
+    "bg-white text-red-700 border-2 border-red-700 shadow-[2px_2px_0px_#b91c1c] hover:bg-red-50 active:translate-x-[1.5px] active:translate-y-[1.5px] active:shadow-none disabled:bg-zinc-100 disabled:text-zinc-400 disabled:border-zinc-300",
   outline:
-    "bg-white text-zinc-800 border-2 border-zinc-400 pixel-shadow-sm hover:bg-zinc-100 hover:border-zinc-800 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none",
+    "bg-white text-zinc-900 border-2 border-zinc-400 shadow-[1.5px_1.5px_0px_#18181b] hover:border-zinc-950 hover:bg-zinc-50 active:translate-x-[1.5px] active:translate-y-[1.5px] active:shadow-none disabled:bg-zinc-100 disabled:text-zinc-400 disabled:border-zinc-300",
   ghost:
-    "bg-transparent text-zinc-700 border-2 border-transparent hover:bg-zinc-200 hover:text-zinc-900 active:bg-zinc-300",
+    "bg-transparent text-zinc-700 border-2 border-transparent hover:border-zinc-300 hover:bg-zinc-100 hover:text-zinc-950 active:bg-zinc-200",
   discord:
-    "bg-[#5865F2] text-white border-2 border-[#2f3896] pixel-shadow-sm hover:bg-[#4752C4] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none",
+    "bg-[#5865F2] text-white border-2 border-zinc-950 shadow-[2px_2px_0px_#18181b] hover:bg-[#4752C4] active:translate-x-[1.5px] active:translate-y-[1.5px] active:shadow-none disabled:bg-zinc-200 disabled:text-zinc-400",
   success:
-    "bg-emerald-600 text-white border-2 border-emerald-950 pixel-shadow-sm hover:bg-emerald-700 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none",
+    "bg-emerald-600 text-white border-2 border-zinc-950 shadow-[2px_2px_0px_#18181b] hover:bg-emerald-700 active:translate-x-[1.5px] active:translate-y-[1.5px] active:shadow-none disabled:bg-zinc-200 disabled:text-zinc-400",
 };
 
 const SIZES = {
-  xs: "h-7 px-2 text-[11px] gap-1.5",
-  sm: "h-8 px-3 text-xs gap-1.5",
-  md: "h-9 px-4 text-xs font-semibold gap-2",
-  lg: "h-10 px-5 text-sm font-semibold gap-2",
-  iconSm: "size-8 justify-center p-0",
+  xs: "h-7 px-2.5 text-[11px] font-semibold gap-1.5",
+  sm: "h-8.5 px-3.5 text-xs font-semibold gap-1.5",
+  md: "h-9.5 px-4 text-xs font-bold gap-2",
+  lg: "h-10.5 px-5 text-sm font-bold gap-2",
+  iconSm: "size-8.5 justify-center p-0",
   iconXs: "size-7 justify-center p-0",
 };
 
 /**
- * Standard interactive Pixel Button component.
+ * Standard interactive Comic Pixel Button component.
  *
  * Why this exists:
- * Implements the unified retro RPG pixel styling across all user-interactive actions.
+ * Implements the unified minimalist comic RPG pixel styling across all user-interactive actions.
  * Guarantees tactile feedback with retro stepped shadows and active state translation
  * while maintaining strict accessibility, focus visibility, and responsive touch targets.
  *
@@ -52,7 +52,7 @@ const SIZES = {
  * @param {React.ReactNode} [props.children] - Button label
  * @param {string} [props.className] - Additional Tailwind classes
  * @param {"button"|"submit"|"reset"} [props.type="button"] - HTML button type
- * @returns {JSX.Element} Rendered pixel button
+ * @returns {JSX.Element} Rendered button
  */
 const Button = forwardRef(function Button(
   {
@@ -77,7 +77,7 @@ const Button = forwardRef(function Button(
       ref={ref}
       type={type}
       disabled={isDisabled}
-      className={`inline-flex items-center justify-center font-medium select-none focus:outline-none focus:ring-2 focus:ring-zinc-950/20 disabled:pointer-events-none transition-transform ${variantClass} ${sizeClass} ${className}`}
+      className={`inline-flex items-center justify-center select-none font-sans cursor-pointer focus:outline-none focus:ring-2 focus:ring-zinc-950/20 disabled:cursor-not-allowed disabled:pointer-events-none transition-[transform,background-color,border-color,box-shadow] ${variantClass} ${sizeClass} ${className}`}
       {...rest}
     >
       {loading ? (
@@ -91,3 +91,4 @@ const Button = forwardRef(function Button(
 });
 
 export default Button;
+

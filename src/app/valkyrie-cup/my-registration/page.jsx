@@ -111,7 +111,7 @@ export default function MyRegistrationPage() {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-xl sm:text-2xl font-bold font-pixel text-zinc-950 tracking-tight">
+              <h1 className="text-xl sm:text-2xl font-black font-sans text-zinc-950 tracking-tight">
                 My Registration
               </h1>
               <Badge variant="brand" size="sm">
@@ -175,7 +175,7 @@ export default function MyRegistrationPage() {
               return (
                 <Card
                   key={reg.id}
-                  className="overflow-hidden bg-white divide-y-2 divide-zinc-950 pixel-shadow"
+                  className="overflow-hidden bg-white divide-y-2 divide-zinc-950 comic-shadow"
                 >
                   {/* TOP HEADER */}
                   <div className="p-4.5 sm:p-6 space-y-4">
@@ -205,7 +205,7 @@ export default function MyRegistrationPage() {
                           </Badge>
                         </div>
 
-                        <h2 className="mt-2 text-xl sm:text-2xl font-bold font-pixel text-zinc-950 tracking-tight">
+                        <h2 className="mt-2 text-xl sm:text-2xl font-black font-sans text-zinc-950 tracking-tight">
                           {reg.teamName}
                         </h2>
 
@@ -237,8 +237,8 @@ export default function MyRegistrationPage() {
 
                     {/* REJECTION REASON ALERT (IF REJECTED) */}
                     {isRejected && (
-                      <div className="border-2 border-red-700 bg-red-50 p-3.5 text-xs text-red-900 space-y-1 pixel-shadow-sm">
-                        <div className="flex items-center gap-1.5 font-bold font-pixel text-red-950 uppercase">
+                      <div className="border-2 border-red-700 bg-red-50 p-3.5 text-xs text-red-900 space-y-1 comic-shadow-sm">
+                        <div className="flex items-center gap-1.5 font-bold font-sans text-red-950 uppercase tracking-wide">
                           <XCircle className="size-4 shrink-0 text-red-700" />
                           <span>Registration Rejected</span>
                         </div>
@@ -251,10 +251,10 @@ export default function MyRegistrationPage() {
 
                     {/* PENDING NOTICE */}
                     {isPending && (
-                      <div className="border-2 border-amber-600 bg-amber-50/70 p-3 text-xs text-amber-900 flex items-start gap-2 pixel-shadow-sm">
+                      <div className="border-2 border-amber-600 bg-amber-50/70 p-3 text-xs text-amber-900 flex items-start gap-2 comic-shadow-sm">
                         <Clock className="size-4 shrink-0 text-amber-700 mt-0.5" />
                         <div>
-                          <span className="font-bold font-pixel uppercase text-amber-950">
+                          <span className="font-bold font-sans uppercase text-amber-950">
                             Awaiting Administrative Review:
                           </span>{" "}
                           Your squad is registered and appears in the public tournament directory.
@@ -265,10 +265,10 @@ export default function MyRegistrationPage() {
 
                     {/* APPROVED NOTICE */}
                     {isApproved && (
-                      <div className="border-2 border-emerald-700 bg-emerald-50/70 p-3 text-xs text-emerald-900 flex items-start gap-2 pixel-shadow-sm">
+                      <div className="border-2 border-emerald-700 bg-emerald-50/70 p-3 text-xs text-emerald-900 flex items-start gap-2 comic-shadow-sm">
                         <CheckCircle2 className="size-4 shrink-0 text-emerald-700 mt-0.5" />
                         <div>
-                          <span className="font-bold font-pixel uppercase text-emerald-950">
+                          <span className="font-bold font-sans uppercase text-emerald-950">
                             Squad Approved:
                           </span>{" "}
                           Your roster is officially locked in for the Valkyrie Cup tournament bracket!
@@ -281,7 +281,7 @@ export default function MyRegistrationPage() {
                   <div className="p-4.5 sm:p-6 space-y-3">
                     <div className="flex items-center justify-between">
                       <div>
-                        <h3 className="text-sm font-bold font-pixel uppercase tracking-wide text-zinc-950">
+                        <h3 className="text-sm font-bold font-sans uppercase tracking-wide text-zinc-950">
                           Squad Roster (Confidential Discord Tags)
                         </h3>
                         <p className="text-[11px] text-zinc-500">
@@ -314,7 +314,7 @@ export default function MyRegistrationPage() {
                               </TableCell>
 
                               <TableCell>
-                                <div className="font-bold text-zinc-950 text-xs sm:text-sm flex items-center gap-1.5">
+                                <div className="font-bold text-zinc-950 text-xs sm:text-sm flex items-center gap-1.5 font-sans">
                                   {isCaptain && (
                                     <Crown className="size-3.5 text-amber-600 shrink-0" />
                                   )}
@@ -395,7 +395,7 @@ export default function MyRegistrationPage() {
           />
 
           {lookupError && (
-            <div className="border-2 border-red-700 bg-red-50 p-3 text-xs font-bold text-red-900 pixel-shadow-sm">
+            <div className="border-2 border-red-700 bg-red-50 p-3 text-xs font-bold text-red-900 comic-shadow-sm">
               {lookupError}
             </div>
           )}
@@ -413,7 +413,7 @@ export default function MyRegistrationPage() {
                 className="size-5 object-contain"
               />
             </div>
-            <span className="text-xs font-bold font-pixel text-zinc-950">
+            <span className="text-xs font-black tracking-wider text-zinc-950 font-sans uppercase">
               VALKYRIE CUP · MY REGISTRATION
             </span>
           </div>

@@ -249,7 +249,7 @@ export default function ValkyrieRegisterPage() {
         {/* HEADER */}
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl sm:text-3xl font-bold font-pixel text-zinc-950 tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-black font-sans text-zinc-950 tracking-tight">
               Register Squad
             </h1>
             <Badge variant="brand" size="sm">
@@ -263,10 +263,10 @@ export default function ValkyrieRegisterPage() {
 
         {/* ERROR ALERT */}
         {errorMessage && (
-          <div className="border-2 border-red-700 bg-red-50 p-3.5 text-xs font-bold text-red-900 flex items-start gap-2.5 pixel-shadow-sm">
+          <div className="border-2 border-red-700 bg-red-50 p-3.5 text-xs font-bold text-red-900 flex items-start gap-2.5 comic-shadow-sm">
             <AlertCircle className="size-4 shrink-0 mt-0.5 text-red-700" />
             <div>
-              <div className="font-pixel uppercase">Validation Error</div>
+              <div className="font-sans font-bold uppercase tracking-wider">Validation Error</div>
               <div className="mt-0.5 font-normal">{errorMessage}</div>
             </div>
           </div>
@@ -275,10 +275,10 @@ export default function ValkyrieRegisterPage() {
         {/* REGISTRATION FORM */}
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* 1. TEAM INFORMATION */}
-          <Card className="p-4 sm:p-5 bg-white space-y-4 pixel-shadow">
+          <Card className="p-4 sm:p-5 bg-white space-y-4 comic-shadow">
             <div className="flex items-center justify-between border-b-2 border-zinc-950 pb-2.5">
               <div>
-                <h2 className="text-sm font-bold font-pixel text-zinc-950 uppercase tracking-wide">
+                <h2 className="text-sm font-bold font-sans text-zinc-950 uppercase tracking-wide">
                   1. Squad Information
                 </h2>
                 <p className="text-xs text-zinc-500">
@@ -315,12 +315,12 @@ export default function ValkyrieRegisterPage() {
           </Card>
 
           {/* 2. TEAM CAPTAIN */}
-          <Card className="p-4 sm:p-5 bg-white space-y-4 pixel-shadow">
+          <Card className="p-4 sm:p-5 bg-white space-y-4 comic-shadow">
             <div className="flex items-center justify-between border-b-2 border-zinc-950 pb-2.5">
               <div className="flex items-center gap-2">
                 <Crown className="size-4 text-amber-600" />
                 <div>
-                  <h2 className="text-sm font-bold font-pixel text-zinc-950 uppercase tracking-wide">
+                  <h2 className="text-sm font-bold font-sans text-zinc-950 uppercase tracking-wide">
                     2. Squad Captain (Player 1)
                   </h2>
                   <p className="text-xs text-zinc-500">
@@ -354,10 +354,10 @@ export default function ValkyrieRegisterPage() {
           </Card>
 
           {/* 3. TEAM MEMBERS */}
-          <Card className="p-4 sm:p-5 bg-white space-y-4 pixel-shadow">
+          <Card className="p-4 sm:p-5 bg-white space-y-4 comic-shadow">
             <div className="flex items-center justify-between border-b-2 border-zinc-950 pb-2.5">
               <div>
-                <h2 className="text-sm font-bold font-pixel text-zinc-950 uppercase tracking-wide">
+                <h2 className="text-sm font-bold font-sans text-zinc-950 uppercase tracking-wide">
                   3. Squad Members (Players 2 – 8)
                 </h2>
                 <p className="text-xs text-zinc-500">
@@ -398,7 +398,7 @@ export default function ValkyrieRegisterPage() {
                         <span className="flex size-5 items-center justify-center border border-zinc-900 bg-zinc-200 font-mono text-[10px] font-bold text-zinc-900">
                           {playerNumber}
                         </span>
-                        <span className="text-xs font-bold text-zinc-950 font-pixel">
+                        <span className="text-xs font-bold text-zinc-950 font-sans">
                           Combatant #{index + 1}
                         </span>
                       </div>
@@ -459,7 +459,7 @@ export default function ValkyrieRegisterPage() {
           </Card>
 
           {/* SUBMIT BUTTON */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-2 border-zinc-950 bg-white p-4 pixel-shadow">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-2 border-zinc-950 bg-white p-4 comic-shadow">
             <div className="text-xs text-zinc-600">
               By submitting, your roster of{" "}
               <strong className="text-zinc-950 font-bold font-mono">{filledCount}</strong> players
@@ -507,8 +507,8 @@ export default function ValkyrieRegisterPage() {
           }
         >
           <div className="space-y-3 py-2 text-xs text-zinc-700">
-            <div className="border-2 border-emerald-700 bg-emerald-50/70 p-3.5 pixel-shadow-sm">
-              <div className="font-bold font-pixel text-emerald-950 text-sm">
+            <div className="border-2 border-emerald-700 bg-emerald-50/70 p-3.5 comic-shadow-sm">
+              <div className="font-bold font-sans text-emerald-950 text-sm">
                 {submittedTeam.teamName}
               </div>
               <div className="mt-1 flex items-center gap-2">

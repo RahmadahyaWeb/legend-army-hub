@@ -178,14 +178,14 @@ export default function MembersPage() {
       <div className="flex flex-col gap-3.5 sm:flex-row sm:items-center sm:justify-between border-b-2 border-zinc-200 pb-4">
         <div>
           <div className="flex flex-wrap items-center gap-2.5">
-            <h1 className="font-pixel text-xl sm:text-2xl font-bold text-zinc-950 tracking-wide">
+            <h1 className="font-sans text-xl sm:text-2xl font-black text-zinc-950 tracking-tight">
               Guild Members
             </h1>
-            <span className="border-2 border-zinc-950 px-2 py-0.5 text-xs font-mono font-bold bg-zinc-100 text-zinc-950 shadow-[1px_1px_0px_#09090b]">
+            <span className="border-2 border-zinc-900 px-2 py-0.5 text-xs font-mono font-bold bg-zinc-100 text-zinc-950 comic-shadow-sm">
               {activeCount} Active / {members.length} Total
             </span>
           </div>
-          <p className="text-xs font-mono text-zinc-600 mt-1">
+          <p className="text-xs text-zinc-600 mt-1">
             Combat characters, job classes, and power levels for guild events
           </p>
         </div>
@@ -230,7 +230,7 @@ export default function MembersPage() {
       </div>
 
       {/* FILTER CONTROLS BAR */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-2 border-zinc-950 bg-white p-3.5 sm:p-4 shadow-[3px_3px_0px_#09090b]">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-2 border-zinc-950 bg-white p-3.5 sm:p-4 comic-shadow">
         <div className="flex flex-1 items-center gap-2 sm:max-w-md">
           <Input
             icon={Search}
@@ -241,7 +241,7 @@ export default function MembersPage() {
               setPage(1);
             }}
             containerClassName="w-full"
-            className="!h-9 text-xs font-mono"
+            className="!h-9 text-xs"
           />
         </div>
 
@@ -252,7 +252,7 @@ export default function MembersPage() {
               setStatusFilter(e.target.value);
               setPage(1);
             }}
-            className="!h-9 !py-0 text-xs font-mono font-bold"
+            className="!h-9 !py-0 text-xs font-bold"
           >
             <option value="all">All Status ({members.length})</option>
             <option value="active">Active ({activeCount})</option>
@@ -267,7 +267,7 @@ export default function MembersPage() {
               setPageSize(Number(e.target.value));
               setPage(1);
             }}
-            className="!h-9 !py-0 text-xs font-mono font-bold"
+            className="!h-9 !py-0 text-xs font-bold"
           >
             {PAGE_SIZE_OPTIONS.map((size) => (
               <option key={size} value={size}>
@@ -309,7 +309,7 @@ export default function MembersPage() {
                   onClick={() => handleSort("nickname")}
                   className="cursor-pointer select-none"
                 >
-                  <div className="flex items-center gap-1.5 font-pixel text-xs tracking-wider">
+                  <div className="flex items-center gap-1.5 font-sans font-bold text-xs uppercase tracking-wider text-zinc-900">
                     <span>Character</span>
                     {sortField === "nickname" ? (
                       sortDirection === "asc" ? (
@@ -326,7 +326,7 @@ export default function MembersPage() {
                   onClick={() => handleSort("className")}
                   className="cursor-pointer select-none"
                 >
-                  <div className="flex items-center gap-1.5 font-pixel text-xs tracking-wider">
+                  <div className="flex items-center gap-1.5 font-sans font-bold text-xs uppercase tracking-wider text-zinc-900">
                     <span>Class / Job</span>
                     {sortField === "className" ? (
                       sortDirection === "asc" ? (
@@ -343,7 +343,7 @@ export default function MembersPage() {
                   onClick={() => handleSort("level")}
                   className="cursor-pointer select-none text-right"
                 >
-                  <div className="flex items-center justify-end gap-1.5 font-pixel text-xs tracking-wider">
+                  <div className="flex items-center justify-end gap-1.5 font-sans font-bold text-xs uppercase tracking-wider text-zinc-900">
                     <span>Level</span>
                     {sortField === "level" ? (
                       sortDirection === "asc" ? (
@@ -360,7 +360,7 @@ export default function MembersPage() {
                   onClick={() => handleSort("gearScore")}
                   className="cursor-pointer select-none text-right"
                 >
-                  <div className="flex items-center justify-end gap-1.5 font-pixel text-xs tracking-wider">
+                  <div className="flex items-center justify-end gap-1.5 font-sans font-bold text-xs uppercase tracking-wider text-zinc-900">
                     <span>Gear Score</span>
                     {sortField === "gearScore" ? (
                       sortDirection === "asc" ? (
@@ -373,8 +373,8 @@ export default function MembersPage() {
                     )}
                   </div>
                 </TableHead>
-                <TableHead className="text-center font-pixel text-xs tracking-wider">Status</TableHead>
-                <TableHead className="text-right w-24 font-pixel text-xs tracking-wider">Actions</TableHead>
+                <TableHead className="text-center font-sans font-bold text-xs uppercase tracking-wider text-zinc-900">Status</TableHead>
+                <TableHead className="text-right w-24 font-sans font-bold text-xs uppercase tracking-wider text-zinc-900">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -389,7 +389,7 @@ export default function MembersPage() {
                     </TableCell>
 
                     <TableCell>
-                      <div className="font-bold text-zinc-950 font-mono text-xs sm:text-sm">
+                      <div className="font-bold text-zinc-950 font-sans text-xs sm:text-sm">
                         {member.nickname}
                       </div>
                       {member.role && (
@@ -418,7 +418,7 @@ export default function MembersPage() {
                       <button
                         type="button"
                         onClick={() => handleToggleActive(member)}
-                        className={`inline-flex items-center gap-1.5 border-2 border-zinc-950 px-2 py-0.5 text-[10px] font-mono font-bold uppercase transition shadow-[1px_1px_0px_#09090b] active:translate-x-[1px] active:translate-y-[1px] ${
+                        className={`inline-flex items-center gap-1.5 border-2 border-zinc-900 px-2 py-0.5 text-[10px] font-sans font-bold uppercase transition comic-shadow-sm active:translate-x-[1px] active:translate-y-[1px] ${
                           isActive
                             ? "bg-emerald-100 text-emerald-950 hover:bg-emerald-200"
                             : "bg-zinc-200 text-zinc-700 hover:bg-zinc-300"
@@ -434,7 +434,7 @@ export default function MembersPage() {
                         <button
                           type="button"
                           onClick={() => setEditingMember(member)}
-                          className="flex size-7 items-center justify-center border border-zinc-950 bg-white text-zinc-700 hover:bg-zinc-100 transition shadow-[1px_1px_0px_#09090b] active:translate-x-[1px] active:translate-y-[1px]"
+                          className="flex size-7.5 items-center justify-center border-2 border-zinc-900 bg-white text-zinc-700 hover:bg-zinc-100 transition comic-shadow-sm active:translate-x-[1px] active:translate-y-[1px]"
                           title="Edit member"
                         >
                           <Pencil className="size-3.5" />
@@ -442,7 +442,7 @@ export default function MembersPage() {
                         <button
                           type="button"
                           onClick={() => setDeletingMember(member)}
-                          className="flex size-7 items-center justify-center border border-zinc-950 bg-white text-zinc-700 hover:bg-red-50 hover:text-red-700 transition shadow-[1px_1px_0px_#09090b] active:translate-x-[1px] active:translate-y-[1px]"
+                          className="flex size-7.5 items-center justify-center border-2 border-zinc-900 bg-white text-zinc-700 hover:bg-red-50 hover:text-red-700 transition comic-shadow-sm active:translate-x-[1px] active:translate-y-[1px]"
                           title="Delete member"
                         >
                           <Trash2 className="size-3.5" />
@@ -457,7 +457,7 @@ export default function MembersPage() {
 
           {/* PAGINATION CONTROLS */}
           {totalPages > 1 && (
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-2 border-zinc-950 bg-white px-4 py-3 text-xs font-mono shadow-[3px_3px_0px_#09090b]">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-2 border-zinc-900 bg-white px-4 py-3 text-xs font-sans comic-shadow">
               <span className="text-zinc-600 font-medium">
                 Showing {(page - 1) * pageSize + 1} to{" "}
                 {Math.min(page * pageSize, sortedMembers.length)} of{" "}

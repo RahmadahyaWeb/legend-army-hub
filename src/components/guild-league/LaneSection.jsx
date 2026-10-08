@@ -34,10 +34,10 @@ export default function LaneSection({
     laneConfig?.description ?? "Assign these teams to Top, Mid or Bot Lane.";
 
   return (
-    <section className="border-2 border-zinc-950 bg-white pixel-shadow-sm">
+    <section className="border-2 border-zinc-900 bg-white comic-shadow-sm">
       <div
         className={[
-          "border-b-2 border-zinc-950 px-4 py-3 sm:px-5",
+          "border-b-2 border-zinc-900 px-4 py-3 sm:px-5",
           laneConfig ? laneConfig.headerClassName : "bg-zinc-100",
         ].join(" ")}
       >
@@ -45,7 +45,7 @@ export default function LaneSection({
           <div className="flex min-w-0 items-center gap-3">
             <div
               className={[
-                "flex size-8 shrink-0 items-center justify-center border-2 border-zinc-950",
+                "flex size-8 shrink-0 items-center justify-center border-2 border-zinc-900",
                 laneConfig
                   ? laneConfig.iconClassName
                   : "bg-zinc-100 text-zinc-800",
@@ -55,14 +55,14 @@ export default function LaneSection({
             </div>
 
             <div>
-              <h2 className="text-sm font-bold font-pixel uppercase tracking-wide text-zinc-950">
+              <h2 className="text-sm font-bold font-sans uppercase tracking-wide text-zinc-900">
                 {title}
               </h2>
-              <p className="text-[11px] text-zinc-600">{description}</p>
+              <p className="text-[11px] font-sans text-zinc-600">{description}</p>
             </div>
           </div>
 
-          <div className="shrink-0 border border-zinc-900 bg-white px-2 py-0.5 text-xs font-bold font-mono text-zinc-800">
+          <div className="shrink-0 border-2 border-zinc-900 bg-white px-2 py-0.5 text-xs font-bold font-mono text-zinc-900 comic-shadow-sm">
             {teamNumbers.length} {teamNumbers.length === 1 ? "Formation" : "Formations"}
           </div>
         </div>

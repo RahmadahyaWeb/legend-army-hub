@@ -222,10 +222,15 @@ export default function AttendancePage() {
       {/* HEADER */}
       <div className="flex flex-col gap-3.5 sm:flex-row sm:items-center sm:justify-between border-b-2 border-zinc-200 pb-4">
         <div>
-          <h1 className="font-pixel text-xl sm:text-2xl font-bold text-zinc-950 tracking-wide">
-            Match Attendance
-          </h1>
-          <p className="mt-1 text-xs font-mono text-zinc-600">
+          <div className="flex items-center gap-2">
+            <span className="inline-block px-1.5 py-0.5 text-[10px] font-pixel uppercase tracking-widest bg-brand-100 text-brand-700 border border-brand-300">
+              Roll Call
+            </span>
+            <h1 className="text-xl sm:text-2xl font-bold text-zinc-950 tracking-tight font-sans">
+              Match Attendance
+            </h1>
+          </div>
+          <p className="mt-1 text-xs sm:text-sm text-zinc-600 font-sans">
             Track member roll call, standby check-ins, and match presence
           </p>
         </div>
@@ -235,7 +240,7 @@ export default function AttendancePage() {
             <Select
               value={selectedLeagueId}
               onChange={(e) => setSelectedLeagueId(e.target.value)}
-              className="!h-9 !py-0 !text-xs font-mono font-bold"
+              className="!h-9 !py-0 !text-xs font-sans font-semibold"
             >
               {guildLeagues.map((gl) => (
                 <option key={gl.id} value={gl.id}>
@@ -248,7 +253,7 @@ export default function AttendancePage() {
           {currentMatch && (
             <Link
               href={`/admin/guild-leagues/${selectedLeagueId}`}
-              className="inline-flex h-9 items-center gap-1.5 border-2 border-zinc-950 bg-white px-3 text-xs font-mono font-bold text-zinc-900 hover:bg-zinc-100 shadow-[2px_2px_0px_#09090b] active:translate-x-[1px] active:translate-y-[1px] transition"
+              className="inline-flex h-9 items-center gap-1.5 border-2 border-zinc-900 bg-white px-3 text-xs font-sans font-semibold text-zinc-900 hover:bg-zinc-50 comic-shadow-sm active:translate-x-[1px] active:translate-y-[1px] transition"
             >
               <ExternalLink className="size-3.5" />
               <span>Roster Editor</span>
@@ -279,7 +284,7 @@ export default function AttendancePage() {
       )}
 
       {/* FILTER BAR */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-2 border-zinc-950 bg-white p-3.5 sm:p-4 shadow-[3px_3px_0px_#09090b]">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-2 border-zinc-900 bg-white p-3.5 sm:p-4 comic-shadow">
         <div className="flex flex-1 items-center gap-2 sm:max-w-md">
           <Input
             icon={Search}
@@ -287,7 +292,7 @@ export default function AttendancePage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             containerClassName="w-full"
-            className="!h-9 text-xs font-mono"
+            className="!h-9 text-xs sm:text-sm font-sans"
           />
         </div>
 
@@ -295,7 +300,7 @@ export default function AttendancePage() {
           <Select
             value={selectedTeam}
             onChange={(e) => setSelectedTeam(e.target.value)}
-            className="!h-9 !py-0 text-xs font-mono font-bold"
+            className="!h-9 !py-0 text-xs sm:text-sm font-sans font-semibold"
           >
             <option value="all">All Teams</option>
             {matchTeams.map((team) => (
@@ -308,7 +313,7 @@ export default function AttendancePage() {
           <Select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="!h-9 !py-0 text-xs font-mono font-bold"
+            className="!h-9 !py-0 text-xs sm:text-sm font-sans font-semibold"
           >
             <option value="all">All Status</option>
             <option value="present">Present ({summaryCounts.present})</option>
@@ -338,13 +343,13 @@ export default function AttendancePage() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-16 font-pixel text-xs tracking-wider">Team</TableHead>
-              <TableHead className="font-pixel text-xs tracking-wider">Player</TableHead>
-              <TableHead className="font-pixel text-xs tracking-wider">Class</TableHead>
-              <TableHead className="text-right font-pixel text-xs tracking-wider">Level</TableHead>
-              <TableHead className="text-right font-pixel text-xs tracking-wider">Gear Score</TableHead>
-              <TableHead className="text-center font-pixel text-xs tracking-wider">Status</TableHead>
-              <TableHead className="text-right font-pixel text-xs tracking-wider">Action</TableHead>
+              <TableHead className="w-16 font-sans text-xs font-bold text-zinc-900 uppercase tracking-wider">Team</TableHead>
+              <TableHead className="font-sans text-xs font-bold text-zinc-900 uppercase tracking-wider">Player</TableHead>
+              <TableHead className="font-sans text-xs font-bold text-zinc-900 uppercase tracking-wider">Class</TableHead>
+              <TableHead className="text-right font-sans text-xs font-bold text-zinc-900 uppercase tracking-wider">Level</TableHead>
+              <TableHead className="text-right font-sans text-xs font-bold text-zinc-900 uppercase tracking-wider">Gear Score</TableHead>
+              <TableHead className="text-center font-sans text-xs font-bold text-zinc-900 uppercase tracking-wider">Status</TableHead>
+              <TableHead className="text-right font-sans text-xs font-bold text-zinc-900 uppercase tracking-wider">Action</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -356,16 +361,16 @@ export default function AttendancePage() {
               return (
                 <TableRow key={`${rosterItem.teamNumber}-${rosterItem.slotNumber}`}>
                   <TableCell>
-                    <span className="inline-flex items-center justify-center border-2 border-zinc-950 bg-zinc-950 px-2 py-0.5 font-mono text-[11px] font-bold text-white shadow-[1px_1px_0px_#09090b]">
+                    <span className="inline-flex items-center justify-center border-2 border-zinc-900 bg-zinc-900 px-2 py-0.5 font-mono text-[11px] font-bold text-white shadow-[1px_1px_0px_#18181b]">
                       T{rosterItem.teamNumber}
                     </span>
                   </TableCell>
 
                   <TableCell>
-                    <div className="font-bold text-zinc-950 font-mono text-xs sm:text-sm">
+                    <div className="font-bold text-zinc-900 font-sans text-sm">
                       {rosterItem.nickname}
                     </div>
-                    <div className="text-[10px] font-mono text-zinc-500">
+                    <div className="text-[11px] font-mono text-zinc-500">
                       Slot #{rosterItem.slotNumber}
                     </div>
                   </TableCell>
@@ -378,25 +383,25 @@ export default function AttendancePage() {
                     {rosterItem.level ? `Lv. ${rosterItem.level}` : "—"}
                   </TableCell>
 
-                  <TableCell className="text-right font-mono text-xs font-bold text-zinc-950">
+                  <TableCell className="text-right font-mono text-xs font-bold text-zinc-900">
                     {rosterItem.gearScore > 0 ? formatNumber(rosterItem.gearScore) : "—"}
                   </TableCell>
 
                   <TableCell className="text-center">
                     {currentStatus === "present" ? (
-                      <span className="inline-block border-2 border-emerald-950 bg-emerald-100 px-2 py-0.5 text-[10px] font-mono font-bold text-emerald-950 shadow-[1px_1px_0px_#064e3b]">
+                      <span className="inline-block border-2 border-emerald-800 bg-emerald-100 px-2 py-0.5 text-[11px] font-sans font-bold text-emerald-900 comic-shadow-sm">
                         PRESENT
                       </span>
                     ) : currentStatus === "absent" ? (
-                      <span className="inline-block border-2 border-red-950 bg-red-100 px-2 py-0.5 text-[10px] font-mono font-bold text-red-950 shadow-[1px_1px_0px_#7f1d1d]">
+                      <span className="inline-block border-2 border-red-800 bg-red-100 px-2 py-0.5 text-[11px] font-sans font-bold text-red-900 comic-shadow-sm">
                         ABSENT
                       </span>
                     ) : currentStatus === "late" ? (
-                      <span className="inline-block border-2 border-amber-950 bg-amber-100 px-2 py-0.5 text-[10px] font-mono font-bold text-amber-950 shadow-[1px_1px_0px_#78350f]">
+                      <span className="inline-block border-2 border-amber-800 bg-amber-100 px-2 py-0.5 text-[11px] font-sans font-bold text-amber-900 comic-shadow-sm">
                         LATE
                       </span>
                     ) : (
-                      <span className="text-[11px] font-mono text-zinc-400 italic">
+                      <span className="text-[11px] font-sans text-zinc-400 italic">
                         Unrecorded
                       </span>
                     )}
@@ -408,7 +413,7 @@ export default function AttendancePage() {
                         type="button"
                         disabled={isSavingThis}
                         onClick={() => handleMarkStatus(rosterItem, "present")}
-                        className={`size-7.5 border-2 border-zinc-950 flex items-center justify-center text-xs font-bold font-mono transition shadow-[1px_1px_0px_#09090b] active:translate-x-[1px] active:translate-y-[1px] ${
+                        className={`size-7.5 border-2 border-zinc-900 flex items-center justify-center text-xs font-bold transition comic-shadow-sm active:translate-x-[1px] active:translate-y-[1px] ${
                           currentStatus === "present"
                             ? "bg-emerald-600 text-white"
                             : "bg-white text-zinc-700 hover:bg-emerald-50 hover:text-emerald-900"
@@ -422,7 +427,7 @@ export default function AttendancePage() {
                         type="button"
                         disabled={isSavingThis}
                         onClick={() => handleMarkStatus(rosterItem, "late")}
-                        className={`size-7.5 border-2 border-zinc-950 flex items-center justify-center text-xs font-bold font-mono transition shadow-[1px_1px_0px_#09090b] active:translate-x-[1px] active:translate-y-[1px] ${
+                        className={`size-7.5 border-2 border-zinc-900 flex items-center justify-center text-xs font-bold transition comic-shadow-sm active:translate-x-[1px] active:translate-y-[1px] ${
                           currentStatus === "late"
                             ? "bg-amber-600 text-white"
                             : "bg-white text-zinc-700 hover:bg-amber-50 hover:text-amber-900"
@@ -436,7 +441,7 @@ export default function AttendancePage() {
                         type="button"
                         disabled={isSavingThis}
                         onClick={() => handleMarkStatus(rosterItem, "absent")}
-                        className={`size-7.5 border-2 border-zinc-950 flex items-center justify-center text-xs font-bold font-mono transition shadow-[1px_1px_0px_#09090b] active:translate-x-[1px] active:translate-y-[1px] ${
+                        className={`size-7.5 border-2 border-zinc-900 flex items-center justify-center text-xs font-bold transition comic-shadow-sm active:translate-x-[1px] active:translate-y-[1px] ${
                           currentStatus === "absent"
                             ? "bg-red-600 text-white"
                             : "bg-white text-zinc-700 hover:bg-red-50 hover:text-red-900"

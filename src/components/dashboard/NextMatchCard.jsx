@@ -23,7 +23,7 @@ export default function NextMatchCard({ guildLeague = null, isAdmin = false }) {
   if (!guildLeague) {
     return (
       <Card className="p-5 sm:p-6 bg-white">
-        <h2 className="text-sm font-bold font-pixel uppercase tracking-wide text-zinc-950">
+        <h2 className="text-xs font-black uppercase tracking-wider text-zinc-900 font-sans">
           No Upcoming Events Scheduled
         </h2>
         <p className="mt-1 text-xs text-zinc-600">
@@ -47,11 +47,11 @@ export default function NextMatchCard({ guildLeague = null, isAdmin = false }) {
     : `/roster/${guildLeague.id}`;
 
   return (
-    <Card className="p-4.5 sm:p-6 bg-white pixel-shadow">
+    <Card className="p-4.5 sm:p-6 bg-white comic-shadow">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <div className="flex items-center gap-2">
-            <span className="font-pixel text-xs font-bold text-zinc-500 uppercase tracking-wide">
+            <span className="text-[11px] font-mono font-bold text-brand-700 uppercase tracking-widest bg-brand-50 px-2 py-0.5 border border-brand-200">
               Imminent War
             </span>
             {isWoe ? (
@@ -77,7 +77,7 @@ export default function NextMatchCard({ guildLeague = null, isAdmin = false }) {
             )}
           </div>
 
-          <h2 className="mt-2 text-lg sm:text-2xl font-bold font-pixel text-zinc-950 tracking-tight">
+          <h2 className="mt-2.5 text-lg sm:text-2xl font-black text-zinc-950 tracking-tight font-sans">
             {guildLeague.name}
           </h2>
 

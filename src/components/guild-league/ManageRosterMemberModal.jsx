@@ -163,12 +163,12 @@ export default function ManageRosterMemberModal({
         {/* HEADER */}
         <div className="flex items-start justify-between border-b-2 border-zinc-950 px-5 py-3.5 bg-zinc-100">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="flex size-9 shrink-0 items-center justify-center border-2 border-zinc-950 bg-zinc-950 text-xs font-mono font-bold text-white pixel-shadow-sm">
+            <div className="flex size-9 shrink-0 items-center justify-center border-2 border-zinc-950 bg-zinc-950 text-xs font-mono font-bold text-white comic-shadow-sm">
               T{member.teamNumber}
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-sm sm:text-base font-bold font-pixel text-zinc-950">
+                <h3 className="text-sm sm:text-base font-bold font-sans text-zinc-950">
                   {member.nickname}
                 </h3>
                 <span className="border border-zinc-900 bg-white px-1.5 py-0.2 text-[10px] font-mono font-bold text-zinc-800">
@@ -204,7 +204,7 @@ export default function ManageRosterMemberModal({
           )}
 
           <div>
-            <label className="text-xs font-bold font-pixel uppercase tracking-wide text-zinc-950">
+            <label className="text-xs font-bold font-sans uppercase tracking-wider text-zinc-950">
               Relocate or Mutual Swap
             </label>
             <p className="text-[11px] text-zinc-600 mt-0.5">
@@ -250,8 +250,8 @@ export default function ManageRosterMemberModal({
               Currently stationed here (Team {member.teamNumber}, Slot #{member.slotNumber}).
             </div>
           ) : targetOccupant ? (
-            <div className="border-2 border-amber-600 bg-amber-50/80 p-3 text-xs text-amber-950 space-y-2 pixel-shadow-sm">
-              <div className="flex items-center gap-1.5 font-bold font-pixel text-amber-950 uppercase">
+            <div className="border-2 border-amber-600 bg-amber-50/80 p-3 text-xs text-amber-950 space-y-2 comic-shadow-sm">
+              <div className="flex items-center gap-1.5 font-bold font-sans text-amber-950 uppercase">
                 <ArrowRightLeft className="size-4 text-amber-800" />
                 <span>Mutual Swap with Occupant</span>
               </div>

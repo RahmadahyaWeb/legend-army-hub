@@ -1,10 +1,10 @@
 "use client";
 
 /**
- * Standard Minimal Pixel Empty State Component
+ * Standard Minimal Comic Pixel Empty State Component
  *
  * Why this exists:
- * Presents a calm, retro RPG-styled empty prompt with crisp rectangular borders
+ * Presents a calm, retro comic RPG-styled empty prompt with crisp rectangular borders
  * and clear actionable call-to-actions, avoiding oversized decorative graphics.
  *
  * @param {Object} props - Component props
@@ -22,15 +22,18 @@ export default function EmptyState({
 }) {
   return (
     <div
-      className={`flex flex-col items-center justify-center border-2 border-dashed border-zinc-400 bg-white py-10 px-4 text-center pixel-shadow-sm ${className}`}
+      className={`flex flex-col items-center justify-center border-2 border-dashed border-zinc-400 bg-white py-10 px-4 text-center shadow-[2px_2px_0px_#18181b] font-sans ${className}`}
     >
-      <p className="text-sm font-bold font-pixel uppercase tracking-wide text-zinc-900">
+      <p className="text-sm font-bold uppercase tracking-wider text-zinc-950 font-sans">
         {title}
       </p>
       {description && (
-        <p className="mt-1.5 text-xs text-zinc-600 max-w-sm">{description}</p>
+        <p className="mt-1.5 text-xs text-zinc-600 max-w-sm font-sans leading-relaxed">
+          {description}
+        </p>
       )}
       {action && <div className="mt-4">{action}</div>}
     </div>
   );
 }
+

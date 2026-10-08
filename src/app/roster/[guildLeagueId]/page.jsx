@@ -150,8 +150,8 @@ export default function PublicRosterPage() {
   if (error || !guildLeague) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-zinc-50 p-4">
-        <div className="w-full max-w-sm border-2 border-zinc-950 bg-white p-6 text-center pixel-shadow">
-          <h2 className="text-base font-bold font-pixel text-zinc-950">
+        <div className="w-full max-w-sm border-2 border-zinc-950 bg-white p-6 text-center comic-shadow">
+          <h2 className="text-base font-bold font-sans text-zinc-950">
             Event Not Found
           </h2>
           <p className="mt-1.5 text-xs text-zinc-600">
@@ -198,7 +198,7 @@ export default function PublicRosterPage() {
       <header className="border-b-2 border-zinc-950 bg-white sticky top-0 z-30">
         <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex items-center gap-2.5">
-            <div className="flex size-8 shrink-0 items-center justify-center border-2 border-zinc-950 bg-brand-600 pixel-shadow-sm">
+            <div className="flex size-8 shrink-0 items-center justify-center border-2 border-zinc-900 bg-brand-600 shadow-[1.5px_1.5px_0px_#18181b]">
               <img
                 src="/logo.png"
                 alt="Legend Army"
@@ -206,7 +206,7 @@ export default function PublicRosterPage() {
               />
             </div>
             <div>
-              <div className="font-pixel text-sm font-bold text-zinc-950 leading-tight">
+              <div className="font-sans text-xs font-black tracking-wider text-zinc-950 leading-tight uppercase">
                 LEGEND ARMY
               </div>
               <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-brand-700 leading-tight">
@@ -257,7 +257,7 @@ export default function PublicRosterPage() {
                   <Layers className="size-4" />
                 </div>
                 <div>
-                  <h2 className="text-sm sm:text-base font-bold font-pixel text-zinc-950 uppercase tracking-wide">
+                  <h2 className="text-sm sm:text-base font-black font-sans text-zinc-950 uppercase tracking-wide">
                     Polarity Battle Formations
                   </h2>
                   <p className="text-[11px] text-zinc-600">
@@ -293,13 +293,13 @@ export default function PublicRosterPage() {
           </div>
         ) : isWoe ? (
           <div className="space-y-4 animate-in fade-in duration-100">
-            <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between border-2 border-zinc-950 bg-white p-3.5 sm:p-4 pixel-shadow-sm">
+            <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between border-2 border-zinc-950 bg-white p-3.5 sm:p-4 comic-shadow-sm">
               <div className="flex items-center gap-2.5 sm:gap-3">
                 <div className="flex size-8 shrink-0 items-center justify-center border-2 border-zinc-950 bg-zinc-100 text-zinc-950">
                   <Castle className="size-4" />
                 </div>
                 <div>
-                  <h2 className="text-sm sm:text-base font-bold font-pixel text-zinc-950 uppercase tracking-wide">
+                  <h2 className="text-sm sm:text-base font-black font-sans text-zinc-950 uppercase tracking-wide">
                     WOE Battle Formations
                   </h2>
                   <p className="text-[11px] text-zinc-600">

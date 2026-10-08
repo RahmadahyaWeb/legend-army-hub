@@ -58,15 +58,15 @@ export default function ValkyrieCupPage() {
       <ValkyrieHeader />
 
       {/* HERO SECTION */}
-      <section className="relative overflow-hidden border-b-2 border-zinc-950 bg-white pixel-grid-bg">
+      <section className="relative overflow-hidden border-b-2 border-zinc-950 bg-white comic-dots-bg">
         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-14 lg:px-8">
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 border border-zinc-950 bg-amber-100 px-3 py-1 text-xs font-bold text-amber-950 mb-4 pixel-shadow-sm">
+            <div className="inline-flex items-center gap-2 border-2 border-amber-600 bg-amber-50 px-3 py-1 text-xs font-bold text-amber-950 mb-4 shadow-[1.5px_1.5px_0px_#d97706]">
               <Trophy className="size-3.5 text-amber-700" />
               <span>Official Guild Tournament Bracket</span>
             </div>
 
-            <h1 className="text-3xl sm:text-5xl font-black font-pixel tracking-tight text-zinc-950 leading-tight">
+            <h1 className="text-3xl sm:text-5xl font-black font-sans tracking-tight text-zinc-950 leading-tight">
               Valkyrie Cup
             </h1>
             <p className="mt-3 text-xs sm:text-sm text-zinc-700 leading-relaxed max-w-2xl font-medium">
@@ -99,7 +99,7 @@ export default function ValkyrieCupPage() {
       <main className="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8 space-y-8 flex-1 w-full">
         {/* SUMMARY STATS GRID */}
         <section className="space-y-3">
-          <h2 className="text-xs font-bold font-pixel uppercase tracking-wider text-zinc-950">
+          <h2 className="text-xs font-black uppercase tracking-wider text-zinc-900 font-sans">
             Tournament Roster Summary
           </h2>
 
@@ -170,10 +170,10 @@ export default function ValkyrieCupPage() {
         <section className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 items-stretch">
           <Card className="p-4 sm:p-5 flex flex-col justify-between bg-white">
             <div>
-              <div className="flex size-8 items-center justify-center border-2 border-zinc-950 bg-zinc-100 text-zinc-950 mb-3 pixel-shadow-sm">
+              <div className="flex size-8 items-center justify-center border-2 border-zinc-950 bg-zinc-100 text-zinc-950 mb-3 comic-shadow-sm">
                 <Users className="size-4" />
               </div>
-              <h3 className="text-sm font-bold font-pixel text-zinc-950 uppercase tracking-wide">
+              <h3 className="text-sm font-bold font-sans text-zinc-950 uppercase tracking-wide">
                 5 to 8 Combatants Roster
               </h3>
               <p className="mt-2 text-xs text-zinc-700 leading-relaxed">
@@ -188,10 +188,10 @@ export default function ValkyrieCupPage() {
 
           <Card className="p-4 sm:p-5 flex flex-col justify-between bg-white">
             <div>
-              <div className="flex size-8 items-center justify-center border-2 border-zinc-950 bg-zinc-100 text-zinc-950 mb-3 pixel-shadow-sm">
+              <div className="flex size-8 items-center justify-center border-2 border-zinc-950 bg-zinc-100 text-zinc-950 mb-3 comic-shadow-sm">
                 <Shield className="size-4" />
               </div>
-              <h3 className="text-sm font-bold font-pixel text-zinc-950 uppercase tracking-wide">
+              <h3 className="text-sm font-bold font-sans text-zinc-950 uppercase tracking-wide">
                 Guild Affiliation
               </h3>
               <p className="mt-2 text-xs text-zinc-700 leading-relaxed">
@@ -207,10 +207,10 @@ export default function ValkyrieCupPage() {
 
           <Card className="p-4 sm:p-5 flex flex-col justify-between bg-white">
             <div>
-              <div className="flex size-8 items-center justify-center border-2 border-zinc-950 bg-zinc-100 text-zinc-950 mb-3 pixel-shadow-sm">
+              <div className="flex size-8 items-center justify-center border-2 border-zinc-950 bg-zinc-100 text-zinc-950 mb-3 comic-shadow-sm">
                 <UserCheck className="size-4" />
               </div>
-              <h3 className="text-sm font-bold font-pixel text-zinc-950 uppercase tracking-wide">
+              <h3 className="text-sm font-bold font-sans text-zinc-950 uppercase tracking-wide">
                 Admin Review & Approval
               </h3>
               <p className="mt-2 text-xs text-zinc-700 leading-relaxed">
@@ -228,7 +228,7 @@ export default function ValkyrieCupPage() {
         <section className="space-y-3">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-xs font-bold font-pixel text-zinc-950 uppercase tracking-wider">
+              <h2 className="text-xs font-black uppercase tracking-wider text-zinc-900 font-sans">
                 Registered Squads
               </h2>
               <p className="text-xs text-zinc-600 mt-0.5">
@@ -248,9 +248,9 @@ export default function ValkyrieCupPage() {
           {loading ? (
             <Loading message="Loading tournament squads..." />
           ) : previewTeams.length === 0 ? (
-            <div className="border-2 border-dashed border-zinc-400 bg-white p-8 text-center space-y-3 pixel-shadow-sm">
+            <div className="border-2 border-dashed border-zinc-400 bg-white p-8 text-center space-y-3 comic-shadow-sm">
               <Trophy className="mx-auto size-8 text-zinc-400" />
-              <div className="text-sm font-bold font-pixel text-zinc-950">
+              <div className="text-sm font-bold font-sans text-zinc-950">
                 No Squads Registered Yet
               </div>
               <p className="text-xs text-zinc-600 max-w-sm mx-auto">
@@ -271,7 +271,7 @@ export default function ValkyrieCupPage() {
                 return (
                   <Card
                     key={team.id}
-                    className="flex flex-col justify-between p-4 sm:p-5 bg-white pixel-shadow-sm hover:pixel-shadow transition-transform"
+                    className="flex flex-col justify-between p-4 sm:p-5 bg-white comic-shadow-sm hover:comic-shadow transition-all"
                   >
                     <div>
                       <div className="flex items-center justify-between gap-2">
@@ -287,7 +287,7 @@ export default function ValkyrieCupPage() {
                         </Badge>
                       </div>
 
-                      <h3 className="mt-3 text-sm font-bold font-pixel text-zinc-950 line-clamp-1">
+                      <h3 className="mt-3 text-sm font-bold font-sans text-zinc-950 line-clamp-1">
                         {team.teamName}
                       </h3>
 
@@ -339,7 +339,7 @@ export default function ValkyrieCupPage() {
                 className="size-5 object-contain"
               />
             </div>
-            <span className="text-xs font-bold font-pixel text-zinc-950">
+            <span className="text-xs font-black tracking-wider text-zinc-950 font-sans uppercase">
               VALKYRIE CUP · LEGEND ARMY
             </span>
           </div>

@@ -66,11 +66,11 @@ export default function ValkyrieHeader() {
         {/* BRAND */}
         <div className="flex items-center gap-6">
           <Link href="/valkyrie-cup" className="flex items-center gap-2.5">
-            <div className="flex size-8 shrink-0 items-center justify-center border-2 border-zinc-950 bg-amber-500 pixel-shadow-sm">
+            <div className="flex size-8 shrink-0 items-center justify-center border-2 border-zinc-900 bg-amber-500 shadow-[1.5px_1.5px_0px_#18181b]">
               <Trophy className="size-4.5 text-zinc-950" />
             </div>
             <div>
-              <span className="font-pixel text-sm font-bold text-zinc-950 block leading-tight">
+              <span className="font-sans text-xs font-black tracking-wider text-zinc-950 block leading-tight uppercase">
                 VALKYRIE CUP
               </span>
               <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-700 block leading-tight">
@@ -92,9 +92,9 @@ export default function ValkyrieHeader() {
                   key={link.href}
                   href={link.href}
                   className={[
-                    "inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold border-2 transition-transform select-none",
+                    "inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold border-2 transition-transform select-none rounded-none",
                     isActive
-                      ? "border-zinc-950 bg-zinc-950 text-white pixel-shadow-sm translate-x-[1px] translate-y-[1px]"
+                      ? "border-amber-700 bg-amber-50 text-amber-950 shadow-[1.5px_1.5px_0px_#b45309] translate-x-[1px] translate-y-[1px]"
                       : "border-transparent text-zinc-700 hover:border-zinc-950 hover:bg-zinc-100 hover:text-zinc-950 active:translate-x-[1px] active:translate-y-[1px]",
                   ].join(" ")}
                 >
@@ -124,7 +124,7 @@ export default function ValkyrieHeader() {
           <button
             type="button"
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="md:hidden flex size-8 items-center justify-center border-2 border-zinc-950 bg-white text-zinc-900 pixel-shadow-sm active:translate-x-[1px] active:translate-y-[1px]"
+            className="md:hidden flex size-8 items-center justify-center border-2 border-zinc-950 bg-white text-zinc-900 shadow-[1.5px_1.5px_0px_#18181b] active:translate-x-[1px] active:translate-y-[1px]"
             aria-label="Toggle navigation menu"
           >
             {mobileOpen ? <X className="size-4" /> : <Menu className="size-4" />}
@@ -134,7 +134,7 @@ export default function ValkyrieHeader() {
 
       {/* MOBILE DRAWER */}
       {mobileOpen && (
-        <div className="md:hidden border-b-2 border-zinc-950 bg-white px-4 py-3 pixel-shadow space-y-2 animate-in fade-in duration-100">
+        <div className="md:hidden border-b-2 border-zinc-950 bg-white px-4 py-3 comic-shadow space-y-2 animate-in fade-in duration-100">
           <div className="space-y-1">
             {NAV_LINKS.map((link) => {
               const Icon = link.icon;
@@ -150,7 +150,7 @@ export default function ValkyrieHeader() {
                   className={[
                     "flex items-center gap-2.5 px-3 py-2 text-xs font-bold border-2 transition-transform",
                     isActive
-                      ? "border-zinc-950 bg-zinc-950 text-white pixel-shadow-sm"
+                      ? "border-amber-700 bg-amber-50 text-amber-950 shadow-[1.5px_1.5px_0px_#b45309]"
                       : "border-transparent text-zinc-700 hover:border-zinc-950 hover:bg-zinc-100",
                   ].join(" ")}
                 >

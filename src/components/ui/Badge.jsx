@@ -1,17 +1,17 @@
 "use client";
 
 /**
- * Semantic pixel badge styling tokens.
- * Sharp rectangular chips reminiscent of retro RPG item labels and status flags.
- */
+  * Semantic comic pixel badge styling tokens.
+  * Sharp rectangular chips reminiscent of retro RPG item labels and modern comic flags.
+  */
 const VARIANTS = {
-  brand: "bg-brand-50 text-brand-900 border-brand-700",
-  success: "bg-emerald-50 text-emerald-900 border-emerald-700",
+  brand: "bg-brand-50 text-brand-950 border-brand-700",
+  success: "bg-emerald-50 text-emerald-950 border-emerald-700",
   warning: "bg-amber-50 text-amber-950 border-amber-600",
-  danger: "bg-red-50 text-red-900 border-red-700",
+  danger: "bg-red-50 text-red-950 border-red-700",
   info: "bg-sky-50 text-sky-950 border-sky-600",
   neutral: "bg-zinc-100 text-zinc-900 border-zinc-400",
-  outline: "bg-white text-zinc-800 border-zinc-900",
+  outline: "bg-white text-zinc-950 border-zinc-950",
 };
 
 const DOTS = {
@@ -25,16 +25,16 @@ const DOTS = {
 };
 
 const SIZES = {
-  xs: "px-1.5 py-0.2 text-[10px] gap-1",
+  xs: "px-1.5 py-0.5 text-[10px] gap-1",
   sm: "px-2 py-0.5 text-[11px] gap-1.5",
   md: "px-2.5 py-1 text-xs gap-1.5",
 };
 
 /**
- * Standard semantic pixel badge primitive.
+ * Standard semantic comic badge primitive.
  *
  * Why this exists:
- * Delivers sharp, pixel-bordered status chips, roles, and event tags that feel right at home
+ * Delivers sharp, comic-bordered status chips, roles, and event tags that feel right at home
  * in a Ragnarok Online-inspired guild system without muddying information density.
  *
  * @param {Object} props - Badge props
@@ -58,10 +58,11 @@ export default function Badge({
 
   return (
     <span
-      className={`inline-flex items-center font-semibold border select-none tracking-tight ${variantClass} ${sizeClass} ${className}`}
+      className={`inline-flex items-center font-bold font-sans border select-none tracking-tight leading-none ${variantClass} ${sizeClass} ${className}`}
     >
       {dot && <span className={`size-1.5 shrink-0 ${dotClass}`} />}
       {children}
     </span>
   );
 }
+

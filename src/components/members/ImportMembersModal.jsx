@@ -149,18 +149,18 @@ export default function ImportMembersModal({ open, onClose, onSuccess }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150">
-      <div className="flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden border-2 border-zinc-950 bg-white shadow-[6px_6px_0px_#09090b]">
+      <div className="flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden border-2 border-zinc-900 bg-white comic-shadow">
         {/* MODAL HEADER */}
-        <div className="flex shrink-0 items-center justify-between border-b-2 border-zinc-950 bg-zinc-50 px-5 py-3.5">
+        <div className="flex shrink-0 items-center justify-between border-b-2 border-zinc-900 bg-zinc-50/80 px-5 py-3.5">
           <div className="flex items-center gap-3">
-            <div className="flex size-9 items-center justify-center border-2 border-zinc-950 bg-white text-zinc-950 shadow-[1px_1px_0px_#09090b]">
+            <div className="flex size-9 items-center justify-center border-2 border-zinc-900 bg-white text-zinc-900 comic-shadow-sm">
               <FileSpreadsheet className="size-4.5" />
             </div>
             <div>
-              <h3 className="font-pixel text-lg font-bold text-zinc-950">
+              <h3 className="font-sans text-base font-bold text-zinc-950">
                 Import Members from CSV
               </h3>
-              <p className="text-[11px] font-mono text-zinc-600">
+              <p className="text-xs font-sans text-zinc-600">
                 Batch upload and update guild roster data
               </p>
             </div>
@@ -169,30 +169,30 @@ export default function ImportMembersModal({ open, onClose, onSuccess }) {
           <button
             type="button"
             onClick={onClose}
-            className="flex size-7 items-center justify-center border-2 border-zinc-950 bg-white text-zinc-950 hover:bg-zinc-100 shadow-[1px_1px_0px_#09090b] active:translate-x-[1px] active:translate-y-[1px]"
+            className="flex size-7.5 items-center justify-center border-2 border-zinc-900 bg-white text-zinc-900 hover:bg-zinc-100 comic-shadow-sm active:translate-x-[1px] active:translate-y-[1px]"
           >
             <X className="size-4" />
           </button>
         </div>
 
         {/* MODAL BODY */}
-        <div className="flex-1 overflow-y-auto p-5 sm:p-6">
+        <div className="flex-1 overflow-y-auto p-5 sm:p-6 font-sans">
           {step === "upload" && (
             <div className="space-y-4">
               <div
                 onClick={() => inputRef.current?.click()}
-                className="flex cursor-pointer flex-col items-center justify-center border-2 border-dashed border-zinc-950 bg-zinc-50 p-10 text-center transition hover:bg-zinc-100"
+                className="flex cursor-pointer flex-col items-center justify-center border-2 border-dashed border-zinc-900 bg-zinc-50/60 p-10 text-center transition hover:bg-zinc-100/80"
               >
-                <div className="flex size-11 items-center justify-center border-2 border-zinc-950 bg-white text-zinc-950 shadow-[2px_2px_0px_#09090b]">
+                <div className="flex size-11 items-center justify-center border-2 border-zinc-900 bg-white text-zinc-900 comic-shadow-sm">
                   <Upload className="size-5" />
                 </div>
-                <h4 className="mt-3 font-pixel text-base font-bold text-zinc-950">
+                <h4 className="mt-3 font-sans text-sm font-bold text-zinc-900">
                   Select CSV File to Upload
                 </h4>
-                <p className="mt-1 text-xs font-mono text-zinc-600">
+                <p className="mt-1 text-xs font-sans text-zinc-600">
                   Columns: Player, Class, Level, Gear Score, Role
                 </p>
-                <span className="mt-3 inline-block border-2 border-zinc-950 bg-white px-3 py-1 text-xs font-mono font-bold text-zinc-950 shadow-[2px_2px_0px_#09090b]">
+                <span className="mt-3 inline-block border-2 border-zinc-900 bg-white px-3 py-1 text-xs font-sans font-semibold text-zinc-900 comic-shadow-sm">
                   Browse File
                 </span>
                 <input
@@ -205,7 +205,7 @@ export default function ImportMembersModal({ open, onClose, onSuccess }) {
               </div>
 
               {error && (
-                <div className="border-2 border-red-600 bg-red-50 p-3 text-xs font-mono font-bold text-red-700 shadow-[2px_2px_0px_#b91c1c]">
+                <div className="border-2 border-red-600 bg-red-50 p-3 text-xs font-sans font-bold text-red-700 comic-shadow-sm">
                   {error}
                 </div>
               )}
@@ -216,10 +216,10 @@ export default function ImportMembersModal({ open, onClose, onSuccess }) {
             <div className="space-y-4">
               <div className="flex items-center justify-between border-b-2 border-zinc-200 pb-3">
                 <div>
-                  <span className="text-xs font-mono font-bold text-zinc-950">
+                  <span className="text-xs font-sans font-bold text-zinc-950">
                     {fileName}
                   </span>
-                  <p className="text-xs font-mono text-zinc-600">
+                  <p className="text-xs font-sans text-zinc-600">
                     Found {rows.length} total rows ({validMembers.length} valid,{" "}
                     {invalidMembers.length} errors)
                   </p>
@@ -227,7 +227,7 @@ export default function ImportMembersModal({ open, onClose, onSuccess }) {
                 <button
                   type="button"
                   onClick={handleReset}
-                  className="inline-flex items-center gap-1.5 border border-zinc-950 bg-white px-2 py-1 text-xs font-mono font-bold text-zinc-950 hover:bg-zinc-100 shadow-[1px_1px_0px_#09090b]"
+                  className="inline-flex items-center gap-1.5 border-2 border-zinc-900 bg-white px-2 py-1 text-xs font-sans font-semibold text-zinc-900 hover:bg-zinc-50 comic-shadow-sm"
                 >
                   <ArrowLeft className="size-3.5" />
                   <span>Choose other file</span>
@@ -235,15 +235,15 @@ export default function ImportMembersModal({ open, onClose, onSuccess }) {
               </div>
 
               {error && (
-                <div className="border-2 border-red-600 bg-red-50 p-3 text-xs font-mono font-bold text-red-700 shadow-[2px_2px_0px_#b91c1c]">
+                <div className="border-2 border-red-600 bg-red-50 p-3 text-xs font-sans font-bold text-red-700 comic-shadow-sm">
                   {error}
                 </div>
               )}
 
               {/* PREVIEW TABLE */}
-              <div className="max-h-64 overflow-y-auto border-2 border-zinc-950">
-                <table className="w-full text-left text-xs font-mono">
-                  <thead className="sticky top-0 border-b-2 border-zinc-950 bg-zinc-100 text-zinc-900 font-bold uppercase">
+              <div className="max-h-64 overflow-y-auto border-2 border-zinc-900">
+                <table className="w-full text-left text-xs font-sans">
+                  <thead className="sticky top-0 border-b-2 border-zinc-900 bg-zinc-100 text-zinc-900 font-bold uppercase tracking-wider">
                     <tr>
                       <th className="p-2.5">Player</th>
                       <th className="p-2.5">Class</th>
@@ -255,19 +255,19 @@ export default function ImportMembersModal({ open, onClose, onSuccess }) {
                   <tbody className="divide-y border-zinc-200 bg-white">
                     {normalizedMembers.slice(0, 50).map((m, i) => (
                       <tr key={i} className={m.isValid ? "hover:bg-zinc-50" : "bg-red-50"}>
-                        <td className="p-2.5 font-bold text-zinc-950">
+                        <td className="p-2.5 font-bold text-zinc-900">
                           {m.nickname || "—"}
                         </td>
                         <td className="p-2.5 text-zinc-700">{m.className || "—"}</td>
-                        <td className="p-2.5 text-zinc-700">{m.level || "—"}</td>
-                        <td className="p-2.5 text-zinc-700 font-bold">{m.gearScore || "—"}</td>
+                        <td className="p-2.5 text-zinc-700 font-mono">{m.level || "—"}</td>
+                        <td className="p-2.5 text-zinc-900 font-bold font-mono">{m.gearScore || "—"}</td>
                         <td className="p-2.5">
                           {m.isValid ? (
-                            <span className="inline-flex items-center gap-1 text-emerald-800 font-bold">
+                            <span className="inline-flex items-center gap-1 text-emerald-800 font-bold text-[11px]">
                               <CheckCircle2 className="size-3.5" /> Ready
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-1 text-red-700 font-bold">
+                            <span className="inline-flex items-center gap-1 text-red-700 font-bold text-[11px]">
                               <XCircle className="size-3.5" /> {m.errors.join(", ")}
                             </span>
                           )}
@@ -282,13 +282,13 @@ export default function ImportMembersModal({ open, onClose, onSuccess }) {
 
           {step === "success" && (
             <div className="py-8 text-center space-y-3">
-              <div className="mx-auto flex size-12 items-center justify-center border-2 border-emerald-900 bg-emerald-100 text-emerald-900 shadow-[2px_2px_0px_#064e3b]">
+              <div className="mx-auto flex size-12 items-center justify-center border-2 border-emerald-800 bg-emerald-100 text-emerald-900 comic-shadow-sm">
                 <CheckCircle2 className="size-7" />
               </div>
-              <h4 className="font-pixel text-lg font-bold text-zinc-950">
+              <h4 className="font-sans text-base font-bold text-zinc-950">
                 Members Imported Successfully!
               </h4>
-              <p className="text-xs font-mono text-zinc-600">
+              <p className="text-xs font-sans text-zinc-600">
                 {validMembers.length} member profiles have been saved to the guild roster.
               </p>
             </div>
@@ -296,7 +296,7 @@ export default function ImportMembersModal({ open, onClose, onSuccess }) {
         </div>
 
         {/* MODAL FOOTER */}
-        <div className="flex justify-end gap-2.5 border-t-2 border-zinc-950 bg-zinc-50 px-5 py-3.5">
+        <div className="flex justify-end gap-2.5 border-t-2 border-zinc-900 bg-zinc-50/80 px-5 py-3.5">
           {step === "preview" && (
             <>
               <Button

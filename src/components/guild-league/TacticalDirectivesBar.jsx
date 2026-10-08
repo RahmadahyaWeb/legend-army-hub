@@ -33,7 +33,7 @@ export default function TacticalDirectivesBar({
       <div className="border-2 border-zinc-950 bg-white pixel-shadow-sm">
         <div className="grid grid-cols-1 divide-y-2 divide-zinc-950 md:grid-cols-3 md:divide-x-2 md:divide-y-0 text-xs">
           <div className="p-3 sm:p-3.5">
-            <div className="flex items-center justify-between gap-2 font-bold font-pixel text-zinc-950">
+            <div className="flex items-center justify-between gap-2 font-bold font-sans text-zinc-950">
               <span>Polarity Attunement</span>
               <span className="shrink-0 font-mono text-[10px] text-zinc-900 bg-zinc-100 px-1.5 py-0.2 border border-zinc-900 uppercase font-bold">
                 Buff Sync
@@ -45,7 +45,7 @@ export default function TacticalDirectivesBar({
           </div>
 
           <div className="p-3 sm:p-3.5">
-            <div className="flex items-center justify-between gap-2 font-bold font-pixel text-zinc-950">
+            <div className="flex items-center justify-between gap-2 font-bold font-sans text-zinc-950">
               <span>Squad Synergy</span>
               <span className="shrink-0 font-mono text-[10px] text-zinc-900 bg-zinc-100 px-1.5 py-0.2 border border-zinc-900 uppercase font-bold">
                 Party Role
@@ -57,7 +57,7 @@ export default function TacticalDirectivesBar({
           </div>
 
           <div className="p-3 sm:p-3.5">
-            <div className="flex items-center justify-between gap-2 font-bold font-pixel text-zinc-950">
+            <div className="flex items-center justify-between gap-2 font-bold font-sans text-zinc-950">
               <span>Sanctuary Nodes</span>
               <span className="shrink-0 font-mono text-[10px] text-zinc-900 bg-zinc-100 px-1.5 py-0.2 border border-zinc-900 uppercase font-bold">
                 Hold Shrines
@@ -77,7 +77,7 @@ export default function TacticalDirectivesBar({
       <div className="border-2 border-zinc-950 bg-white pixel-shadow-sm">
         <div className="grid grid-cols-1 divide-y-2 divide-zinc-950 md:grid-cols-3 md:divide-x-2 md:divide-y-0 text-xs">
           <div className="p-3 sm:p-3.5">
-            <div className="flex items-center justify-between gap-2 font-bold font-pixel text-zinc-950">
+            <div className="flex items-center justify-between gap-2 font-bold font-sans text-zinc-950">
               <span>Emperium Strike</span>
               <span className="shrink-0 font-mono text-[10px] text-zinc-900 bg-zinc-100 px-1.5 py-0.2 border border-zinc-900 uppercase font-bold">
                 Target Obj
@@ -89,7 +89,7 @@ export default function TacticalDirectivesBar({
           </div>
 
           <div className="p-3 sm:p-3.5">
-            <div className="flex items-center justify-between gap-2 font-bold font-pixel text-zinc-950">
+            <div className="flex items-center justify-between gap-2 font-bold font-sans text-zinc-950">
               <span>Castle Defense</span>
               <span className="shrink-0 font-mono text-[10px] text-zinc-900 bg-zinc-100 px-1.5 py-0.2 border border-zinc-900 uppercase font-bold">
                 Hold Gate
@@ -101,7 +101,7 @@ export default function TacticalDirectivesBar({
           </div>
 
           <div className="p-3 sm:p-3.5">
-            <div className="flex items-center justify-between gap-2 font-bold font-pixel text-zinc-950">
+            <div className="flex items-center justify-between gap-2 font-bold font-sans text-zinc-950">
               <span>Frontline Intercept</span>
               <span className="shrink-0 font-mono text-[10px] text-zinc-900 bg-zinc-100 px-1.5 py-0.2 border border-zinc-900 uppercase font-bold">
                 Chokepoint
@@ -120,7 +120,7 @@ export default function TacticalDirectivesBar({
     <div className="border-2 border-zinc-950 bg-white pixel-shadow-sm">
       <div className="grid grid-cols-1 divide-y-2 divide-zinc-950 md:grid-cols-3 md:divide-x-2 md:divide-y-0 text-xs">
         <div className="p-3 sm:p-3.5">
-          <div className="flex items-center justify-between gap-2 font-bold font-pixel text-zinc-950">
+          <div className="flex items-center justify-between gap-2 font-bold font-sans text-zinc-950">
             <span>MVP Strike</span>
             <span className="shrink-0 font-mono text-[10px] text-zinc-900 bg-zinc-100 px-1.5 py-0.2 border border-zinc-900 uppercase font-bold">
               18:00 & 08:00
@@ -132,7 +132,7 @@ export default function TacticalDirectivesBar({
         </div>
 
         <div className="p-3 sm:p-3.5">
-          <div className="flex items-center justify-between gap-2 font-bold font-pixel text-zinc-950">
+          <div className="flex items-center justify-between gap-2 font-bold font-sans text-zinc-950">
             <span>Lane Defense</span>
             <span className="shrink-0 font-mono text-[10px] text-zinc-900 bg-zinc-100 px-1.5 py-0.2 border border-zinc-900 uppercase font-bold">
               Hold Portal
@@ -144,7 +144,7 @@ export default function TacticalDirectivesBar({
         </div>
 
         <div className="p-3 sm:p-3.5">
-          <div className="flex items-center justify-between gap-2 font-bold font-pixel text-zinc-950">
+          <div className="flex items-center justify-between gap-2 font-bold font-sans text-zinc-950">
             <span>Lane Assault</span>
             <span className="shrink-0 font-mono text-[10px] text-zinc-900 bg-zinc-100 px-1.5 py-0.2 border border-zinc-900 uppercase font-bold">
               Siege

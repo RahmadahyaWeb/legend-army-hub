@@ -25,11 +25,13 @@ export default function StrategyList({
   onNew,
 }) {
   return (
-    <div className="flex flex-col border-2 border-zinc-950 bg-white overflow-hidden shadow-[4px_4px_0px_#09090b] h-[680px]">
-      <div className="flex items-center justify-between border-b-2 border-zinc-950 p-4 bg-zinc-50">
+    <div className="flex flex-col border-2 border-zinc-900 bg-white overflow-hidden comic-shadow h-[680px]">
+      <div className="flex items-center justify-between border-b-2 border-zinc-900 p-4 bg-zinc-50/80">
         <div>
-          <h2 className="font-pixel text-base font-bold text-zinc-950">Battle Playbooks</h2>
-          <p className="text-[11px] font-mono text-zinc-600 mt-0.5">
+          <h2 className="font-sans text-sm font-bold text-zinc-900 uppercase tracking-wider">
+            Battle Playbooks
+          </h2>
+          <p className="text-xs font-sans text-zinc-500 mt-0.5">
             {strategies.length} documents
           </p>
         </div>
@@ -46,7 +48,7 @@ export default function StrategyList({
 
       <div className="flex-1 overflow-y-auto divide-y-2 divide-zinc-100 p-2.5 space-y-2">
         {strategies.length === 0 ? (
-          <div className="py-12 text-center text-xs font-mono text-zinc-500">
+          <div className="py-12 text-center text-xs font-sans text-zinc-500">
             No strategies recorded. Click "New Strategy" to write your first playbook.
           </div>
         ) : (
@@ -59,16 +61,16 @@ export default function StrategyList({
                 onClick={() => onSelect(strat)}
                 className={`group flex cursor-pointer flex-col gap-1.5 p-3 text-xs transition select-none ${
                   isSelected
-                    ? "border-2 border-zinc-950 bg-red-50 text-red-950 shadow-[2px_2px_0px_#09090b]"
+                    ? "border-2 border-brand-800 bg-brand-50 text-brand-950 comic-shadow-sm"
                     : "border-2 border-transparent hover:border-zinc-300 hover:bg-zinc-50 text-zinc-800"
                 }`}
               >
                 <div className="flex items-start justify-between gap-2">
                   <span
-                    className={`font-bold text-xs truncate ${
+                    className={`font-sans font-bold text-sm truncate ${
                       isSelected
-                        ? "text-brand-900 font-pixel text-sm"
-                        : "text-zinc-950 group-hover:text-brand-700"
+                        ? "text-brand-950"
+                        : "text-zinc-900 group-hover:text-brand-700"
                     }`}
                   >
                     {strat.title || "Untitled Strategy"}
@@ -83,9 +85,9 @@ export default function StrategyList({
                   </Badge>
                 </div>
 
-                <div className="flex items-center justify-between text-[10px] font-mono text-zinc-500">
+                <div className="flex items-center justify-between text-[11px] font-sans text-zinc-500">
                   <span>{strat.mapName ? `Map: ${strat.mapName}` : "All Maps"}</span>
-                  <span>{formatDate(strat.updatedAt || strat.createdAt)}</span>
+                  <span className="font-mono text-[10px]">{formatDate(strat.updatedAt || strat.createdAt)}</span>
                 </div>
               </div>
             );

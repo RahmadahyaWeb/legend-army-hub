@@ -76,7 +76,7 @@ export default function GuildLeaguesPage() {
       {/* HEADER */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold font-pixel text-zinc-950 tracking-tight">
+          <h1 className="text-xl sm:text-2xl font-black font-sans text-zinc-950 tracking-tight">
             Guild Events
           </h1>
           <p className="mt-0.5 text-xs text-zinc-600">
@@ -142,7 +142,7 @@ export default function GuildLeaguesPage() {
             return (
               <Card
                 key={gl.id}
-                className="flex flex-col justify-between p-4 sm:p-5 bg-white pixel-shadow-sm hover:pixel-shadow transition-transform"
+                className="flex flex-col justify-between p-4 sm:p-5 bg-white comic-shadow-sm hover:comic-shadow transition-all"
               >
                 <div>
                   <div className="flex items-start justify-between gap-3">
@@ -175,7 +175,7 @@ export default function GuildLeaguesPage() {
                     </button>
                   </div>
 
-                  <h3 className="mt-3 text-sm sm:text-base font-bold font-pixel text-zinc-950 tracking-tight line-clamp-1">
+                  <h3 className="mt-3 text-sm sm:text-base font-bold font-sans text-zinc-950 tracking-tight line-clamp-1">
                     {gl.name}
                   </h3>
 

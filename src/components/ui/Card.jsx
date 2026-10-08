@@ -1,23 +1,23 @@
 "use client";
 
 /**
- * Standard Pixel Card Container and Subcomponents
+ * Standard Minimalist Comic Pixel Card Container and Subcomponents
  *
  * Why this exists:
- * Unifies dashboard cards and panels into a cohesive Ragnarok Online retro RPG window aesthetic:
- * crisp solid borders, subtle pixel depth shadows, and clean off-white canvas interiors.
+ * Unifies dashboard cards and panels into a cohesive Ragnarok Online-inspired comic window aesthetic:
+ * crisp solid 2px ink borders, subtle comic drop shadows, and clean off-white/white surfaces.
  * Eliminates ad-hoc floating card shapes across all public and admin views.
  */
 
 /**
- * Main Card wrapper with pixel border and subtle shadow
+ * Main Card wrapper with comic border and subtle shadow
  * @param {Object} props
  * @returns {JSX.Element}
  */
 export function Card({ children, className = "", ...rest }) {
   return (
     <div
-      className={`border-2 border-zinc-900 bg-white pixel-shadow-sm transition-colors ${className}`}
+      className={`border-2 border-zinc-950 bg-white shadow-[2px_2px_0px_#18181b] transition-transform ${className}`}
       {...rest}
     >
       {children}
@@ -33,7 +33,7 @@ export function Card({ children, className = "", ...rest }) {
 export function CardHeader({ children, className = "", ...rest }) {
   return (
     <div
-      className={`flex items-start justify-between gap-4 border-b-2 border-zinc-900 bg-zinc-50/80 p-3.5 sm:p-4.5 ${className}`}
+      className={`flex items-start justify-between gap-4 border-b-2 border-zinc-950 bg-zinc-50/90 p-3.5 sm:p-4.5 ${className}`}
       {...rest}
     >
       {children}
@@ -42,15 +42,15 @@ export function CardHeader({ children, className = "", ...rest }) {
 }
 
 /**
- * Card Title heading with retro pixel font accent
+ * Card Title heading with clean sans-serif typography for readability
  * @param {Object} props
  * @returns {JSX.Element}
  */
 export function CardTitle({ children, className = "", as: Component = "h3", pixel = false, ...rest }) {
   return (
     <Component
-      className={`text-sm sm:text-base font-bold text-zinc-900 tracking-tight ${
-        pixel ? "font-pixel" : ""
+      className={`text-sm sm:text-base font-bold text-zinc-950 tracking-tight font-sans ${
+        pixel ? "font-pixel uppercase tracking-wide" : ""
       } ${className}`}
       {...rest}
     >
@@ -66,7 +66,7 @@ export function CardTitle({ children, className = "", as: Component = "h3", pixe
  */
 export function CardDescription({ children, className = "", ...rest }) {
   return (
-    <p className={`mt-0.5 text-xs text-zinc-600 ${className}`} {...rest}>
+    <p className={`mt-0.5 text-xs text-zinc-600 font-sans ${className}`} {...rest}>
       {children}
     </p>
   );
@@ -93,10 +93,11 @@ export function CardContent({ children, className = "", ...rest }) {
 export function CardFooter({ children, className = "", ...rest }) {
   return (
     <div
-      className={`border-t-2 border-zinc-900 p-3.5 sm:p-4.5 bg-zinc-50 ${className}`}
+      className={`border-t-2 border-zinc-950 p-3.5 sm:p-4.5 bg-zinc-50 ${className}`}
       {...rest}
     >
       {children}
     </div>
   );
 }
+

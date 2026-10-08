@@ -75,7 +75,7 @@ export default function PublicDashboard() {
       <header className="sticky top-0 z-40 border-b-2 border-zinc-950 bg-white">
         <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex items-center gap-2.5">
-            <div className="flex size-8 shrink-0 items-center justify-center border-2 border-zinc-950 bg-brand-600 pixel-shadow-sm">
+            <div className="flex size-8 shrink-0 items-center justify-center border-2 border-zinc-900 bg-brand-600 shadow-[1.5px_1.5px_0px_#18181b]">
               <img
                 src="/logo.png"
                 alt="Legend Army"
@@ -83,7 +83,7 @@ export default function PublicDashboard() {
               />
             </div>
             <div>
-              <span className="font-pixel text-sm font-bold text-zinc-950 block leading-tight">
+              <span className="font-sans text-xs font-black tracking-wider text-zinc-950 block leading-tight uppercase">
                 LEGEND ARMY
               </span>
               <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-brand-700 block leading-tight">
@@ -109,15 +109,15 @@ export default function PublicDashboard() {
       </header>
 
       {/* HERO SECTION */}
-      <section className="border-b-2 border-zinc-950 bg-white pixel-grid-bg relative">
+      <section className="border-b-2 border-zinc-950 bg-white comic-dots-bg relative">
         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="max-w-2xl">
-              <div className="inline-flex items-center gap-2 border border-zinc-900 bg-amber-50 px-2.5 py-0.5 text-[11px] font-bold text-amber-950 mb-3 pixel-shadow-sm">
-                <Trophy className="size-3 text-amber-600" />
+              <div className="inline-flex items-center gap-2 border-2 border-amber-600 bg-amber-50 px-2.5 py-1 text-[11px] font-bold text-amber-950 mb-3 shadow-[1.5px_1.5px_0px_#d97706]">
+                <Trophy className="size-3.5 text-amber-600 shrink-0" />
                 <span>Active Tournament: Valkyrie Cup 8v8</span>
               </div>
-              <h1 className="text-3xl sm:text-5xl font-black font-pixel tracking-tight text-zinc-950 leading-tight">
+              <h1 className="text-3xl sm:text-5xl font-black font-sans tracking-tight text-zinc-950 leading-tight">
                 Legend Army Hub
               </h1>
               <p className="mt-2 text-xs sm:text-sm text-zinc-700 leading-relaxed font-medium">
@@ -146,7 +146,7 @@ export default function PublicDashboard() {
         {/* OVERVIEW STATS */}
         <section className="space-y-3">
           <div className="flex items-center justify-between">
-            <h2 className="text-xs font-bold font-pixel text-zinc-950 uppercase tracking-wider">
+            <h2 className="text-xs font-black uppercase tracking-wider text-zinc-900 font-sans">
               Battle Readiness Overview
             </h2>
           </div>
@@ -184,7 +184,7 @@ export default function PublicDashboard() {
         {/* ALL MATCHES & EVENTS */}
         <section className="space-y-3">
           <div className="flex items-center justify-between">
-            <h2 className="text-xs font-bold font-pixel text-zinc-950 uppercase tracking-wider">
+            <h2 className="text-xs font-black uppercase tracking-wider text-zinc-900 font-sans">
               Matches & Guild Events
             </h2>
 
@@ -194,7 +194,7 @@ export default function PublicDashboard() {
           </div>
 
           {guildLeagues.length === 0 ? (
-            <div className="border-2 border-dashed border-zinc-400 bg-white p-8 text-center text-xs text-zinc-500 pixel-shadow-sm font-medium">
+            <div className="border-2 border-dashed border-zinc-400 bg-white p-8 text-center text-xs text-zinc-500 comic-shadow-sm font-medium">
               No guild events scheduled at the moment.
             </div>
           ) : (
@@ -212,7 +212,7 @@ export default function PublicDashboard() {
                 return (
                   <div
                     key={gl.id}
-                    className="flex flex-col justify-between h-full border-2 border-zinc-950 bg-white p-4 pixel-shadow-sm hover:pixel-shadow transition-transform"
+                    className="flex flex-col justify-between h-full border-2 border-zinc-950 bg-white p-4 comic-shadow-sm hover:comic-shadow transition-all"
                   >
                     <div>
                       {/* TOP BADGES ROW */}
@@ -251,7 +251,7 @@ export default function PublicDashboard() {
                       </div>
 
                       {/* EVENT TITLE */}
-                      <h3 className="mt-3 text-sm font-bold text-zinc-950 leading-snug line-clamp-1 font-pixel">
+                      <h3 className="mt-3 text-sm font-bold text-zinc-950 leading-snug line-clamp-1 font-sans">
                         {gl.name}
                       </h3>
 
@@ -314,7 +314,7 @@ export default function PublicDashboard() {
                 className="size-5 object-contain"
               />
             </div>
-            <span className="text-xs font-bold font-pixel text-zinc-950">
+            <span className="text-xs font-black tracking-wider text-zinc-950 font-sans uppercase">
               LEGEND ARMY GUILD HUB
             </span>
           </div>

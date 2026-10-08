@@ -117,7 +117,7 @@ export default function ValkyrieTeamDetailPage() {
         </div>
 
         {/* TEAM INFORMATION CARD */}
-        <Card className="p-4.5 sm:p-6 bg-white pixel-shadow">
+        <Card className="p-4.5 sm:p-6 bg-white comic-shadow">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <div className="flex flex-wrap items-center gap-2">
@@ -136,7 +136,7 @@ export default function ValkyrieTeamDetailPage() {
                 </Badge>
               </div>
 
-              <h1 className="mt-2 text-2xl sm:text-3xl font-bold font-pixel text-zinc-950 tracking-tight">
+              <h1 className="mt-2 text-2xl sm:text-3xl font-black font-sans text-zinc-950 tracking-tight">
                 {team.teamName}
               </h1>
 
@@ -145,9 +145,9 @@ export default function ValkyrieTeamDetailPage() {
               </p>
             </div>
 
-            <div className="flex items-center gap-3 border-2 border-zinc-950 bg-zinc-50 p-3 sm:text-right pixel-shadow-sm">
+            <div className="flex items-center gap-3 border-2 border-zinc-950 bg-zinc-50 p-3 sm:text-right comic-shadow-sm">
               <div>
-                <div className="text-[10px] font-bold font-pixel uppercase tracking-wider text-zinc-500">
+                <div className="text-[10px] font-bold font-sans uppercase tracking-wider text-zinc-500">
                   Squad Captain
                 </div>
                 <div className="text-sm font-bold text-zinc-950 flex items-center gap-1.5 mt-0.5">
@@ -160,10 +160,10 @@ export default function ValkyrieTeamDetailPage() {
         </Card>
 
         {/* TEAM ROSTER SECTION */}
-        <Card className="overflow-hidden bg-white pixel-shadow">
+        <Card className="overflow-hidden bg-white comic-shadow">
           <div className="flex items-center justify-between border-b-2 border-zinc-950 bg-zinc-100 px-4 sm:px-6 py-3">
             <div>
-              <h2 className="text-sm font-bold font-pixel uppercase tracking-wide text-zinc-950">
+              <h2 className="text-sm font-bold font-sans uppercase tracking-wide text-zinc-950">
                 Squad Lineup
               </h2>
               <p className="text-[11px] text-zinc-600 mt-0.5">
@@ -240,7 +240,7 @@ export default function ValkyrieTeamDetailPage() {
                 className="size-5 object-contain"
               />
             </div>
-            <span className="text-xs font-bold font-pixel text-zinc-950">
+            <span className="text-xs font-black tracking-wider text-zinc-950 font-sans uppercase">
               VALKYRIE CUP · SQUAD DETAIL
             </span>
           </div>

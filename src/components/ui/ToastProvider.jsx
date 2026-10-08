@@ -56,22 +56,22 @@ function ToastItem({ toast, onClose }) {
 
   return (
     <div
-      className={`pointer-events-auto w-full overflow-hidden border-2 ${config.borderClass} bg-white pixel-shadow sm:w-[360px] animate-in slide-in-from-top-2 duration-150`}
+      className={`pointer-events-auto w-full overflow-hidden border-2 ${config.borderClass} bg-white shadow-[3px_3px_0px_#18181b] sm:w-[360px] animate-in slide-in-from-top-2 duration-150 font-sans`}
     >
       <div className="flex gap-3 p-3.5">
         <div
-          className={`flex size-8 shrink-0 items-center justify-center border border-zinc-900 ${config.iconBackground}`}
+          className={`flex size-8 shrink-0 items-center justify-center border-2 border-zinc-950 ${config.iconBackground}`}
         >
           <Icon className={`size-4 ${config.iconClass}`} />
         </div>
 
         <div className="min-w-0 flex-1 pt-0.5">
-          <p className="text-xs sm:text-sm font-bold text-zinc-950 tracking-tight leading-snug">
+          <p className="text-xs sm:text-sm font-bold text-zinc-950 tracking-tight leading-snug font-sans">
             {toast.title}
           </p>
 
           {toast.description && (
-            <p className="mt-0.5 text-xs text-zinc-600 leading-snug">
+            <p className="mt-0.5 text-xs text-zinc-600 leading-snug font-sans">
               {toast.description}
             </p>
           )}
@@ -80,7 +80,7 @@ function ToastItem({ toast, onClose }) {
         <button
           type="button"
           onClick={() => onClose(toast.id)}
-          className="flex size-6 shrink-0 items-center justify-center border border-zinc-900 bg-white text-zinc-700 hover:bg-zinc-100 active:translate-x-[1px] active:translate-y-[1px] transition-colors"
+          className="flex size-6 shrink-0 items-center justify-center border-2 border-zinc-950 bg-white text-zinc-700 hover:bg-zinc-100 active:translate-x-[1px] active:translate-y-[1px] transition-colors cursor-pointer"
           aria-label="Close notification"
         >
           <X className="size-3.5" />
