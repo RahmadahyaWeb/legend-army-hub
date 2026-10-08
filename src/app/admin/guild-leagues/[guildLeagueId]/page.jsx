@@ -485,11 +485,11 @@ export default function GuildLeagueDetailPage() {
 
   if (error || !guildLeague) {
     return (
-      <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-center text-sm text-red-700">
-        <p>{error || "Guild League event not found."}</p>
+      <div className="border-2 border-red-600 bg-red-50 p-6 text-center text-sm font-mono text-red-700 shadow-[3px_3px_0px_#b91c1c]">
+        <p className="font-bold">{error || "Guild League event not found."}</p>
         <Link
           href="/admin/guild-leagues"
-          className="mt-4 inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2 text-xs font-medium text-white hover:bg-zinc-800 transition"
+          className="mt-4 inline-flex items-center gap-2 border-2 border-zinc-950 bg-zinc-950 px-4 py-2 text-xs font-mono font-bold text-white hover:bg-zinc-800 transition shadow-[2px_2px_0px_#09090b] active:translate-x-[1px] active:translate-y-[1px]"
         >
           <ArrowLeft className="size-3.5" />
           <span>Back to Events</span>
@@ -525,25 +525,26 @@ export default function GuildLeagueDetailPage() {
   return (
     <div className="space-y-6">
       {/* TOP HEADER / ACTION BAR */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-2.5">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b-2 border-zinc-200 pb-4">
+        <div className="flex items-center gap-3">
           <Link
             href="/admin/guild-leagues"
-            className="flex size-8 items-center justify-center rounded-lg border border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-50 transition"
+            className="flex size-9 items-center justify-center border-2 border-zinc-950 bg-white text-zinc-900 hover:bg-zinc-100 transition shadow-[2px_2px_0px_#09090b] active:translate-x-[1px] active:translate-y-[1px]"
+            title="Back to matches"
           >
-            <ArrowLeft className="size-4" />
+            <ArrowLeft className="size-4.5" />
           </Link>
           <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-lg font-bold text-zinc-900 tracking-tight">
+            <div className="flex flex-wrap items-center gap-2.5">
+              <h1 className="font-pixel text-xl sm:text-2xl font-bold text-zinc-950 tracking-wide">
                 {guildLeague.name}
               </h1>
-              <span className="rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase bg-zinc-100 text-zinc-700 border border-zinc-200">
+              <span className="border-2 border-zinc-950 px-2 py-0.5 text-[11px] font-pixel uppercase font-bold tracking-wider bg-zinc-100 text-zinc-900 shadow-[1px_1px_0px_#09090b]">
                 {guildLeague.status || "DRAFT"}
               </span>
             </div>
-            <p className="text-xs text-zinc-500">
-              Manage lineup formations, teams, and tactical assignments
+            <p className="text-xs text-zinc-600 font-mono mt-0.5">
+              Lineup formations, team coordination, and tactical assignments
             </p>
           </div>
         </div>
@@ -552,7 +553,7 @@ export default function GuildLeagueDetailPage() {
           <Link
             href={`/roster/${guildLeagueId}`}
             target="_blank"
-            className="inline-flex h-8.5 items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-3 text-xs font-medium text-zinc-700 hover:bg-zinc-50 transition"
+            className="inline-flex h-9 items-center gap-1.5 border-2 border-zinc-950 bg-white px-3 text-xs font-mono font-bold text-zinc-900 hover:bg-zinc-100 transition shadow-[2px_2px_0px_#09090b] active:translate-x-[1px] active:translate-y-[1px]"
           >
             <ExternalLink className="size-3.5" />
             <span>Public View</span>
@@ -578,7 +579,7 @@ export default function GuildLeagueDetailPage() {
           <Select
             value={guildLeague.status}
             onChange={(e) => handleStatusChange(e.target.value)}
-            className="!h-8.5 !py-0 !text-xs font-medium"
+            className="!h-9 !py-0 !text-xs font-mono font-bold"
           >
             <option value="draft">Status: Draft</option>
             <option value="published">Status: Published</option>
@@ -589,12 +590,12 @@ export default function GuildLeagueDetailPage() {
       </div>
 
       {discordMsg && (
-        <div className="rounded-xl border border-indigo-200 bg-indigo-50 p-3 text-xs font-medium text-indigo-900 flex items-center justify-between">
+        <div className="border-2 border-indigo-900 bg-indigo-50 p-3 text-xs font-mono font-bold text-indigo-950 shadow-[2px_2px_0px_#1e1b4b] flex items-center justify-between">
           <span>{discordMsg}</span>
           <button
             type="button"
             onClick={() => setDiscordMsg("")}
-            className="text-indigo-600 hover:text-indigo-800 text-xs font-bold"
+            className="text-indigo-800 hover:text-indigo-950 text-xs font-bold px-1.5 py-0.5 border border-indigo-900 bg-white"
           >
             ✕
           </button>
@@ -610,7 +611,7 @@ export default function GuildLeagueDetailPage() {
         maxTeams={maxTeams}
         actions={
           !isUnified && (
-            <div className="mt-4 border-t border-zinc-100 pt-3.5">
+            <div className="mt-4 border-t-2 border-zinc-200 pt-3.5">
               <Tabs
                 tabs={tabsList}
                 activeTab={activeTab}
@@ -621,32 +622,32 @@ export default function GuildLeagueDetailPage() {
         }
       />
 
-      {/* TACTICAL DIRECTIVES BAR (Hanya untuk Guild League 3-lane format) */}
+      {/* TACTICAL DIRECTIVES BAR (Guild League 3-lane format only) */}
       {!isUnified && <TacticalDirectivesBar eventType={eventType} />}
 
       {/* BATTLEFIELD TEAMS / LANE SECTIONS */}
       {isPolarity ? (
-        <div className="space-y-4 animate-in fade-in duration-200">
-          <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between rounded-xl border border-zinc-200 bg-white p-3.5 sm:p-4 shadow-xs">
-            <div className="flex items-center gap-2.5 sm:gap-3">
-              <div className="flex size-8 sm:size-9 shrink-0 items-center justify-center rounded-lg bg-zinc-100 text-zinc-700">
-                <Layers className="size-4" />
+        <div className="space-y-4">
+          <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between border-2 border-zinc-950 bg-white p-4 shadow-[3px_3px_0px_#09090b]">
+            <div className="flex items-center gap-3">
+              <div className="flex size-9 shrink-0 items-center justify-center border-2 border-zinc-950 bg-zinc-100 text-zinc-950 shadow-[1px_1px_0px_#09090b]">
+                <Layers className="size-4.5" />
               </div>
               <div>
-                <h2 className="text-sm sm:text-base font-semibold text-zinc-900">
+                <h2 className="font-pixel text-base sm:text-lg font-bold text-zinc-950">
                   Polarity Battle Formations
                 </h2>
-                <p className="text-[11px] text-zinc-500">
+                <p className="text-xs text-zinc-600 font-mono">
                   Fixed 10 Squads (5 Players / Squad) • Coordinated 50-Player Lineup
                 </p>
               </div>
             </div>
-            <span className="rounded-md border border-zinc-200 bg-zinc-50 px-2 py-0.5 text-[10px] sm:text-[11px] font-medium text-zinc-700 self-start sm:self-center">
+            <span className="border-2 border-zinc-950 bg-zinc-100 px-2.5 py-1 text-xs font-mono font-bold text-zinc-950 self-start sm:self-center shadow-[1px_1px_0px_#09090b]">
               {totalAssigned}/50 Players Deployed
             </span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
             {allTeamNumbers.map((tNum) => {
               const team = teams.find((t) => Number(t.teamNumber) === tNum);
               const teamMembers = roster.filter(
@@ -670,22 +671,22 @@ export default function GuildLeagueDetailPage() {
           </div>
         </div>
       ) : isWoe ? (
-        <div className="space-y-4 animate-in fade-in duration-200">
-          <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between rounded-xl border border-zinc-200 bg-white p-3.5 sm:p-4 shadow-xs">
-            <div className="flex items-center gap-2.5 sm:gap-3">
-              <div className="flex size-8 sm:size-9 shrink-0 items-center justify-center rounded-lg bg-zinc-100 text-zinc-700">
-                <Castle className="size-4" />
+        <div className="space-y-4">
+          <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between border-2 border-zinc-950 bg-white p-4 shadow-[3px_3px_0px_#09090b]">
+            <div className="flex items-center gap-3">
+              <div className="flex size-9 shrink-0 items-center justify-center border-2 border-zinc-950 bg-zinc-100 text-zinc-950 shadow-[1px_1px_0px_#09090b]">
+                <Castle className="size-4.5" />
               </div>
               <div>
-                <h2 className="text-sm sm:text-base font-semibold text-zinc-900">
+                <h2 className="font-pixel text-base sm:text-lg font-bold text-zinc-950">
                   WOE Battle Formations
                 </h2>
-                <p className="text-[11px] text-zinc-500">
+                <p className="text-xs text-zinc-600 font-mono">
                   {maxTeams} Squad Formations • Unified Team Formations (No 3-Lane Division)
                 </p>
               </div>
             </div>
-            <span className="rounded-md border border-zinc-200 bg-zinc-50 px-2 py-0.5 text-[10px] sm:text-[11px] font-medium text-zinc-700 self-start sm:self-center">
+            <span className="border-2 border-zinc-950 bg-zinc-100 px-2.5 py-1 text-xs font-mono font-bold text-zinc-950 self-start sm:self-center shadow-[1px_1px_0px_#09090b]">
               {totalAssigned}/{maxRoster} Players Deployed
             </span>
           </div>

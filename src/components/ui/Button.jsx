@@ -4,50 +4,55 @@ import { forwardRef } from "react";
 import { Loader2 } from "lucide-react";
 
 /**
- * Standard button variants adhering to clean, calm visual hierarchy
+ * Visual variant tokens for buttons inspired by classic Ragnarok Online dialog and action buttons.
+ * Uses crisp rectangular borders, bold contrast, and tactical pixel shadows.
  */
 const VARIANTS = {
   primary:
-    "bg-zinc-900 text-white hover:bg-zinc-800 active:bg-zinc-950 disabled:bg-zinc-200 disabled:text-zinc-400",
+    "bg-brand-600 text-white border-2 border-brand-950 pixel-shadow-sm hover:bg-brand-700 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none disabled:bg-zinc-200 disabled:text-zinc-500 disabled:border-zinc-400 disabled:shadow-none",
   secondary:
-    "bg-white text-zinc-800 border border-zinc-200 hover:bg-zinc-50 active:bg-zinc-100 disabled:bg-zinc-50 disabled:text-zinc-400",
+    "bg-white text-zinc-900 border-2 border-zinc-900 pixel-shadow-sm hover:bg-zinc-100 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none disabled:bg-zinc-100 disabled:text-zinc-400 disabled:border-zinc-300 disabled:shadow-none",
   danger:
-    "bg-red-600 text-white hover:bg-red-700 active:bg-red-800 disabled:bg-zinc-200 disabled:text-zinc-400",
+    "bg-red-600 text-white border-2 border-red-950 pixel-shadow-sm hover:bg-red-700 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none disabled:bg-zinc-200 disabled:text-zinc-400 disabled:border-zinc-300 disabled:shadow-none",
   dangerOutline:
-    "bg-white text-red-600 border border-red-200 hover:bg-red-50 active:bg-red-100",
+    "bg-white text-red-700 border-2 border-red-600 pixel-shadow-sm hover:bg-red-50 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none",
   outline:
-    "bg-transparent text-zinc-700 border border-zinc-200 hover:bg-zinc-50 active:bg-zinc-100",
+    "bg-white text-zinc-800 border-2 border-zinc-400 pixel-shadow-sm hover:bg-zinc-100 hover:border-zinc-800 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none",
   ghost:
-    "bg-transparent text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900",
+    "bg-transparent text-zinc-700 border-2 border-transparent hover:bg-zinc-200 hover:text-zinc-900 active:bg-zinc-300",
   discord:
-    "bg-[#5865F2] text-white hover:bg-[#4752C4] active:bg-[#3c45a5]",
+    "bg-[#5865F2] text-white border-2 border-[#2f3896] pixel-shadow-sm hover:bg-[#4752C4] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none",
   success:
-    "bg-emerald-600 text-white hover:bg-emerald-700 active:bg-emerald-800",
+    "bg-emerald-600 text-white border-2 border-emerald-950 pixel-shadow-sm hover:bg-emerald-700 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none",
 };
 
 const SIZES = {
-  xs: "h-7 px-2.5 text-xs rounded-md gap-1.5",
-  sm: "h-8.5 px-3 text-xs rounded-lg gap-1.5",
-  md: "h-9.5 px-4 text-sm rounded-lg gap-2",
-  lg: "h-10.5 px-5 text-sm rounded-lg gap-2",
-  iconSm: "size-8.5 rounded-lg justify-center p-0",
-  iconXs: "size-7 rounded-md justify-center p-0",
+  xs: "h-7 px-2 text-[11px] gap-1.5",
+  sm: "h-8 px-3 text-xs gap-1.5",
+  md: "h-9 px-4 text-xs font-semibold gap-2",
+  lg: "h-10 px-5 text-sm font-semibold gap-2",
+  iconSm: "size-8 justify-center p-0",
+  iconXs: "size-7 justify-center p-0",
 };
 
 /**
- * Standard interactive button primitive for application consistency.
+ * Standard interactive Pixel Button component.
  *
  * Why this exists:
- * Standardizes button hierarchy (primary, secondary, danger, ghost), focus rings,
- * hover transitions, and action loading state across all views.
+ * Implements the unified retro RPG pixel styling across all user-interactive actions.
+ * Guarantees tactile feedback with retro stepped shadows and active state translation
+ * while maintaining strict accessibility, focus visibility, and responsive touch targets.
  *
- * @param {Object} props - Button props
- * @param {"primary"|"secondary"|"danger"|"dangerOutline"|"outline"|"ghost"|"discord"|"success"} [props.variant="secondary"]
- * @param {"xs"|"sm"|"md"|"lg"|"iconSm"|"iconXs"} [props.size="sm"]
- * @param {boolean} [props.loading=false] - Shows loading spinner and disables clicks
- * @param {React.ReactNode} [props.icon] - Leading icon element
+ * @param {Object} props - Button configuration
+ * @param {"primary"|"secondary"|"danger"|"dangerOutline"|"outline"|"ghost"|"discord"|"success"} [props.variant="secondary"] - Color variant
+ * @param {"xs"|"sm"|"md"|"lg"|"iconSm"|"iconXs"} [props.size="sm"] - Button dimensions
+ * @param {boolean} [props.loading=false] - Display action spinner
+ * @param {boolean} [props.disabled=false] - Disabled state
+ * @param {React.ComponentType} [props.icon] - Leading icon element
  * @param {React.ReactNode} [props.children] - Button label
- * @param {string} [props.className] - Additional custom classes
+ * @param {string} [props.className] - Additional Tailwind classes
+ * @param {"button"|"submit"|"reset"} [props.type="button"] - HTML button type
+ * @returns {JSX.Element} Rendered pixel button
  */
 const Button = forwardRef(function Button(
   {
@@ -72,7 +77,7 @@ const Button = forwardRef(function Button(
       ref={ref}
       type={type}
       disabled={isDisabled}
-      className={`inline-flex items-center justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-zinc-900/10 disabled:pointer-events-none ${variantClass} ${sizeClass} ${className}`}
+      className={`inline-flex items-center justify-center font-medium select-none focus:outline-none focus:ring-2 focus:ring-zinc-950/20 disabled:pointer-events-none transition-transform ${variantClass} ${sizeClass} ${className}`}
       {...rest}
     >
       {loading ? (

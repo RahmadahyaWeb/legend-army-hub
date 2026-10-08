@@ -4,11 +4,12 @@ import { formatNumber } from "@/utils/formatters";
 import TeamCard from "./TeamCard";
 
 /**
- * Lane Group Section
+ * Lane Group Section with Retro Pixel Styling
  *
  * Why this exists:
  * Groups teams stationed in a battlefield lane (Top, Mid, Bot, or Reserve/Unassigned)
  * and displays aggregated statistics (formation player count vs capacity, average GS).
+ * Adopts the Ragnarok Online battlefield zone header styling with crisp 2px borders.
  *
  * @param {Object} props - LaneGroupSection props
  * @param {string} props.id - Lane ID ('top', 'mid', 'bot', 'unassigned')
@@ -24,6 +25,7 @@ import TeamCard from "./TeamCard";
  * @param {(slot: { teamNumber: number, slotNumber: number }) => void} [props.onAssignSlot]
  * @param {(member: Object) => void} [props.onSelectMember]
  * @param {(member: Object) => void} [props.onRemoveMember]
+ * @returns {JSX.Element} Rendered lane group section
  */
 export default function LaneGroupSection({
   id,
@@ -41,36 +43,36 @@ export default function LaneGroupSection({
   onRemoveMember,
 }) {
   return (
-    <section id={`lane-${id}`} className="space-y-3 sm:space-y-4 animate-in fade-in duration-200">
+    <section id={`lane-${id}`} className="space-y-3 sm:space-y-4 animate-in fade-in duration-100">
       {/* LANE HEADER */}
-      <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between rounded-xl border border-zinc-200 bg-white p-3.5 sm:p-4 shadow-xs">
+      <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between border-2 border-zinc-950 bg-white p-3 sm:p-4 pixel-shadow-sm">
         <div className="flex items-center justify-between sm:justify-start gap-2.5 sm:gap-3">
           <div className="flex items-center gap-2.5 sm:gap-3">
-            <div className="flex size-8 sm:size-9 shrink-0 items-center justify-center rounded-lg bg-zinc-50 border border-zinc-200 text-zinc-800">
+            <div className="flex size-8 shrink-0 items-center justify-center border-2 border-zinc-950 bg-zinc-100 text-zinc-950 pixel-shadow-sm">
               <Icon className="size-4" />
             </div>
-            <h2 className="text-sm sm:text-base font-semibold text-zinc-900">
+            <h2 className="text-sm sm:text-base font-bold font-pixel text-zinc-950 uppercase tracking-wide">
               {name}
             </h2>
           </div>
-          <span className="rounded-md border border-zinc-200 bg-zinc-50 px-2 py-0.5 text-[10px] sm:text-[11px] font-medium text-zinc-600">
-            {teamNumbers.length} {teamNumbers.length === 1 ? "Team" : "Teams"}
+          <span className="border border-zinc-900 bg-zinc-100 px-2 py-0.5 text-[10px] sm:text-[11px] font-mono font-bold text-zinc-800">
+            {teamNumbers.length} {teamNumbers.length === 1 ? "Formation" : "Formations"}
           </span>
         </div>
 
         {/* FORMATION STATS */}
         <div className="flex items-center justify-between sm:justify-end gap-2 text-[11px] sm:text-xs">
-          <div className="rounded-lg border border-zinc-200 bg-zinc-50 px-2.5 sm:px-3 py-1 text-zinc-600 font-medium">
-            <span>Formation: </span>
-            <strong className="text-zinc-900 font-semibold">
+          <div className="border border-zinc-900 bg-zinc-50 px-2.5 sm:px-3 py-1 text-zinc-700 font-bold">
+            <span>Deployed: </span>
+            <strong className="text-zinc-950 font-mono">
               {stat.assignedCount || 0} / {stat.capacity || 0}
             </strong>
           </div>
 
           {stat.avgGS > 0 && (
-            <div className="rounded-lg border border-zinc-200 bg-zinc-50 px-2.5 sm:px-3 py-1 text-zinc-600 font-medium">
+            <div className="border border-zinc-900 bg-zinc-50 px-2.5 sm:px-3 py-1 text-zinc-700 font-bold">
               <span>Avg GS: </span>
-              <strong className="text-zinc-900 font-semibold font-mono">
+              <strong className="text-brand-700 font-mono">
                 {formatNumber(stat.avgGS)}
               </strong>
             </div>
@@ -80,11 +82,11 @@ export default function LaneGroupSection({
 
       {/* TEAMS GRID */}
       {teamNumbers.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-zinc-300 bg-white p-6 sm:p-8 text-center text-xs text-zinc-500">
-          No teams currently positioned on {name}.
+        <div className="border-2 border-dashed border-zinc-400 bg-white p-6 sm:p-8 text-center text-xs text-zinc-500 font-mono">
+          No formations positioned on {name}.
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-4 sm:gap-5 md:grid-cols-2 xl:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
           {teamNumbers.map((teamNumber) => {
             const team = teams.find((t) => Number(t.teamNumber) === teamNumber);
             const teamMembers = roster

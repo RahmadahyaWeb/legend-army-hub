@@ -4,12 +4,12 @@ import { formatDate, formatNumber } from "@/utils/formatters";
 import Badge from "@/components/ui/Badge";
 
 /**
- * Guild Event Header & Summary Card
+ * Guild Event Header & Summary Card with Retro Pixel Styling
  *
  * Why this exists:
  * Presents core match information, opponent status, countdown/date,
  * and key formation metrics (deployed roster %, average gear score, active teams)
- * uniformly in both admin and public roster views.
+ * uniformly in both admin and public roster views using sharp Ragnarok Online banner aesthetics.
  *
  * @param {Object} props - Component props
  * @param {Object} props.guildLeague - Guild League match data
@@ -18,6 +18,7 @@ import Badge from "@/components/ui/Badge";
  * @param {number} props.averageGearScore - Computed average gear score
  * @param {number} props.maxTeams - Number of teams
  * @param {React.ReactNode} [props.actions] - Optional actions (e.g. tabs or filter bar)
+ * @returns {JSX.Element|null} Rendered event header banner
  */
 export default function GuildLeagueHeaderCard({
   guildLeague,
@@ -36,10 +37,10 @@ export default function GuildLeagueHeaderCard({
   const isPolarity = guildLeague.eventType === "polarity";
 
   return (
-    <div className="rounded-xl border border-zinc-200 bg-white p-5 sm:p-6">
+    <div className="border-2 border-zinc-950 bg-white p-4.5 sm:p-6 pixel-shadow">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <div className="flex items-center gap-2 text-xs font-semibold text-zinc-500 uppercase tracking-wide">
+          <div className="flex items-center gap-2 text-xs font-bold font-pixel text-zinc-500 uppercase tracking-wide">
             <span>Event Lineup</span>
             {isWoe ? (
               <Badge variant="warning" size="xs">
@@ -47,7 +48,7 @@ export default function GuildLeagueHeaderCard({
               </Badge>
             ) : isPolarity ? (
               <Badge variant="info" size="xs">
-                Polarity (10 Teams)
+                Polarity (10 Parties)
               </Badge>
             ) : (
               <Badge variant="neutral" size="xs">
@@ -56,16 +57,16 @@ export default function GuildLeagueHeaderCard({
             )}
           </div>
 
-          <h1 className="mt-1.5 text-xl sm:text-2xl font-bold text-zinc-900 tracking-tight">
+          <h1 className="mt-1.5 text-xl sm:text-2xl font-bold font-pixel text-zinc-950 tracking-tight">
             {guildLeague.name}
           </h1>
 
-          <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-zinc-500">
-            <span>{formatDate(matchDate)}</span>
+          <div className="mt-1.5 flex flex-wrap items-center gap-3 text-xs text-zinc-600">
+            <span className="font-mono">{formatDate(matchDate)}</span>
             {guildLeague.opponent && (
               <span>
-                {isWoe ? "Target: " : "Opponent: "}
-                <strong className="text-zinc-800 font-medium">{guildLeague.opponent}</strong>
+                {isWoe ? "Target Castle: " : "Opponent Guild: "}
+                <strong className="text-zinc-950 font-bold">{guildLeague.opponent}</strong>
               </span>
             )}
             {guildLeague.status && (
@@ -86,43 +87,39 @@ export default function GuildLeagueHeaderCard({
         </div>
 
         {/* METRICS ROW */}
-        <div className="flex flex-wrap items-center gap-4 border-t border-zinc-100 pt-3 lg:border-t-0 lg:pt-0">
-          <div className="min-w-24">
-            <span className="text-[11px] font-medium text-zinc-400 block uppercase">
+        <div className="flex flex-wrap items-center gap-3 border-t-2 border-zinc-950 pt-3 lg:border-t-0 lg:pt-0">
+          <div className="border border-zinc-900 bg-zinc-50 p-2.5 min-w-24">
+            <span className="text-[10px] font-bold font-pixel text-zinc-500 block uppercase">
               Roster
             </span>
-            <span className="text-base font-bold text-zinc-900 font-mono">
+            <span className="text-sm sm:text-base font-bold text-zinc-950 font-mono">
               {totalAssigned} / {maxRoster}
             </span>
-            <span className="text-[11px] text-zinc-500 block">
+            <span className="text-[10px] text-zinc-500 block font-mono">
               {deploymentPercentage}% filled
             </span>
           </div>
 
-          <div className="h-8 w-px bg-zinc-200 hidden sm:block" />
-
-          <div className="min-w-24">
-            <span className="text-[11px] font-medium text-zinc-400 block uppercase">
+          <div className="border border-zinc-900 bg-zinc-50 p-2.5 min-w-24">
+            <span className="text-[10px] font-bold font-pixel text-zinc-500 block uppercase">
               Average GS
             </span>
-            <span className="text-base font-bold text-zinc-900 font-mono">
+            <span className="text-sm sm:text-base font-bold text-brand-700 font-mono">
               {averageGearScore > 0 ? formatNumber(averageGearScore) : "—"}
             </span>
-            <span className="text-[11px] text-zinc-500 block">
+            <span className="text-[10px] text-zinc-500 block">
               Active combatants
             </span>
           </div>
 
-          <div className="h-8 w-px bg-zinc-200 hidden sm:block" />
-
-          <div className="min-w-20">
-            <span className="text-[11px] font-medium text-zinc-400 block uppercase">
-              Teams
+          <div className="border border-zinc-900 bg-zinc-50 p-2.5 min-w-20">
+            <span className="text-[10px] font-bold font-pixel text-zinc-500 block uppercase">
+              Squads
             </span>
-            <span className="text-base font-bold text-zinc-900 font-mono">
+            <span className="text-sm sm:text-base font-bold text-zinc-950 font-mono">
               {maxTeams}
             </span>
-            <span className="text-[11px] text-zinc-500 block">
+            <span className="text-[10px] text-zinc-500 block">
               {isPolarity ? "Parties" : "Formations"}
             </span>
           </div>
@@ -130,7 +127,7 @@ export default function GuildLeagueHeaderCard({
       </div>
 
       {actions && (
-        <div className="mt-5 pt-4 border-t border-zinc-100">{actions}</div>
+        <div className="mt-4 pt-3.5 border-t-2 border-zinc-950">{actions}</div>
       )}
     </div>
   );

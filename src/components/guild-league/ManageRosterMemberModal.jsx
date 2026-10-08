@@ -10,13 +10,15 @@ import {
 } from "lucide-react";
 import { assignRosterMember, removeRosterMember } from "@/lib/api";
 import { ClassBadge } from "@/utils/classColors";
+import Button from "@/components/ui/Button";
 
 /**
- * ManageRosterMemberModal
+ * ManageRosterMemberModal with Retro Pixel Styling
  *
  * Why this exists:
  * Allows guild officers to relocate a player to a new team/slot or perform
  * a mutual swap with another occupant, or cleanly remove the player from the lineup.
+ * Styled after classic Ragnarok Online slot management windows.
  *
  * @param {Object} props - Component props
  * @param {boolean} props.open - Modal visibility
@@ -29,6 +31,7 @@ import { ClassBadge } from "@/utils/classColors";
  * @param {() => void} [props.onSuccess]
  * @param {(member: Object, targetTeam: number, targetSlot: number) => void} [props.onMove]
  * @param {(member: Object) => void} [props.onRemove]
+ * @returns {JSX.Element|null}
  */
 export default function ManageRosterMemberModal({
   open,
@@ -155,28 +158,28 @@ export default function ManageRosterMemberModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4 animate-in fade-in duration-150">
-      <div className="w-full max-w-lg overflow-hidden rounded-xl bg-white shadow-xl border border-zinc-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-in fade-in duration-100 font-sans">
+      <div className="w-full max-w-lg overflow-hidden border-2 border-zinc-950 bg-white pixel-shadow-lg">
         {/* HEADER */}
-        <div className="flex items-start justify-between border-b border-zinc-200 px-6 py-4 bg-zinc-50/70">
-          <div className="flex items-center gap-3">
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-zinc-900 text-sm font-semibold text-white">
+        <div className="flex items-start justify-between border-b-2 border-zinc-950 px-5 py-3.5 bg-zinc-100">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="flex size-9 shrink-0 items-center justify-center border-2 border-zinc-950 bg-zinc-950 text-xs font-mono font-bold text-white pixel-shadow-sm">
               T{member.teamNumber}
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-base font-semibold text-zinc-900">
+                <h3 className="text-sm sm:text-base font-bold font-pixel text-zinc-950">
                   {member.nickname}
                 </h3>
-                <span className="rounded-md border border-zinc-200 bg-white px-2 py-0.5 text-xs font-medium text-zinc-700">
+                <span className="border border-zinc-900 bg-white px-1.5 py-0.2 text-[10px] font-mono font-bold text-zinc-800">
                   Slot #{member.slotNumber}
                 </span>
               </div>
-              <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-zinc-500">
+              <div className="mt-0.5 flex flex-wrap items-center gap-2 text-xs text-zinc-600">
                 <ClassBadge className={member.className} size="xs" />
-                {Number(member.level) > 0 && <span>Lv. {member.level}</span>}
+                {Number(member.level) > 0 && <span className="font-mono font-bold">Lv. {member.level}</span>}
                 <span>•</span>
-                <span className="font-semibold text-zinc-900 font-mono">
+                <span className="font-bold text-brand-700 font-mono">
                   {Number(member.gearScore || 0).toLocaleString()} GS
                 </span>
               </div>
@@ -186,35 +189,35 @@ export default function ManageRosterMemberModal({
           <button
             type="button"
             onClick={onClose}
-            className="flex size-8 items-center justify-center rounded-lg text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 transition"
+            className="flex size-7 shrink-0 items-center justify-center border-2 border-zinc-950 bg-white text-zinc-950 hover:bg-red-50 hover:text-red-700 active:translate-x-[1px] active:translate-y-[1px] transition-colors"
           >
-            <X className="size-4" />
+            <X className="size-3.5 stroke-[2.5]" />
           </button>
         </div>
 
         {/* BODY */}
-        <div className="p-6 space-y-4">
+        <div className="p-5 space-y-4">
           {error && (
-            <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-xs text-red-700">
+            <div className="border-2 border-red-700 bg-red-50 p-3 text-xs font-bold text-red-900">
               {error}
             </div>
           )}
 
           <div>
-            <label className="text-xs font-semibold uppercase tracking-wider text-zinc-600">
-              Relocate or Swap Position
+            <label className="text-xs font-bold font-pixel uppercase tracking-wide text-zinc-950">
+              Relocate or Mutual Swap
             </label>
-            <p className="text-[11px] text-zinc-500 mt-0.5">
+            <p className="text-[11px] text-zinc-600 mt-0.5">
               Select destination team and slot. If the slot is occupied, players will swap places.
             </p>
 
             <div className="mt-3 grid grid-cols-2 gap-3">
               <div>
-                <span className="text-xs font-medium text-zinc-700">Target Team</span>
+                <span className="text-xs font-bold text-zinc-900 uppercase">Target Team</span>
                 <select
                   value={targetTeam}
                   onChange={(e) => setTargetTeam(Number(e.target.value))}
-                  className="mt-1 h-9 w-full rounded-lg border border-zinc-200 bg-zinc-50/50 px-3 text-xs font-medium text-zinc-800 focus:border-zinc-900 focus:bg-white focus:outline-none"
+                  className="mt-1 h-9 w-full border-2 border-zinc-950 bg-white px-2.5 text-xs font-bold text-zinc-900 focus:outline-none"
                 >
                   {Array.from({ length: maxTeams }, (_, i) => (
                     <option key={i + 1} value={i + 1}>
@@ -225,11 +228,11 @@ export default function ManageRosterMemberModal({
               </div>
 
               <div>
-                <span className="text-xs font-medium text-zinc-700">Target Slot</span>
+                <span className="text-xs font-bold text-zinc-900 uppercase">Target Slot</span>
                 <select
                   value={targetSlot}
                   onChange={(e) => setTargetSlot(Number(e.target.value))}
-                  className="mt-1 h-9 w-full rounded-lg border border-zinc-200 bg-zinc-50/50 px-3 text-xs font-medium text-zinc-800 focus:border-zinc-900 focus:bg-white focus:outline-none"
+                  className="mt-1 h-9 w-full border-2 border-zinc-950 bg-white px-2.5 text-xs font-bold text-zinc-900 focus:outline-none"
                 >
                   {Array.from({ length: membersPerTeam }, (_, i) => (
                     <option key={i + 1} value={i + 1}>
@@ -243,76 +246,67 @@ export default function ManageRosterMemberModal({
 
           {/* TARGET SLOT STATUS & SWAP PREVIEW */}
           {isSameSlot ? (
-            <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-3 text-xs text-zinc-500 text-center">
-              Currently in this position (Team {member.teamNumber}, Slot #{member.slotNumber}).
+            <div className="border border-zinc-300 bg-zinc-50 p-3 text-xs text-zinc-600 font-mono text-center">
+              Currently stationed here (Team {member.teamNumber}, Slot #{member.slotNumber}).
             </div>
           ) : targetOccupant ? (
-            <div className="rounded-lg border border-amber-200 bg-amber-50/80 p-3.5 text-xs text-amber-900 space-y-2">
-              <div className="flex items-center gap-1.5 font-semibold text-amber-900">
-                <ArrowRightLeft className="size-4 text-amber-700" />
+            <div className="border-2 border-amber-600 bg-amber-50/80 p-3 text-xs text-amber-950 space-y-2 pixel-shadow-sm">
+              <div className="flex items-center gap-1.5 font-bold font-pixel text-amber-950 uppercase">
+                <ArrowRightLeft className="size-4 text-amber-800" />
                 <span>Mutual Swap with Occupant</span>
               </div>
-              <div className="flex flex-wrap items-center gap-2 text-zinc-800">
-                <span>Occupied by: <strong className="text-zinc-900 font-semibold">{targetOccupant.nickname}</strong></span>
+              <div className="flex flex-wrap items-center gap-2 text-zinc-900">
+                <span>Occupant: <strong className="font-bold">{targetOccupant.nickname}</strong></span>
                 <ClassBadge className={targetOccupant.className} size="xs" />
-                <span className="font-semibold text-zinc-900 font-mono">
+                <span className="font-bold text-brand-700 font-mono">
                   {Number(targetOccupant.gearScore || 0).toLocaleString()} GS
                 </span>
               </div>
-              <div className="rounded-md bg-white/80 p-2.5 text-[11px] text-amber-950 border border-amber-200/70 leading-relaxed font-medium">
-                <strong>{member.nickname}</strong> will move to Team {targetTeam} #{targetSlot}, and <strong>{targetOccupant.nickname}</strong> will move to Team {member.teamNumber} #{member.slotNumber}.
+              <div className="border border-amber-400 bg-white p-2 text-[11px] text-amber-950 leading-relaxed font-medium">
+                <strong>{member.nickname}</strong> ➔ Team {targetTeam} #{targetSlot}, while <strong>{targetOccupant.nickname}</strong> ➔ Team {member.teamNumber} #{member.slotNumber}.
               </div>
             </div>
           ) : (
-            <div className="rounded-lg border border-emerald-200 bg-emerald-50/90 p-3.5 text-xs text-emerald-900 flex items-center gap-2.5">
-              <Check className="size-4 text-emerald-600 shrink-0" />
+            <div className="border-2 border-emerald-700 bg-emerald-50/90 p-3 text-xs text-emerald-950 flex items-center gap-2 pixel-shadow-sm">
+              <Check className="size-4 text-emerald-700 shrink-0" />
               <span>
-                Target slot is empty. <strong>{member.nickname}</strong> will be relocated to <strong>Team {targetTeam} (Slot #{targetSlot})</strong>.
+                Target slot is vacant. <strong>{member.nickname}</strong> will relocate to <strong>Team {targetTeam} (Slot #{targetSlot})</strong>.
               </span>
             </div>
           )}
         </div>
 
         {/* FOOTER */}
-        <div className="flex items-center justify-between border-t border-zinc-200 bg-zinc-50 px-6 py-4">
-          <button
-            type="button"
+        <div className="flex items-center justify-between border-t-2 border-zinc-950 bg-zinc-50 px-5 py-3.5">
+          <Button
+            variant="dangerOutline"
+            size="sm"
             disabled={saving}
+            icon={Trash2}
             onClick={handleRemove}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-red-200 bg-white px-3.5 py-2 text-xs font-medium text-red-600 hover:bg-red-50 transition disabled:opacity-50"
           >
-            <Trash2 className="size-3.5" />
-            <span>Remove from Roster</span>
-          </button>
+            Remove from Roster
+          </Button>
 
           <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={onClose}
+            <Button
+              variant="secondary"
+              size="sm"
               disabled={saving}
-              className="rounded-lg border border-zinc-300 bg-white px-4 py-2 text-xs font-medium text-zinc-700 hover:bg-zinc-50 transition"
+              onClick={onClose}
             >
               Cancel
-            </button>
-            <button
-              type="button"
+            </Button>
+            <Button
+              variant="primary"
+              size="sm"
               disabled={saving || isSameSlot}
+              loading={saving}
+              icon={ArrowRightLeft}
               onClick={handleMove}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-zinc-900 px-4 py-2 text-xs font-medium text-white hover:bg-zinc-800 transition disabled:opacity-50"
             >
-              {saving ? (
-                <Loader2 className="size-3.5 animate-spin" />
-              ) : (
-                <ArrowRightLeft className="size-3.5" />
-              )}
-              <span>
-                {saving
-                  ? "Saving..."
-                  : targetOccupant
-                  ? "Confirm Swap"
-                  : "Confirm Move"}
-              </span>
-            </button>
+              {targetOccupant ? "Confirm Swap" : "Confirm Move"}
+            </Button>
           </div>
         </div>
       </div>

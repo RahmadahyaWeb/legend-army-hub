@@ -1,14 +1,13 @@
 "use client";
 
 import { CheckCircle2, Clock3, Users, XCircle } from "lucide-react";
-import { Card } from "@/components/ui/Card";
 
 /**
  * Attendance Summary Metric Cards
  *
  * Why this exists:
- * Displays real-time breakdown of roll call counts (Total Roster, Present, Absent, Late)
- * and computed attendance rate for the chosen match.
+ * Displays real-time tactical breakdown of roll call counts (Total Roster, Present, Absent, Late)
+ * and computed attendance rate for the chosen match with pixel-inspired gaming cards.
  *
  * @param {Object} props - Component props
  * @param {number} props.totalRoster - Total players deployed in this match
@@ -27,73 +26,77 @@ export default function AttendanceSummaryCards({
 
   return (
     <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
-      <Card className="p-4 bg-white">
+      {/* TOTAL LINEUP */}
+      <div className="border-2 border-zinc-950 bg-white p-3.5 sm:p-4 shadow-[3px_3px_0px_#09090b]">
         <div className="flex items-center justify-between">
-          <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-zinc-400">
+          <span className="font-pixel text-xs font-bold uppercase tracking-wider text-zinc-600">
             Total Lineup
           </span>
-          <div className="flex size-7 items-center justify-center rounded-lg bg-zinc-100 text-zinc-600">
+          <div className="flex size-7 items-center justify-center border border-zinc-950 bg-zinc-100 text-zinc-950 shadow-[1px_1px_0px_#09090b]">
             <Users className="size-3.5" />
           </div>
         </div>
-        <div className="mt-2 text-xl sm:text-2xl font-black text-zinc-900 font-mono">
+        <div className="mt-2 text-2xl sm:text-3xl font-bold font-mono text-zinc-950">
           {totalRoster}
         </div>
-        <div className="text-[10px] sm:text-[11px] text-zinc-500 mt-0.5 font-medium">
-          Deployed players
+        <div className="text-[11px] font-mono text-zinc-500 mt-1">
+          Deployed combatants
         </div>
-      </Card>
+      </div>
 
-      <Card className="p-4 bg-white border-emerald-200/80">
+      {/* PRESENT */}
+      <div className="border-2 border-emerald-950 bg-emerald-50/50 p-3.5 sm:p-4 shadow-[3px_3px_0px_#064e3b]">
         <div className="flex items-center justify-between">
-          <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-emerald-700">
+          <span className="font-pixel text-xs font-bold uppercase tracking-wider text-emerald-900">
             Present
           </span>
-          <div className="flex size-7 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
+          <div className="flex size-7 items-center justify-center border border-emerald-950 bg-emerald-100 text-emerald-900 shadow-[1px_1px_0px_#064e3b]">
             <CheckCircle2 className="size-3.5" />
           </div>
         </div>
-        <div className="mt-2 text-xl sm:text-2xl font-black text-emerald-700 font-mono">
+        <div className="mt-2 text-2xl sm:text-3xl font-bold font-mono text-emerald-900">
           {presentCount}
         </div>
-        <div className="text-[10px] sm:text-[11px] text-emerald-600 mt-0.5 font-medium">
-          {attendanceRate}% Attendance Rate
+        <div className="text-[11px] font-mono text-emerald-800 font-bold mt-1">
+          {attendanceRate}% Check-in Rate
         </div>
-      </Card>
+      </div>
 
-      <Card className="p-4 bg-white border-red-200/80">
+      {/* ABSENT */}
+      <div className="border-2 border-red-950 bg-red-50/50 p-3.5 sm:p-4 shadow-[3px_3px_0px_#7f1d1d]">
         <div className="flex items-center justify-between">
-          <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-red-700">
+          <span className="font-pixel text-xs font-bold uppercase tracking-wider text-red-900">
             Absent
           </span>
-          <div className="flex size-7 items-center justify-center rounded-lg bg-red-50 text-red-600">
+          <div className="flex size-7 items-center justify-center border border-red-950 bg-red-100 text-red-900 shadow-[1px_1px_0px_#7f1d1d]">
             <XCircle className="size-3.5" />
           </div>
         </div>
-        <div className="mt-2 text-xl sm:text-2xl font-black text-red-700 font-mono">
+        <div className="mt-2 text-2xl sm:text-3xl font-bold font-mono text-red-900">
           {absentCount}
         </div>
-        <div className="text-[10px] sm:text-[11px] text-red-600 mt-0.5 font-medium">
+        <div className="text-[11px] font-mono text-red-700 font-bold mt-1">
           Unconfirmed / Out
         </div>
-      </Card>
+      </div>
 
-      <Card className="p-4 bg-white border-amber-200/80">
+      {/* LATE / STANDBY */}
+      <div className="border-2 border-amber-950 bg-amber-50/50 p-3.5 sm:p-4 shadow-[3px_3px_0px_#78350f]">
         <div className="flex items-center justify-between">
-          <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-amber-800">
+          <span className="font-pixel text-xs font-bold uppercase tracking-wider text-amber-950">
             Late / Standby
           </span>
-          <div className="flex size-7 items-center justify-center rounded-lg bg-amber-50 text-amber-700">
+          <div className="flex size-7 items-center justify-center border border-amber-950 bg-amber-100 text-amber-950 shadow-[1px_1px_0px_#78350f]">
             <Clock3 className="size-3.5" />
           </div>
         </div>
-        <div className="mt-2 text-xl sm:text-2xl font-black text-amber-800 font-mono">
+        <div className="mt-2 text-2xl sm:text-3xl font-bold font-mono text-amber-950">
           {lateCount}
         </div>
-        <div className="text-[10px] sm:text-[11px] text-amber-700 mt-0.5 font-medium">
+        <div className="text-[11px] font-mono text-amber-800 font-bold mt-1">
           Arriving late
         </div>
-      </Card>
+      </div>
     </div>
   );
 }

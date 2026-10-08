@@ -175,28 +175,27 @@ export default function MembersPage() {
   return (
     <div className="space-y-4 sm:space-y-6">
       {/* PAGE HEADER */}
-      <div className="flex flex-col gap-3.5 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3.5 sm:flex-row sm:items-center sm:justify-between border-b-2 border-zinc-200 pb-4">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-xl sm:text-2xl font-black text-zinc-900 tracking-tight">
+          <div className="flex flex-wrap items-center gap-2.5">
+            <h1 className="font-pixel text-xl sm:text-2xl font-bold text-zinc-950 tracking-wide">
               Guild Members
             </h1>
-            <Badge variant="brand" size="sm">
+            <span className="border-2 border-zinc-950 px-2 py-0.5 text-xs font-mono font-bold bg-zinc-100 text-zinc-950 shadow-[1px_1px_0px_#09090b]">
               {activeCount} Active / {members.length} Total
-            </Badge>
+            </span>
           </div>
-          <p className="text-xs text-zinc-500 mt-1">
-            Manage combat characters, job classes, and power levels for guild events
+          <p className="text-xs font-mono text-zinc-600 mt-1">
+            Combat characters, job classes, and power levels for guild events
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
           <Button
-            variant="outline"
+            variant="danger"
             size="sm"
             icon={RotateCcw}
             onClick={() => setResetModalOpen(true)}
-            className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
           >
             Reset
           </Button>
@@ -231,7 +230,7 @@ export default function MembersPage() {
       </div>
 
       {/* FILTER CONTROLS BAR */}
-      <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between rounded-xl border border-zinc-200 bg-white p-3 sm:p-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-2 border-zinc-950 bg-white p-3.5 sm:p-4 shadow-[3px_3px_0px_#09090b]">
         <div className="flex flex-1 items-center gap-2 sm:max-w-md">
           <Input
             icon={Search}
@@ -242,7 +241,7 @@ export default function MembersPage() {
               setPage(1);
             }}
             containerClassName="w-full"
-            className="!h-9 text-xs"
+            className="!h-9 text-xs font-mono"
           />
         </div>
 
@@ -253,7 +252,7 @@ export default function MembersPage() {
               setStatusFilter(e.target.value);
               setPage(1);
             }}
-            className="!h-9 !py-0 text-xs font-medium"
+            className="!h-9 !py-0 text-xs font-mono font-bold"
           >
             <option value="all">All Status ({members.length})</option>
             <option value="active">Active ({activeCount})</option>
@@ -268,7 +267,7 @@ export default function MembersPage() {
               setPageSize(Number(e.target.value));
               setPage(1);
             }}
-            className="!h-9 !py-0 text-xs font-medium"
+            className="!h-9 !py-0 text-xs font-mono font-bold"
           >
             {PAGE_SIZE_OPTIONS.map((size) => (
               <option key={size} value={size}>
@@ -305,12 +304,12 @@ export default function MembersPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-12 text-center">#</TableHead>
+                <TableHead className="w-12 text-center font-mono">#</TableHead>
                 <TableHead
                   onClick={() => handleSort("nickname")}
                   className="cursor-pointer select-none"
                 >
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1.5 font-pixel text-xs tracking-wider">
                     <span>Character</span>
                     {sortField === "nickname" ? (
                       sortDirection === "asc" ? (
@@ -319,7 +318,7 @@ export default function MembersPage() {
                         <ArrowDown className="size-3 text-brand-600" />
                       )
                     ) : (
-                      <ArrowUpDown className="size-3 text-zinc-300" />
+                      <ArrowUpDown className="size-3 text-zinc-400" />
                     )}
                   </div>
                 </TableHead>
@@ -327,7 +326,7 @@ export default function MembersPage() {
                   onClick={() => handleSort("className")}
                   className="cursor-pointer select-none"
                 >
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1.5 font-pixel text-xs tracking-wider">
                     <span>Class / Job</span>
                     {sortField === "className" ? (
                       sortDirection === "asc" ? (
@@ -336,7 +335,7 @@ export default function MembersPage() {
                         <ArrowDown className="size-3 text-brand-600" />
                       )
                     ) : (
-                      <ArrowUpDown className="size-3 text-zinc-300" />
+                      <ArrowUpDown className="size-3 text-zinc-400" />
                     )}
                   </div>
                 </TableHead>
@@ -344,7 +343,7 @@ export default function MembersPage() {
                   onClick={() => handleSort("level")}
                   className="cursor-pointer select-none text-right"
                 >
-                  <div className="flex items-center justify-end gap-1.5">
+                  <div className="flex items-center justify-end gap-1.5 font-pixel text-xs tracking-wider">
                     <span>Level</span>
                     {sortField === "level" ? (
                       sortDirection === "asc" ? (
@@ -353,7 +352,7 @@ export default function MembersPage() {
                         <ArrowDown className="size-3 text-brand-600" />
                       )
                     ) : (
-                      <ArrowUpDown className="size-3 text-zinc-300" />
+                      <ArrowUpDown className="size-3 text-zinc-400" />
                     )}
                   </div>
                 </TableHead>
@@ -361,7 +360,7 @@ export default function MembersPage() {
                   onClick={() => handleSort("gearScore")}
                   className="cursor-pointer select-none text-right"
                 >
-                  <div className="flex items-center justify-end gap-1.5">
+                  <div className="flex items-center justify-end gap-1.5 font-pixel text-xs tracking-wider">
                     <span>Gear Score</span>
                     {sortField === "gearScore" ? (
                       sortDirection === "asc" ? (
@@ -370,12 +369,12 @@ export default function MembersPage() {
                         <ArrowDown className="size-3 text-brand-600" />
                       )
                     ) : (
-                      <ArrowUpDown className="size-3 text-zinc-300" />
+                      <ArrowUpDown className="size-3 text-zinc-400" />
                     )}
                   </div>
                 </TableHead>
-                <TableHead className="text-center">Status</TableHead>
-                <TableHead className="text-right w-24">Actions</TableHead>
+                <TableHead className="text-center font-pixel text-xs tracking-wider">Status</TableHead>
+                <TableHead className="text-right w-24 font-pixel text-xs tracking-wider">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -385,16 +384,16 @@ export default function MembersPage() {
 
                 return (
                   <TableRow key={member.id || globalIndex}>
-                    <TableCell className="text-center font-mono text-zinc-400 text-xs font-semibold">
+                    <TableCell className="text-center font-mono text-zinc-400 text-xs font-bold">
                       {globalIndex}
                     </TableCell>
 
                     <TableCell>
-                      <div className="font-bold text-zinc-900 text-xs sm:text-sm">
+                      <div className="font-bold text-zinc-950 font-mono text-xs sm:text-sm">
                         {member.nickname}
                       </div>
                       {member.role && (
-                        <div className="text-[10px] uppercase font-bold tracking-wider text-zinc-400 mt-0.5">
+                        <div className="text-[10px] uppercase font-mono font-bold tracking-wider text-zinc-500 mt-0.5">
                           {member.role}
                         </div>
                       )}
@@ -407,11 +406,11 @@ export default function MembersPage() {
                       />
                     </TableCell>
 
-                    <TableCell className="text-right font-mono text-xs sm:text-sm font-semibold text-zinc-700">
+                    <TableCell className="text-right font-mono text-xs sm:text-sm font-bold text-zinc-700">
                       {member.level ? `Lv. ${member.level}` : "—"}
                     </TableCell>
 
-                    <TableCell className="text-right font-mono text-xs sm:text-sm font-bold text-zinc-900">
+                    <TableCell className="text-right font-mono text-xs sm:text-sm font-bold text-zinc-950">
                       {member.gearScore > 0 ? formatNumber(member.gearScore) : "—"}
                     </TableCell>
 
@@ -419,10 +418,10 @@ export default function MembersPage() {
                       <button
                         type="button"
                         onClick={() => handleToggleActive(member)}
-                        className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-bold border transition ${
+                        className={`inline-flex items-center gap-1.5 border-2 border-zinc-950 px-2 py-0.5 text-[10px] font-mono font-bold uppercase transition shadow-[1px_1px_0px_#09090b] active:translate-x-[1px] active:translate-y-[1px] ${
                           isActive
-                            ? "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100"
-                            : "bg-zinc-100 text-zinc-500 border-zinc-200 hover:bg-zinc-200"
+                            ? "bg-emerald-100 text-emerald-950 hover:bg-emerald-200"
+                            : "bg-zinc-200 text-zinc-700 hover:bg-zinc-300"
                         }`}
                       >
                         <Power className="size-2.5" />
@@ -431,11 +430,11 @@ export default function MembersPage() {
                     </TableCell>
 
                     <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-1">
+                      <div className="flex items-center justify-end gap-1.5">
                         <button
                           type="button"
                           onClick={() => setEditingMember(member)}
-                          className="flex size-7.5 items-center justify-center rounded-lg text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700 transition"
+                          className="flex size-7 items-center justify-center border border-zinc-950 bg-white text-zinc-700 hover:bg-zinc-100 transition shadow-[1px_1px_0px_#09090b] active:translate-x-[1px] active:translate-y-[1px]"
                           title="Edit member"
                         >
                           <Pencil className="size-3.5" />
@@ -443,7 +442,7 @@ export default function MembersPage() {
                         <button
                           type="button"
                           onClick={() => setDeletingMember(member)}
-                          className="flex size-7.5 items-center justify-center rounded-lg text-zinc-400 hover:bg-red-50 hover:text-red-600 transition"
+                          className="flex size-7 items-center justify-center border border-zinc-950 bg-white text-zinc-700 hover:bg-red-50 hover:text-red-700 transition shadow-[1px_1px_0px_#09090b] active:translate-x-[1px] active:translate-y-[1px]"
                           title="Delete member"
                         >
                           <Trash2 className="size-3.5" />
@@ -458,11 +457,11 @@ export default function MembersPage() {
 
           {/* PAGINATION CONTROLS */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-between rounded-xl border border-zinc-200 bg-white px-4 py-3 text-xs shadow-2xs">
-              <span className="text-zinc-500 font-medium">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-2 border-zinc-950 bg-white px-4 py-3 text-xs font-mono shadow-[3px_3px_0px_#09090b]">
+              <span className="text-zinc-600 font-medium">
                 Showing {(page - 1) * pageSize + 1} to{" "}
                 {Math.min(page * pageSize, sortedMembers.length)} of{" "}
-                <strong className="text-zinc-900 font-bold">
+                <strong className="text-zinc-950 font-bold">
                   {sortedMembers.length}
                 </strong>{" "}
                 members
@@ -479,7 +478,7 @@ export default function MembersPage() {
                   Prev
                 </Button>
 
-                <span className="px-2 font-bold font-mono text-zinc-700">
+                <span className="px-2 font-bold font-mono text-zinc-950 border border-zinc-950 bg-zinc-100 py-0.5">
                   {page} / {totalPages}
                 </span>
 

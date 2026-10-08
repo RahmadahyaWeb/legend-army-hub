@@ -30,16 +30,12 @@ import {
 } from "@/components/ui/Table";
 
 /**
- * My Registration Portal Page
+ * My Registration Portal Page with Retro Pixel Styling
  *
  * Why this exists:
- * Private user portal enabling tournament participants to track their team's review progress,
- * view all 8 player Discord tags, and review administrative feedback if rejected.
- *
- * Tricky logic:
- * Uses the client's persistent user identity cookie and local storage to pull their submissions.
- * Offers a backup lookup modal by Team Name & Captain Discord ID in case the participant switched
- * browsers or devices.
+ * Private user portal enabling tournament participants to track their squad's review progress,
+ * view all player Discord tags, and review administrative feedback if rejected.
+ * Styled after classic Ragnarok Online tournament status logs.
  *
  * @returns {JSX.Element} Rendered user registrations portal
  */
@@ -73,7 +69,7 @@ export default function MyRegistrationPage() {
   const handleLookupSubmit = async (e) => {
     if (e) e.preventDefault();
     if (!lookupTeamName.trim() || !lookupDiscordId.trim()) {
-      setLookupError("Both Team Name and Captain Discord ID are required.");
+      setLookupError("Both Squad Name and Captain Discord ID are required.");
       return;
     }
 
@@ -91,7 +87,7 @@ export default function MyRegistrationPage() {
 
       if (!res || res.length === 0) {
         setLookupError(
-          "No registration found matching that Team Name and Captain Discord ID."
+          "No registration found matching that Squad Name and Captain Discord ID."
         );
       } else {
         setRegistrations(res);
@@ -107,7 +103,7 @@ export default function MyRegistrationPage() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-50 text-zinc-900 flex flex-col">
+    <div className="min-h-screen bg-zinc-50 text-zinc-950 flex flex-col font-sans">
       <ValkyrieHeader />
 
       <main className="mx-auto max-w-5xl p-4 sm:p-6 lg:p-8 space-y-6 flex-1 w-full">
@@ -115,14 +111,14 @@ export default function MyRegistrationPage() {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-xl sm:text-2xl font-bold text-zinc-950 tracking-tight">
+              <h1 className="text-xl sm:text-2xl font-bold font-pixel text-zinc-950 tracking-tight">
                 My Registration
               </h1>
               <Badge variant="brand" size="sm">
                 Participant Portal
               </Badge>
             </div>
-            <p className="mt-0.5 text-xs text-zinc-500">
+            <p className="mt-0.5 text-xs text-zinc-600">
               Track your squad review status, view private player Discord IDs, and read admin feedback
             </p>
           </div>
@@ -134,12 +130,12 @@ export default function MyRegistrationPage() {
               icon={Search}
               onClick={() => setLookupOpen(true)}
             >
-              Look Up Team
+              Look Up Squad
             </Button>
 
             <Link href="/valkyrie-cup/register">
               <Button variant="primary" size="sm" icon={UserPlus}>
-                Register Team
+                Register Squad
               </Button>
             </Link>
           </div>
@@ -151,7 +147,7 @@ export default function MyRegistrationPage() {
         ) : registrations.length === 0 ? (
           <EmptyState
             title="No Registrations Found"
-            description="You have not submitted a team registration from this browser, or your session has expired."
+            description="You have not submitted a squad registration from this browser, or your session has expired."
             action={
               <div className="flex items-center gap-2">
                 <Button
@@ -159,7 +155,7 @@ export default function MyRegistrationPage() {
                   size="sm"
                   onClick={() => setLookupOpen(true)}
                 >
-                  Look Up by Team Name
+                  Look Up by Squad Name
                 </Button>
                 <Link href="/valkyrie-cup/register">
                   <Button variant="primary" size="sm" icon={UserPlus}>
@@ -179,10 +175,10 @@ export default function MyRegistrationPage() {
               return (
                 <Card
                   key={reg.id}
-                  className="overflow-hidden bg-white divide-y divide-zinc-100"
+                  className="overflow-hidden bg-white divide-y-2 divide-zinc-950 pixel-shadow"
                 >
                   {/* TOP HEADER */}
-                  <div className="p-5 sm:p-6 space-y-4">
+                  <div className="p-4.5 sm:p-6 space-y-4">
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                       <div>
                         <div className="flex flex-wrap items-center gap-2">
@@ -209,18 +205,18 @@ export default function MyRegistrationPage() {
                           </Badge>
                         </div>
 
-                        <h2 className="mt-2 text-xl sm:text-2xl font-black text-zinc-950 tracking-tight">
+                        <h2 className="mt-2 text-xl sm:text-2xl font-bold font-pixel text-zinc-950 tracking-tight">
                           {reg.teamName}
                         </h2>
 
-                        <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-zinc-500">
+                        <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-zinc-600 font-mono">
                           <div>Submitted {formatDate(reg.createdAt)}</div>
                           {reg.reviewedAt && (
                             <>
                               <span>•</span>
                               <div>
                                 Reviewed by{" "}
-                                <strong className="text-zinc-800 font-semibold">
+                                <strong className="text-zinc-950 font-bold">
                                   {reg.reviewedBy || "Admin"}
                                 </strong>{" "}
                                 on {formatDate(reg.reviewedAt)}
@@ -231,23 +227,22 @@ export default function MyRegistrationPage() {
                       </div>
 
                       <div className="flex items-center gap-2">
-                        <Link
-                          href={`/valkyrie-cup/teams/${reg.id}`}
-                          className="inline-flex h-8 items-center rounded-lg border border-zinc-200 bg-white px-3 text-xs font-medium text-zinc-700 hover:bg-zinc-50 transition"
-                        >
-                          Public View
+                        <Link href={`/valkyrie-cup/teams/${reg.id}`}>
+                          <Button variant="secondary" size="xs">
+                            Public View
+                          </Button>
                         </Link>
                       </div>
                     </div>
 
                     {/* REJECTION REASON ALERT (IF REJECTED) */}
                     {isRejected && (
-                      <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-xs text-red-800 space-y-1 animate-in fade-in duration-150">
-                        <div className="flex items-center gap-1.5 font-bold text-red-900">
-                          <XCircle className="size-4 shrink-0 text-red-600" />
+                      <div className="border-2 border-red-700 bg-red-50 p-3.5 text-xs text-red-900 space-y-1 pixel-shadow-sm">
+                        <div className="flex items-center gap-1.5 font-bold font-pixel text-red-950 uppercase">
+                          <XCircle className="size-4 shrink-0 text-red-700" />
                           <span>Registration Rejected</span>
                         </div>
-                        <p className="mt-1 text-red-700 leading-relaxed pl-5.5">
+                        <p className="mt-1 text-red-800 leading-relaxed pl-5.5">
                           {reg.rejectionReason ||
                             "Your registration was rejected by administrators. Please contact leadership on Discord for clarification or submit a revised roster."}
                         </p>
@@ -256,13 +251,13 @@ export default function MyRegistrationPage() {
 
                     {/* PENDING NOTICE */}
                     {isPending && (
-                      <div className="rounded-xl border border-amber-200 bg-amber-50/70 p-3.5 text-xs text-amber-800 flex items-start gap-2">
-                        <Clock className="size-4 shrink-0 text-amber-600 mt-0.5" />
+                      <div className="border-2 border-amber-600 bg-amber-50/70 p-3 text-xs text-amber-900 flex items-start gap-2 pixel-shadow-sm">
+                        <Clock className="size-4 shrink-0 text-amber-700 mt-0.5" />
                         <div>
-                          <span className="font-bold text-amber-900">
+                          <span className="font-bold font-pixel uppercase text-amber-950">
                             Awaiting Administrative Review:
                           </span>{" "}
-                          Your team is registered and appears in the public tournament directory.
+                          Your squad is registered and appears in the public tournament directory.
                           An administrator will verify your 8 combatants shortly.
                         </div>
                       </div>
@@ -270,27 +265,27 @@ export default function MyRegistrationPage() {
 
                     {/* APPROVED NOTICE */}
                     {isApproved && (
-                      <div className="rounded-xl border border-emerald-200 bg-emerald-50/70 p-3.5 text-xs text-emerald-800 flex items-start gap-2">
-                        <CheckCircle2 className="size-4 shrink-0 text-emerald-600 mt-0.5" />
+                      <div className="border-2 border-emerald-700 bg-emerald-50/70 p-3 text-xs text-emerald-900 flex items-start gap-2 pixel-shadow-sm">
+                        <CheckCircle2 className="size-4 shrink-0 text-emerald-700 mt-0.5" />
                         <div>
-                          <span className="font-bold text-emerald-900">
+                          <span className="font-bold font-pixel uppercase text-emerald-950">
                             Squad Approved:
                           </span>{" "}
-                          Your roster is officially locked in for the Valkyrie Cup bracket!
+                          Your roster is officially locked in for the Valkyrie Cup tournament bracket!
                         </div>
                       </div>
                     )}
                   </div>
 
                   {/* ROSTER TABLE (INCLUDES DISCORD ID) */}
-                  <div className="p-5 sm:p-6 space-y-3">
+                  <div className="p-4.5 sm:p-6 space-y-3">
                     <div className="flex items-center justify-between">
                       <div>
-                        <h3 className="text-sm font-bold text-zinc-900">
-                          Team Roster (Private Discord IDs)
+                        <h3 className="text-sm font-bold font-pixel uppercase tracking-wide text-zinc-950">
+                          Squad Roster (Confidential Discord Tags)
                         </h3>
-                        <p className="text-[11px] text-zinc-400">
-                          Discord IDs are strictly confidential and visible only to you and administrators
+                        <p className="text-[11px] text-zinc-500">
+                          Discord tags are strictly private and visible only to you and administrators
                         </p>
                       </div>
 
@@ -303,9 +298,9 @@ export default function MyRegistrationPage() {
                       <TableHeader>
                         <TableRow>
                           <TableHead className="w-12 text-center">#</TableHead>
-                          <TableHead>Nickname</TableHead>
-                          <TableHead>Role</TableHead>
-                          <TableHead>Discord ID</TableHead>
+                          <TableHead>Character Nickname</TableHead>
+                          <TableHead>Designation</TableHead>
+                          <TableHead>Discord Tag</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -314,14 +309,14 @@ export default function MyRegistrationPage() {
 
                           return (
                             <TableRow key={player.id || index}>
-                              <TableCell className="text-center font-mono text-zinc-400 text-xs font-semibold">
+                              <TableCell className="text-center font-mono text-zinc-500 text-xs font-bold">
                                 {index + 1}
                               </TableCell>
 
                               <TableCell>
-                                <div className="font-bold text-zinc-900 text-xs sm:text-sm flex items-center gap-1.5">
+                                <div className="font-bold text-zinc-950 text-xs sm:text-sm flex items-center gap-1.5">
                                   {isCaptain && (
-                                    <Crown className="size-3.5 text-amber-500 shrink-0" />
+                                    <Crown className="size-3.5 text-amber-600 shrink-0" />
                                   )}
                                   <span>{player.nickname}</span>
                                 </div>
@@ -339,7 +334,7 @@ export default function MyRegistrationPage() {
                                 )}
                               </TableCell>
 
-                              <TableCell className="font-mono text-xs font-medium text-zinc-700">
+                              <TableCell className="font-mono text-xs font-bold text-zinc-800">
                                 {player.discordId || "—"}
                               </TableCell>
                             </TableRow>
@@ -359,8 +354,8 @@ export default function MyRegistrationPage() {
       <Modal
         open={lookupOpen}
         onClose={() => setLookupOpen(false)}
-        title="Find My Team Registration"
-        description="Search for your submitted squad using your exact Team Name and Captain Discord ID."
+        title="Find My Squad Registration"
+        description="Search for your submitted squad using your exact Squad Name and Captain Discord Tag."
         icon={Search}
         size="sm"
         footer={
@@ -377,22 +372,22 @@ export default function MyRegistrationPage() {
               loading={lookupLoading}
               onClick={handleLookupSubmit}
             >
-              Find Team
+              Find Squad
             </Button>
           </>
         }
       >
         <form onSubmit={handleLookupSubmit} className="space-y-4 py-1">
           <Input
-            label="Team Name"
-            placeholder="Exact team name used upon registration"
+            label="Squad Name"
+            placeholder="Exact squad name used upon registration"
             value={lookupTeamName}
             onChange={(e) => setLookupTeamName(e.target.value)}
             required
           />
 
           <Input
-            label="Captain Discord ID"
+            label="Captain Discord Tag"
             placeholder="Discord ID entered for the captain"
             value={lookupDiscordId}
             onChange={(e) => setLookupDiscordId(e.target.value)}
@@ -400,7 +395,7 @@ export default function MyRegistrationPage() {
           />
 
           {lookupError && (
-            <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-xs font-semibold text-red-700">
+            <div className="border-2 border-red-700 bg-red-50 p-3 text-xs font-bold text-red-900 pixel-shadow-sm">
               {lookupError}
             </div>
           )}
@@ -408,20 +403,22 @@ export default function MyRegistrationPage() {
       </Modal>
 
       {/* FOOTER */}
-      <footer className="mt-12 border-t border-zinc-200 bg-white">
+      <footer className="mt-12 border-t-2 border-zinc-950 bg-white">
         <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-6 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
           <div className="flex items-center gap-2.5">
-            <img
-              src="/logo.png"
-              alt="Legend Army"
-              className="size-7 object-contain"
-            />
-            <span className="text-xs font-bold text-zinc-900">
-              Valkyrie Cup · My Registration
+            <div className="flex size-6 shrink-0 items-center justify-center border border-zinc-950 bg-brand-600">
+              <img
+                src="/logo.png"
+                alt="Legend Army"
+                className="size-5 object-contain"
+              />
+            </div>
+            <span className="text-xs font-bold font-pixel text-zinc-950">
+              VALKYRIE CUP · MY REGISTRATION
             </span>
           </div>
 
-          <div className="text-xs text-zinc-400">
+          <div className="text-xs font-mono text-zinc-500">
             Legend Army · Guild Management
           </div>
         </div>

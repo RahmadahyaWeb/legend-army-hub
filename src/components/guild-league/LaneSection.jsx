@@ -1,9 +1,16 @@
 import { MapPin } from "lucide-react";
-
 import { LANE_CONFIG } from "../../utils/guildLeague";
-
 import TeamCard from "./TeamCard";
 
+/**
+ * LaneSection component
+ *
+ * Why this exists:
+ * Section container for a specific tactical battlefield lane.
+ *
+ * @param {Object} props
+ * @returns {JSX.Element|null}
+ */
 export default function LaneSection({
   lane,
   teamNumbers,
@@ -22,44 +29,41 @@ export default function LaneSection({
   }
 
   const laneConfig = lane === "unassigned" ? null : LANE_CONFIG[lane];
-
-  const title = laneConfig?.label ?? "Unassigned Teams";
-
+  const title = laneConfig?.label ?? "Unassigned Formations";
   const description =
     laneConfig?.description ?? "Assign these teams to Top, Mid or Bot Lane.";
 
   return (
-    <section className="overflow-hidden rounded-xl border border-zinc-200 bg-white">
+    <section className="border-2 border-zinc-950 bg-white pixel-shadow-sm">
       <div
         className={[
-          "border-b px-5 py-4 sm:px-6",
-          laneConfig ? laneConfig.headerClassName : "border-zinc-200 bg-zinc-50",
+          "border-b-2 border-zinc-950 px-4 py-3 sm:px-5",
+          laneConfig ? laneConfig.headerClassName : "bg-zinc-100",
         ].join(" ")}
       >
         <div className="flex items-center justify-between gap-4">
           <div className="flex min-w-0 items-center gap-3">
             <div
               className={[
-                "flex size-9 shrink-0 items-center justify-center rounded-lg",
+                "flex size-8 shrink-0 items-center justify-center border-2 border-zinc-950",
                 laneConfig
                   ? laneConfig.iconClassName
-                  : "bg-zinc-100 text-zinc-600",
+                  : "bg-zinc-100 text-zinc-800",
               ].join(" ")}
             >
               <MapPin className="size-4" />
             </div>
 
             <div>
-              <h2 className="text-sm font-semibold uppercase tracking-wider text-zinc-900">
+              <h2 className="text-sm font-bold font-pixel uppercase tracking-wide text-zinc-950">
                 {title}
               </h2>
-
-              <p className="mt-0.5 text-xs text-zinc-500">{description}</p>
+              <p className="text-[11px] text-zinc-600">{description}</p>
             </div>
           </div>
 
-          <div className="shrink-0 rounded-md border border-zinc-200 bg-white px-2.5 py-1 text-xs font-medium text-zinc-700">
-            {teamNumbers.length} {teamNumbers.length === 1 ? "Team" : "Teams"}
+          <div className="shrink-0 border border-zinc-900 bg-white px-2 py-0.5 text-xs font-bold font-mono text-zinc-800">
+            {teamNumbers.length} {teamNumbers.length === 1 ? "Formation" : "Formations"}
           </div>
         </div>
       </div>
@@ -70,14 +74,11 @@ export default function LaneSection({
             key={teamNumber}
             teamNumber={teamNumber}
             membersPerTeam={membersPerTeam}
-            rosterMembers={rosterMembers}
-            teamLane={teamLaneMap.get(teamNumber) || ""}
+            teamMembers={rosterMembers}
             onLaneChange={onLaneChange}
-            changingLaneTeam={changingLaneTeam}
-            onEmptySlotClick={onEmptySlotClick}
-            onMemberClick={onMemberClick}
+            onAssignSlot={onEmptySlotClick}
+            onSelectMember={onMemberClick}
             onRemoveMember={onRemoveMember}
-            removingMemberId={removingMemberId}
           />
         ))}
       </div>

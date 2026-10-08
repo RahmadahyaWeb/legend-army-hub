@@ -6,10 +6,12 @@ import { getLaneConfig, LANE_SELECT_GROUPS } from "@/utils/guildLeague";
 import RosterSlotItem from "./RosterSlotItem";
 
 /**
- * Unified Team Card Component
+ * Unified Pixel Team Card Component
  *
  * Why this exists:
  * Unifies the team card layout between public roster view and admin roster manager.
+ * Presents a Ragnarok Online-inspired party card: 2px solid outlines, retro party header,
+ * slot occupancy counter, and average Gear Score badge.
  * Supports lane assignment dropdown in admin mode, and static badge in read-only mode.
  *
  * @param {Object} props - TeamCard props
@@ -25,6 +27,7 @@ import RosterSlotItem from "./RosterSlotItem";
  * @param {(slot: { teamNumber: number, slotNumber: number }) => void} [props.onAssignSlot]
  * @param {(member: Object) => void} [props.onSelectMember]
  * @param {(member: Object) => void} [props.onRemoveMember]
+ * @returns {JSX.Element} Rendered party card
  */
 export default function TeamCard({
   teamNumber,
@@ -66,21 +69,21 @@ export default function TeamCard({
   );
 
   return (
-    <div className="flex flex-col overflow-hidden rounded-xl border border-zinc-200 bg-white transition-colors">
+    <div className="flex flex-col border-2 border-zinc-950 bg-white pixel-shadow-sm transition-transform">
       {/* TEAM HEADER */}
-      <div className="flex items-center justify-between gap-3 border-b border-zinc-100 bg-zinc-50/70 px-4 py-2.5">
-        <div className="flex items-center gap-2 min-w-0">
-          <span className="truncate text-xs font-semibold text-zinc-900">
+      <div className="flex items-center justify-between gap-2.5 border-b-2 border-zinc-950 bg-zinc-100 px-3.5 py-2">
+        <div className="flex items-center gap-1.5 min-w-0">
+          <span className="truncate text-xs font-bold font-pixel text-zinc-950">
             {displayName}
           </span>
-          <span className="shrink-0 text-[11px] text-zinc-400 font-mono">
+          <span className="shrink-0 text-[11px] text-zinc-600 font-mono font-bold">
             ({teamMembers.length}/{membersPerTeam})
           </span>
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
           {averageGearScore > 0 && (
-            <span className="text-[11px] font-mono font-medium text-zinc-500">
+            <span className="text-[11px] font-mono font-bold text-brand-700">
               Avg {formatNumber(averageGearScore)}
             </span>
           )}
@@ -88,7 +91,7 @@ export default function TeamCard({
           {!shouldHideLane && (
             readOnly ? (
               <span
-                className={`rounded px-1.5 py-0.5 text-[10px] font-semibold border ${laneConfig.bg} ${laneConfig.color} ${laneConfig.border}`}
+                className={`px-1.5 py-0.2 text-[10px] font-bold border ${laneConfig.bg} ${laneConfig.color} ${laneConfig.border}`}
               >
                 {laneConfig.label}
               </span>
@@ -96,7 +99,7 @@ export default function TeamCard({
               <select
                 value={team?.lane || ""}
                 onChange={(e) => onLaneChange?.(teamNumber, e.target.value)}
-                className="h-6 rounded border border-zinc-200 bg-white px-1.5 text-[11px] font-medium text-zinc-700 focus:outline-none focus:ring-1 focus:ring-zinc-400"
+                className="h-6 border border-zinc-900 bg-white px-1 text-[11px] font-bold text-zinc-900 focus:outline-none"
               >
                 <option value="">No Lane</option>
                 {LANE_SELECT_GROUPS.map((group) => (
@@ -115,7 +118,7 @@ export default function TeamCard({
       </div>
 
       {/* ROSTER SLOTS */}
-      <div className="divide-y divide-zinc-50 p-1 flex-1">
+      <div className="divide-y divide-zinc-200 p-0.5 flex-1 bg-white">
         {slots.map((slotNum) => {
           const occupant = teamMembers.find(
             (m) => Number(m.slotNumber) === Number(slotNum)

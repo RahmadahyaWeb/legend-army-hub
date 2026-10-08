@@ -1,46 +1,49 @@
 "use client";
 
 /**
- * Visual badge tokens adhering to clean, calm visual hierarchy
+ * Semantic pixel badge styling tokens.
+ * Sharp rectangular chips reminiscent of retro RPG item labels and status flags.
  */
 const VARIANTS = {
-  brand: "bg-zinc-100 text-zinc-800 border-zinc-200",
-  success: "bg-emerald-50 text-emerald-700 border-emerald-200",
-  warning: "bg-amber-50 text-amber-800 border-amber-200",
-  danger: "bg-red-50 text-red-700 border-red-200",
-  info: "bg-blue-50 text-blue-700 border-blue-200",
-  neutral: "bg-zinc-100 text-zinc-700 border-zinc-200",
-  outline: "bg-transparent text-zinc-600 border-zinc-200",
+  brand: "bg-brand-50 text-brand-900 border-brand-700",
+  success: "bg-emerald-50 text-emerald-900 border-emerald-700",
+  warning: "bg-amber-50 text-amber-950 border-amber-600",
+  danger: "bg-red-50 text-red-900 border-red-700",
+  info: "bg-sky-50 text-sky-950 border-sky-600",
+  neutral: "bg-zinc-100 text-zinc-900 border-zinc-400",
+  outline: "bg-white text-zinc-800 border-zinc-900",
 };
 
 const DOTS = {
-  brand: "bg-zinc-500",
-  success: "bg-emerald-500",
-  warning: "bg-amber-500",
-  danger: "bg-red-500",
-  info: "bg-blue-500",
-  neutral: "bg-zinc-400",
-  outline: "bg-zinc-400",
+  brand: "bg-brand-600",
+  success: "bg-emerald-600",
+  warning: "bg-amber-600",
+  danger: "bg-red-600",
+  info: "bg-sky-600",
+  neutral: "bg-zinc-600",
+  outline: "bg-zinc-900",
 };
 
 const SIZES = {
-  xs: "px-1.5 py-0.5 text-[10px] gap-1",
-  sm: "px-2 py-0.5 text-xs gap-1.5",
+  xs: "px-1.5 py-0.2 text-[10px] gap-1",
+  sm: "px-2 py-0.5 text-[11px] gap-1.5",
   md: "px-2.5 py-1 text-xs gap-1.5",
 };
 
 /**
- * Standard semantic badge primitive.
+ * Standard semantic pixel badge primitive.
  *
  * Why this exists:
- * Standardizes status chips, event types, and role tags across all interfaces.
+ * Delivers sharp, pixel-bordered status chips, roles, and event tags that feel right at home
+ * in a Ragnarok Online-inspired guild system without muddying information density.
  *
  * @param {Object} props - Badge props
- * @param {"brand"|"success"|"warning"|"danger"|"info"|"neutral"|"outline"} [props.variant="neutral"]
- * @param {"xs"|"sm"|"md"} [props.size="sm"]
- * @param {boolean} [props.dot=false] - Optional status dot indicator
- * @param {React.ReactNode} [props.children] - Badge content
+ * @param {"brand"|"success"|"warning"|"danger"|"info"|"neutral"|"outline"} [props.variant="neutral"] - Variant
+ * @param {"xs"|"sm"|"md"} [props.size="sm"] - Size scale
+ * @param {boolean} [props.dot=false] - Optional status indicator dot
+ * @param {React.ReactNode} props.children - Badge content
  * @param {string} [props.className] - Additional classes
+ * @returns {JSX.Element} Rendered badge
  */
 export default function Badge({
   variant = "neutral",
@@ -55,9 +58,9 @@ export default function Badge({
 
   return (
     <span
-      className={`inline-flex items-center rounded-md font-medium border select-none tracking-normal ${variantClass} ${sizeClass} ${className}`}
+      className={`inline-flex items-center font-semibold border select-none tracking-tight ${variantClass} ${sizeClass} ${className}`}
     >
-      {dot && <span className={`size-1.5 rounded-full shrink-0 ${dotClass}`} />}
+      {dot && <span className={`size-1.5 shrink-0 ${dotClass}`} />}
       {children}
     </span>
   );

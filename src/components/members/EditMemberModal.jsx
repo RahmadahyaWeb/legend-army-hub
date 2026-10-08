@@ -189,16 +189,16 @@ export default function EditMemberModal({ open, member, onClose, onSuccess }) {
               name="isActive"
               checked={form.isActive}
               onChange={handleChange}
-              className="size-4 rounded text-brand-600 focus:ring-brand-500"
+              className="size-4 rounded-none border-2 border-zinc-950 text-brand-600 focus:ring-0"
             />
-            <span className="text-xs font-semibold text-zinc-700">
+            <span className="text-xs font-mono font-bold text-zinc-900">
               Active Member (Include in guild power calculations & roster)
             </span>
           </label>
         </div>
 
         {error && (
-          <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-xs font-medium text-red-700 animate-in fade-in duration-150">
+          <div className="border-2 border-red-600 bg-red-50 p-3 text-xs font-mono font-bold text-red-700 shadow-[2px_2px_0px_#b91c1c]">
             {error}
           </div>
         )}

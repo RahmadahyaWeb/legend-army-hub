@@ -21,7 +21,7 @@ const INITIAL_FORM = {
 };
 
 /**
- * Create Guild Event Modal
+ * Create Guild Event Modal with Retro Pixel Styling
  *
  * Why this exists:
  * Setup dialog for creating a new Guild Event:
@@ -33,6 +33,7 @@ const INITIAL_FORM = {
  * @param {boolean} props.open - Modal visibility
  * @param {() => void} props.onClose - Close callback
  * @param {() => void} [props.onSuccess] - Refresh callback
+ * @returns {JSX.Element|null}
  */
 export default function CreateGuildLeagueModal({ open, onClose, onSuccess }) {
   const [form, setForm] = useState(INITIAL_FORM);
@@ -151,24 +152,24 @@ export default function CreateGuildLeagueModal({ open, onClose, onSuccess }) {
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* EVENT TYPE SELECTOR (GUILD LEAGUE VS WOE VS POLARITY) */}
         <div>
-          <label className="text-xs font-bold text-zinc-900 mb-1.5 block">
-            Event Type <span className="text-red-500">*</span>
+          <label className="text-xs font-bold font-pixel uppercase tracking-wide text-zinc-950 mb-1.5 block">
+            Event Type <span className="text-brand-600">*</span>
           </label>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
             <button
               type="button"
               onClick={() => handleSelectType("guild_league")}
-              className={`flex flex-col text-left p-3 rounded-xl border transition cursor-pointer ${
+              className={`flex flex-col text-left p-3 border-2 transition-transform cursor-pointer select-none ${
                 form.eventType === "guild_league"
-                  ? "border-red-600 bg-red-50/50 ring-1 ring-red-600 text-red-950"
-                  : "border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-700"
+                  ? "border-brand-950 bg-brand-50/70 pixel-shadow-sm text-brand-950"
+                  : "border-zinc-300 bg-white hover:border-zinc-950 text-zinc-800"
               }`}
             >
               <div className="flex items-center gap-2">
-                <Swords className={`size-4 ${form.eventType === "guild_league" ? "text-red-600" : "text-zinc-500"}`} />
-                <span className="text-xs font-bold">Guild League</span>
+                <Swords className={`size-4 ${form.eventType === "guild_league" ? "text-brand-700" : "text-zinc-600"}`} />
+                <span className="text-xs font-bold font-pixel">Guild League</span>
               </div>
-              <p className="text-[11px] text-zinc-500 mt-1">
+              <p className="text-[11px] text-zinc-600 mt-1">
                 3-lane tactical format (Top, Mid, Bot)
               </p>
             </button>
@@ -176,47 +177,44 @@ export default function CreateGuildLeagueModal({ open, onClose, onSuccess }) {
             <button
               type="button"
               onClick={() => handleSelectType("woe")}
-              className={`flex flex-col text-left p-3 rounded-xl border transition cursor-pointer ${
+              className={`flex flex-col text-left p-3 border-2 transition-transform cursor-pointer select-none ${
                 form.eventType === "woe"
-                  ? "border-amber-600 bg-amber-50/50 ring-1 ring-amber-600 text-amber-950"
-                  : "border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-700"
+                  ? "border-amber-950 bg-amber-50/70 pixel-shadow-sm text-amber-950"
+                  : "border-zinc-300 bg-white hover:border-zinc-950 text-zinc-800"
               }`}
             >
               <div className="flex items-center gap-2">
-                <Castle className={`size-4 ${form.eventType === "woe" ? "text-amber-600" : "text-zinc-500"}`} />
-                <span className="text-xs font-bold">WOE (Castle War)</span>
+                <Castle className={`size-4 ${form.eventType === "woe" ? "text-amber-700" : "text-zinc-600"}`} />
+                <span className="text-xs font-bold font-pixel">WOE (Castle)</span>
               </div>
-              <p className="text-[11px] text-zinc-500 mt-1">
-                Unified team format (No lane division)
+              <p className="text-[11px] text-zinc-600 mt-1">
+                Unified team format (No lanes)
               </p>
             </button>
 
             <button
               type="button"
               onClick={() => handleSelectType("polarity")}
-              className={`flex flex-col text-left p-3 rounded-xl border transition cursor-pointer ${
+              className={`flex flex-col text-left p-3 border-2 transition-transform cursor-pointer select-none ${
                 form.eventType === "polarity"
-                  ? "border-cyan-600 bg-cyan-50/50 ring-1 ring-cyan-600 text-cyan-950"
-                  : "border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-700"
+                  ? "border-cyan-950 bg-cyan-50/70 pixel-shadow-sm text-cyan-950"
+                  : "border-zinc-300 bg-white hover:border-zinc-950 text-zinc-800"
               }`}
             >
               <div className="flex items-center gap-2">
-                <Layers className={`size-4 ${form.eventType === "polarity" ? "text-cyan-600" : "text-zinc-500"}`} />
-                <span className="text-xs font-bold">Polarity</span>
+                <Layers className={`size-4 ${form.eventType === "polarity" ? "text-cyan-700" : "text-zinc-600"}`} />
+                <span className="text-xs font-bold font-pixel">Polarity</span>
               </div>
-              <p className="text-[11px] text-zinc-500 mt-1">
-                Fixed 10 teams • 5 players/team (50 max)
+              <p className="text-[11px] text-zinc-600 mt-1">
+                Fixed 10 teams • 5 players/team
               </p>
             </button>
           </div>
         </div>
 
         {isPolarity && (
-          <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-3 text-xs text-zinc-700">
-            <p className="font-semibold text-zinc-900">Fixed Polarity Formation</p>
-            <p className="text-[11px] text-zinc-500 mt-0.5">
-              Polarity matches are fixed to 10 teams of 5 players (50 total capacity).
-            </p>
+          <div className="border border-cyan-700 bg-cyan-50 p-2.5 text-xs text-cyan-950 font-mono">
+            <strong>Fixed Polarity Formation:</strong> 10 parties with exactly 5 combatants (50 total capacity).
           </div>
         )}
 
@@ -280,7 +278,7 @@ export default function CreateGuildLeagueModal({ open, onClose, onSuccess }) {
 
           <div>
             <Input
-              label="Total Teams"
+              label="Total Squads"
               name="maxTeams"
               type="number"
               min="1"
@@ -290,15 +288,15 @@ export default function CreateGuildLeagueModal({ open, onClose, onSuccess }) {
               onChange={handleChange}
             />
             {isPolarity && (
-              <span className="text-[10px] text-cyan-600 font-bold block mt-1">
-                Fixed 10 Teams
+              <span className="text-[10px] text-cyan-700 font-bold block mt-1 font-mono">
+                Fixed 10 Squads
               </span>
             )}
           </div>
 
           <div>
             <Input
-              label="Players / Team"
+              label="Players / Squad"
               name="membersPerTeam"
               type="number"
               min="1"
@@ -308,7 +306,7 @@ export default function CreateGuildLeagueModal({ open, onClose, onSuccess }) {
               onChange={handleChange}
             />
             {isPolarity && (
-              <span className="text-[10px] text-cyan-600 font-bold block mt-1">
+              <span className="text-[10px] text-cyan-700 font-bold block mt-1 font-mono">
                 Fixed 5 Players
               </span>
             )}
@@ -325,7 +323,7 @@ export default function CreateGuildLeagueModal({ open, onClose, onSuccess }) {
         />
 
         {error && (
-          <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-xs font-semibold text-red-700 animate-in fade-in duration-150">
+          <div className="border-2 border-red-700 bg-red-50 p-3 text-xs font-bold text-red-900">
             {error}
           </div>
         )}

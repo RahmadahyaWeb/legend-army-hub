@@ -7,6 +7,7 @@ import { fetchMembers, fetchGuildLeagues } from "@/lib/api";
 import { formatDate, formatNumber, isMemberActive } from "@/utils/formatters";
 import Loading from "@/components/ui/Loading";
 import Badge from "@/components/ui/Badge";
+import Button from "@/components/ui/Button";
 import StatCard from "@/components/dashboard/StatCard";
 import NextMatchCard from "@/components/dashboard/NextMatchCard";
 import ClassCompositionCard from "@/components/dashboard/ClassCompositionCard";
@@ -18,11 +19,13 @@ import GearLeaderboardCard from "@/components/dashboard/GearLeaderboardCard";
  * Why this exists:
  * The single public-facing entry point for Legend Army guild members and visitors.
  * Displays:
- * 1. Clean Guild Portal Hero
+ * 1. Retro Pixel Guild Portal Hero
  * 2. High-level Overview Metrics (Members, Active Combatants, Average GS, Event Count)
  * 3. Next Imminent Match Spotlight
- * 4. All Matches & Events List in a responsive, clean card grid
+ * 4. All Matches & Events List in a responsive retro pixel card grid
  * 5. Class Composition Breakdown & Top Gear Leaderboard
+ *
+ * @returns {JSX.Element} Rendered landing page
  */
 export default function PublicDashboard() {
   const [members, setMembers] = useState([]);
@@ -63,80 +66,75 @@ export default function PublicDashboard() {
   }, [guildLeagues]);
 
   if (loading) {
-    return <Loading fullScreen message="Loading dashboard..." />;
+    return <Loading fullScreen message="Loading Guild Hub..." />;
   }
 
   return (
-    <div className="min-h-screen bg-zinc-50 text-zinc-900 flex flex-col">
+    <div className="min-h-screen bg-zinc-50 text-zinc-950 flex flex-col font-sans">
       {/* HEADER */}
-      <header className="sticky top-0 z-40 border-b border-zinc-200 bg-white/95 backdrop-blur-xs">
+      <header className="sticky top-0 z-40 border-b-2 border-zinc-950 bg-white">
         <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex items-center gap-2.5">
-            <img
-              src="/logo.png"
-              alt="Legend Army"
-              className="size-8 object-contain"
-            />
+            <div className="flex size-8 shrink-0 items-center justify-center border-2 border-zinc-950 bg-brand-600 pixel-shadow-sm">
+              <img
+                src="/logo.png"
+                alt="Legend Army"
+                className="size-7 object-contain"
+              />
+            </div>
             <div>
-              <span className="text-sm font-bold tracking-tight text-zinc-900 block leading-tight">
+              <span className="font-pixel text-sm font-bold text-zinc-950 block leading-tight">
                 LEGEND ARMY
               </span>
-              <span className="text-[10px] font-medium uppercase tracking-wider text-zinc-400 block leading-tight">
+              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-brand-700 block leading-tight">
                 Guild Portal
               </span>
             </div>
           </Link>
 
           <div className="flex items-center gap-2">
-            <Link
-              href="/valkyrie-cup"
-              className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-amber-200 bg-amber-50/80 px-3 text-xs font-semibold text-amber-900 hover:bg-amber-100/80 transition-colors"
-            >
-              <Trophy className="size-3.5 text-amber-600" />
-              <span>Valkyrie Cup</span>
+            <Link href="/valkyrie-cup">
+              <Button variant="secondary" size="xs" icon={Trophy} className="!border-amber-600 !bg-amber-50 !text-amber-950">
+                Valkyrie Cup
+              </Button>
             </Link>
 
-            <Link
-              href="/login"
-              className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-3 text-xs font-medium text-zinc-700 hover:bg-zinc-50 transition-colors"
-            >
-              <Lock className="size-3.5 text-zinc-400" />
-              <span>Admin Sign In</span>
+            <Link href="/login">
+              <Button variant="outline" size="xs" icon={Lock}>
+                Admin Sign In
+              </Button>
             </Link>
           </div>
         </div>
       </header>
 
       {/* HERO SECTION */}
-      <section className="border-b border-zinc-200 bg-white">
+      <section className="border-b-2 border-zinc-950 bg-white pixel-grid-bg relative">
         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="max-w-2xl">
-              <div className="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-2.5 py-0.5 text-[11px] font-semibold text-amber-900 mb-3">
+              <div className="inline-flex items-center gap-2 border border-zinc-900 bg-amber-50 px-2.5 py-0.5 text-[11px] font-bold text-amber-950 mb-3 pixel-shadow-sm">
                 <Trophy className="size-3 text-amber-600" />
-                <span>Featured Event: Valkyrie Cup 8v8 Tournament</span>
+                <span>Active Tournament: Valkyrie Cup 8v8</span>
               </div>
-              <h1 className="text-2xl sm:text-4xl font-bold tracking-tight text-zinc-950">
+              <h1 className="text-3xl sm:text-5xl font-black font-pixel tracking-tight text-zinc-950 leading-tight">
                 Legend Army Hub
               </h1>
-              <p className="mt-2 text-xs sm:text-sm text-zinc-500 leading-relaxed">
-                Guild roster lineups, class balance, tactical battle preparations, and tournament operations.
+              <p className="mt-2 text-xs sm:text-sm text-zinc-700 leading-relaxed font-medium">
+                Ragnarok guild war rosters, class balance composition, tactical battle formations, and tournament management.
               </p>
             </div>
 
             <div className="flex flex-wrap items-center gap-2.5 shrink-0">
-              <Link
-                href="/valkyrie-cup"
-                className="inline-flex h-9 items-center gap-2 rounded-lg bg-zinc-900 px-4 text-xs font-semibold text-white hover:bg-zinc-800 transition-colors"
-              >
-                <Trophy className="size-3.5 text-amber-400" />
-                <span>Enter Valkyrie Cup</span>
+              <Link href="/valkyrie-cup">
+                <Button variant="primary" size="md" icon={Trophy}>
+                  Enter Valkyrie Cup
+                </Button>
               </Link>
-              <Link
-                href="/valkyrie-cup/teams"
-                className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-3.5 text-xs font-medium text-zinc-700 hover:bg-zinc-50 transition-colors"
-              >
-                <span>View Teams</span>
+              <Link href="/valkyrie-cup/teams">
+                <Button variant="secondary" size="md">
+                  View Squads
+                </Button>
               </Link>
             </div>
           </div>
@@ -148,8 +146,8 @@ export default function PublicDashboard() {
         {/* OVERVIEW STATS */}
         <section className="space-y-3">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-zinc-900 uppercase tracking-wide">
-              Overview
+            <h2 className="text-xs font-bold font-pixel text-zinc-950 uppercase tracking-wider">
+              Battle Readiness Overview
             </h2>
           </div>
 
@@ -175,7 +173,7 @@ export default function PublicDashboard() {
             <StatCard
               value={guildLeagues.length}
               label="Total Events"
-              description="Scheduled matches"
+              description="Scheduled wars"
             />
           </div>
         </section>
@@ -186,20 +184,18 @@ export default function PublicDashboard() {
         {/* ALL MATCHES & EVENTS */}
         <section className="space-y-3">
           <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-sm font-semibold text-zinc-900 uppercase tracking-wide">
-                All Matches & Events
-              </h2>
-            </div>
+            <h2 className="text-xs font-bold font-pixel text-zinc-950 uppercase tracking-wider">
+              Matches & Guild Events
+            </h2>
 
-            <span className="text-xs text-zinc-500">
+            <span className="text-xs font-mono font-bold text-zinc-600">
               {guildLeagues.length} {guildLeagues.length === 1 ? "event" : "events"}
             </span>
           </div>
 
           {guildLeagues.length === 0 ? (
-            <div className="rounded-xl border border-dashed border-zinc-200 bg-white p-8 text-center text-xs text-zinc-500">
-              No guild events scheduled yet.
+            <div className="border-2 border-dashed border-zinc-400 bg-white p-8 text-center text-xs text-zinc-500 pixel-shadow-sm font-medium">
+              No guild events scheduled at the moment.
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-stretch">
@@ -216,7 +212,7 @@ export default function PublicDashboard() {
                 return (
                   <div
                     key={gl.id}
-                    className="flex flex-col justify-between h-full rounded-xl border border-zinc-200 bg-white p-4 transition-colors hover:border-zinc-300"
+                    className="flex flex-col justify-between h-full border-2 border-zinc-950 bg-white p-4 pixel-shadow-sm hover:pixel-shadow transition-transform"
                   >
                     <div>
                       {/* TOP BADGES ROW */}
@@ -249,36 +245,36 @@ export default function PublicDashboard() {
                           </Badge>
                         </div>
 
-                        <span className="text-xs text-zinc-400 shrink-0">
+                        <span className="text-xs font-mono text-zinc-500 shrink-0">
                           {formatDate(matchDate)}
                         </span>
                       </div>
 
                       {/* EVENT TITLE */}
-                      <h3 className="mt-3 text-sm font-semibold text-zinc-900 leading-snug line-clamp-1">
+                      <h3 className="mt-3 text-sm font-bold text-zinc-950 leading-snug line-clamp-1 font-pixel">
                         {gl.name}
                       </h3>
 
                       {/* OPPONENT / OBJECTIVE */}
-                      <div className="mt-1 text-xs text-zinc-500 truncate">
+                      <div className="mt-1 text-xs text-zinc-600 truncate">
                         {isWoe ? (
-                          <span>Target: <strong className="text-zinc-800 font-medium">{gl.opponent || "TBA"}</strong></span>
+                          <span>Target: <strong className="text-zinc-950 font-bold">{gl.opponent || "TBA"}</strong></span>
                         ) : (
-                          <span>Opponent: <strong className="text-zinc-800 font-medium">{gl.opponent || "TBA"}</strong></span>
+                          <span>Opponent: <strong className="text-zinc-950 font-bold">{gl.opponent || "TBA"}</strong></span>
                         )}
                       </div>
 
-                      {/* ROSTER PROGRESS BAR */}
+                      {/* RETRO ROSTER PROGRESS BAR */}
                       <div className="mt-3.5 space-y-1">
-                        <div className="flex items-center justify-between text-xs text-zinc-500">
+                        <div className="flex items-center justify-between text-xs text-zinc-600 font-medium">
                           <span>Roster</span>
-                          <span className="font-medium text-zinc-800">
+                          <span className="font-mono font-bold text-zinc-950">
                             {assigned} / {maxRoster} ({progress}%)
                           </span>
                         </div>
-                        <div className="h-1 w-full overflow-hidden rounded-full bg-zinc-100">
+                        <div className="h-2 w-full border border-zinc-950 bg-zinc-100 p-0.2">
                           <div
-                            className="h-full bg-zinc-800 rounded-full transition-all duration-200"
+                            className="h-full bg-brand-600 transition-all duration-200"
                             style={{ width: `${progress}%` }}
                           />
                         </div>
@@ -286,12 +282,11 @@ export default function PublicDashboard() {
                     </div>
 
                     {/* PINNED ACTION FOOTER */}
-                    <div className="mt-4 pt-3 border-t border-zinc-100">
-                      <Link
-                        href={`/roster/${gl.id}`}
-                        className="inline-flex w-full items-center justify-center rounded-lg bg-zinc-900 hover:bg-zinc-800 px-3 py-2 text-xs font-medium text-white transition-colors"
-                      >
-                        View Roster
+                    <div className="mt-4 pt-3 border-t-2 border-zinc-950">
+                      <Link href={`/roster/${gl.id}`} className="block w-full">
+                        <Button variant="secondary" size="sm" className="w-full">
+                          View Roster Lineup
+                        </Button>
                       </Link>
                     </div>
                   </div>
@@ -309,21 +304,23 @@ export default function PublicDashboard() {
       </main>
 
       {/* FOOTER */}
-      <footer className="mt-12 border-t border-zinc-200 bg-white">
+      <footer className="mt-12 border-t-2 border-zinc-950 bg-white">
         <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-6 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
           <div className="flex items-center gap-2.5">
-            <img
-              src="/logo.png"
-              alt="Legend Army"
-              className="size-7 object-contain"
-            />
-            <span className="text-xs font-semibold text-zinc-900">
-              Legend Army Hub
+            <div className="flex size-6 shrink-0 items-center justify-center border border-zinc-950 bg-brand-600">
+              <img
+                src="/logo.png"
+                alt="Legend Army"
+                className="size-5 object-contain"
+              />
+            </div>
+            <span className="text-xs font-bold font-pixel text-zinc-950">
+              LEGEND ARMY GUILD HUB
             </span>
           </div>
 
-          <div className="text-left sm:text-right text-xs text-zinc-400">
-            Legend Army · Guild Management
+          <div className="text-left sm:text-right text-xs font-mono text-zinc-500">
+            Classic Ragnarok Online Guild Operations
           </div>
         </div>
       </footer>

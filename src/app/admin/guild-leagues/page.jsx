@@ -15,11 +15,13 @@ import { useToast } from "@/components/ui/ToastProvider";
 import CreateGuildLeagueModal from "@/components/guild-league/CreateGuildLeagueModal";
 
 /**
- * Guild Events Index Page
+ * Guild Events Index Page with Retro Pixel Styling
  *
  * Why this exists:
  * Lists all past and upcoming Guild Events (Guild League, War of Emperium, Polarity),
  * allowing officers to filter by status, schedule new events, or manage team lineups.
+ *
+ * @returns {JSX.Element} Rendered events index page
  */
 export default function GuildLeaguesPage() {
   const { success, error: toastError } = useToast();
@@ -70,15 +72,15 @@ export default function GuildLeaguesPage() {
   }, [guildLeagues, statusFilter]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 font-sans">
       {/* HEADER */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-zinc-900 tracking-tight">
+          <h1 className="text-xl sm:text-2xl font-bold font-pixel text-zinc-950 tracking-tight">
             Guild Events
           </h1>
-          <p className="mt-0.5 text-xs text-zinc-500">
-            Create events, organize teams, and assign tactical lineups
+          <p className="mt-0.5 text-xs text-zinc-600">
+            Create events, organize tactical formations, and deploy member rosters
           </p>
         </div>
 
@@ -86,7 +88,7 @@ export default function GuildLeaguesPage() {
           <Select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="!h-8.5 !py-0 !text-xs font-medium"
+            className="!h-8.5 !py-0 !text-xs font-bold"
           >
             <option value="all">All Events ({guildLeagues.length})</option>
             <option value="draft">Draft Only</option>
@@ -140,7 +142,7 @@ export default function GuildLeaguesPage() {
             return (
               <Card
                 key={gl.id}
-                className="flex flex-col justify-between p-4 sm:p-5 hover:border-zinc-300 transition-colors"
+                className="flex flex-col justify-between p-4 sm:p-5 bg-white pixel-shadow-sm hover:pixel-shadow transition-transform"
               >
                 <div>
                   <div className="flex items-start justify-between gap-3">
@@ -166,48 +168,47 @@ export default function GuildLeaguesPage() {
                     <button
                       type="button"
                       onClick={(e) => handleDelete(gl.id, gl.name, e)}
-                      className="text-zinc-400 hover:text-red-600 transition p-1"
+                      className="border border-zinc-400 bg-white p-1 text-zinc-500 hover:border-red-600 hover:bg-red-50 hover:text-red-700 transition-colors"
                       title="Delete event"
                     >
                       <Trash2 className="size-3.5" />
                     </button>
                   </div>
 
-                  <h3 className="mt-3 text-sm sm:text-base font-semibold text-zinc-900 tracking-tight line-clamp-1">
+                  <h3 className="mt-3 text-sm sm:text-base font-bold font-pixel text-zinc-950 tracking-tight line-clamp-1">
                     {gl.name}
                   </h3>
 
-                  <div className="mt-2.5 space-y-1 text-xs text-zinc-500">
+                  <div className="mt-2.5 space-y-1 text-xs text-zinc-600 font-mono">
                     <div>{formatDate(gl.matchDate || gl.date)}</div>
 
                     {gl.opponent && (
-                      <div className="text-zinc-700">
+                      <div className="text-zinc-800">
                         {gl.eventType === "woe" ? "Target: " : "Opponent: "}
-                        <span className="font-medium text-zinc-900">{gl.opponent}</span>
+                        <span className="font-bold text-zinc-950">{gl.opponent}</span>
                       </div>
                     )}
 
-                    <div>
+                    <div className="font-bold text-zinc-900">
                       Roster: {rosterCount} / {maxRoster} players
                     </div>
                   </div>
                 </div>
 
-                <div className="mt-4 flex items-center justify-between gap-2 pt-3 border-t border-zinc-100">
+                <div className="mt-4 flex items-center justify-between gap-2 pt-3 border-t-2 border-zinc-950">
                   <Link
                     href={`/roster/${gl.id}`}
                     target="_blank"
-                    className="inline-flex items-center gap-1 text-xs text-zinc-500 hover:text-zinc-900 transition-colors"
+                    className="inline-flex items-center gap-1 text-xs font-bold text-zinc-700 hover:text-zinc-950 transition-colors"
                   >
                     <span>Public</span>
                     <ExternalLink className="size-3" />
                   </Link>
 
-                  <Link
-                    href={`/admin/guild-leagues/${gl.id}`}
-                    className="inline-flex h-8 items-center rounded-lg bg-zinc-900 px-3 text-xs font-medium text-white hover:bg-zinc-800 transition-colors"
-                  >
-                    Manage Lineup
+                  <Link href={`/admin/guild-leagues/${gl.id}`}>
+                    <Button variant="primary" size="xs">
+                      Manage Lineup
+                    </Button>
                   </Link>
                 </div>
               </Card>

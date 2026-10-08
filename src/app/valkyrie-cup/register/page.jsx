@@ -27,15 +27,12 @@ const GUILD_OPTIONS = [
 ];
 
 /**
- * Valkyrie Cup Team Registration Page
+ * Valkyrie Cup Team Registration Page with Retro Pixel Styling
  *
  * Why this exists:
  * The official registration form for entering an 8-player squad into the Valkyrie Cup.
- * Enforces mandatory team metadata, guild assignment, captain details, and 7 team members.
- *
- * Tricky logic:
- * Performs instant in-browser duplicate nickname validation across all 8 roster entries
- * before sending to the transactional backend endpoint.
+ * Enforces mandatory team metadata, guild assignment, captain details, and squad combatants
+ * while preserving instant in-browser duplicate nickname validation.
  *
  * @returns {JSX.Element} Rendered registration form page
  */
@@ -158,13 +155,13 @@ export default function ValkyrieRegisterPage() {
 
     if (duplicateNicknames.size > 0) {
       setErrorMessage(
-        "Duplicate nicknames detected. All players in the roster must have unique nicknames within the team."
+        "Duplicate nicknames detected. All players in the roster must have unique nicknames within the squad."
       );
       return;
     }
 
     if (filledCount < 5 || filledCount > 8) {
-      setErrorMessage("The team roster must consist of between 5 and 8 players (1 Captain and 4 to 7 Members).");
+      setErrorMessage("The squad roster must consist of between 5 and 8 players (1 Captain and 4 to 7 Members).");
       return;
     }
 
@@ -212,7 +209,7 @@ export default function ValkyrieRegisterPage() {
 
       success(
         "Registration Submitted",
-        `Team "${teamName.trim()}" has been registered and is pending approval.`
+        `Squad "${teamName.trim()}" has been registered and is pending approval.`
       );
 
       setSubmittedTeam({
@@ -230,50 +227,47 @@ export default function ValkyrieRegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-50 text-zinc-900 flex flex-col">
+    <div className="min-h-screen bg-zinc-50 text-zinc-950 flex flex-col font-sans">
       <ValkyrieHeader />
 
       <main className="mx-auto max-w-4xl p-4 sm:p-6 lg:p-8 space-y-6 flex-1 w-full">
         {/* TOP BREADCRUMB */}
         <div className="flex items-center justify-between">
-          <Link
-            href="/valkyrie-cup"
-            className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-500 hover:text-zinc-900 transition"
-          >
-            <ArrowLeft className="size-3.5" />
-            <span>Tournament Overview</span>
+          <Link href="/valkyrie-cup">
+            <Button variant="secondary" size="xs" icon={ArrowLeft}>
+              Tournament Overview
+            </Button>
           </Link>
 
-          <Link
-            href="/valkyrie-cup/teams"
-            className="text-xs font-medium text-zinc-600 hover:text-zinc-900"
-          >
-            View Registered Teams
+          <Link href="/valkyrie-cup/teams">
+            <Button variant="outline" size="xs">
+              View Registered Squads
+            </Button>
           </Link>
         </div>
 
         {/* HEADER */}
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-zinc-950 tracking-tight">
-              Register Team
+            <h1 className="text-2xl sm:text-3xl font-bold font-pixel text-zinc-950 tracking-tight">
+              Register Squad
             </h1>
             <Badge variant="brand" size="sm">
               Valkyrie Cup
             </Badge>
           </div>
-          <p className="mt-1 text-xs sm:text-sm text-zinc-500">
-            Submit your 8-player squad lineup for administrative review and bracket placement.
+          <p className="mt-1 text-xs sm:text-sm text-zinc-600">
+            Submit your 5 to 8 player lineup for administrative review and tournament bracket seeding.
           </p>
         </div>
 
         {/* ERROR ALERT */}
         {errorMessage && (
-          <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-xs font-medium text-red-700 flex items-start gap-2.5 animate-in fade-in duration-150">
-            <AlertCircle className="size-4 shrink-0 mt-0.5" />
+          <div className="border-2 border-red-700 bg-red-50 p-3.5 text-xs font-bold text-red-900 flex items-start gap-2.5 pixel-shadow-sm">
+            <AlertCircle className="size-4 shrink-0 mt-0.5 text-red-700" />
             <div>
-              <div className="font-bold">Validation Error</div>
-              <div className="mt-0.5">{errorMessage}</div>
+              <div className="font-pixel uppercase">Validation Error</div>
+              <div className="mt-0.5 font-normal">{errorMessage}</div>
             </div>
           </div>
         )}
@@ -281,22 +275,22 @@ export default function ValkyrieRegisterPage() {
         {/* REGISTRATION FORM */}
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* 1. TEAM INFORMATION */}
-          <Card className="p-5 sm:p-6 bg-white space-y-4">
-            <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
+          <Card className="p-4 sm:p-5 bg-white space-y-4 pixel-shadow">
+            <div className="flex items-center justify-between border-b-2 border-zinc-950 pb-2.5">
               <div>
-                <h2 className="text-sm font-bold text-zinc-900 uppercase tracking-wide">
-                  1. Team Information
+                <h2 className="text-sm font-bold font-pixel text-zinc-950 uppercase tracking-wide">
+                  1. Squad Information
                 </h2>
                 <p className="text-xs text-zinc-500">
-                  Select your guild affiliation and distinctive squad name
+                  Select your guild affiliation and official squad moniker
                 </p>
               </div>
-              <Shield className="size-4 text-zinc-400" />
+              <Shield className="size-4 text-zinc-700" />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Input
-                label="Team Name"
+                label="Squad Name"
                 placeholder="e.g. Valkyrie Alpha"
                 value={teamName}
                 onChange={(e) => setTeamName(e.target.value)}
@@ -309,7 +303,7 @@ export default function ValkyrieRegisterPage() {
                 value={guild}
                 onChange={(e) => setGuild(e.target.value)}
                 required
-                helperText="Teams must belong to LegendArmy1 or LegendArmy2"
+                helperText="Squads must represent LegendArmy1 or LegendArmy2"
               >
                 {GUILD_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>
@@ -321,16 +315,16 @@ export default function ValkyrieRegisterPage() {
           </Card>
 
           {/* 2. TEAM CAPTAIN */}
-          <Card className="p-5 sm:p-6 bg-white space-y-4">
-            <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
+          <Card className="p-4 sm:p-5 bg-white space-y-4 pixel-shadow">
+            <div className="flex items-center justify-between border-b-2 border-zinc-950 pb-2.5">
               <div className="flex items-center gap-2">
-                <Crown className="size-4 text-amber-500" />
+                <Crown className="size-4 text-amber-600" />
                 <div>
-                  <h2 className="text-sm font-bold text-zinc-900 uppercase tracking-wide">
-                    2. Team Captain (Player 1)
+                  <h2 className="text-sm font-bold font-pixel text-zinc-950 uppercase tracking-wide">
+                    2. Squad Captain (Player 1)
                   </h2>
                   <p className="text-xs text-zinc-500">
-                    Primary contact person responsible for the squad
+                    Primary leader and official point of contact
                   </p>
                 </div>
               </div>
@@ -349,25 +343,25 @@ export default function ValkyrieRegisterPage() {
               />
 
               <Input
-                label="Captain Discord ID"
+                label="Captain Discord Tag"
                 placeholder="e.g. captain#1234 or discord_user"
                 value={captainDiscordId}
                 onChange={(e) => setCaptainDiscordId(e.target.value)}
                 required
-                helperText="Used for match coordination (private to team & admin)"
+                helperText="Used for match coordination (private to squad & admin)"
               />
             </div>
           </Card>
 
           {/* 3. TEAM MEMBERS */}
-          <Card className="p-5 sm:p-6 bg-white space-y-5">
-            <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
+          <Card className="p-4 sm:p-5 bg-white space-y-4 pixel-shadow">
+            <div className="flex items-center justify-between border-b-2 border-zinc-950 pb-2.5">
               <div>
-                <h2 className="text-sm font-bold text-zinc-900 uppercase tracking-wide">
-                  3. Team Members (Players 2 – 8)
+                <h2 className="text-sm font-bold font-pixel text-zinc-950 uppercase tracking-wide">
+                  3. Squad Members (Players 2 – 8)
                 </h2>
                 <p className="text-xs text-zinc-500">
-                  Enter between 4 and 7 squad members (minimum 5, maximum 8 total players including Captain)
+                  Enter between 4 and 7 combatants (minimum 5, maximum 8 total players including Captain)
                 </p>
               </div>
 
@@ -376,12 +370,12 @@ export default function ValkyrieRegisterPage() {
                   variant={filledCount >= 5 ? "success" : "neutral"}
                   size="sm"
                 >
-                  {filledCount} / 8 Players (Min. 5)
+                  {filledCount} / 8 Combatants (Min. 5)
                 </Badge>
               </div>
             </div>
 
-            <div className="space-y-3.5">
+            <div className="space-y-3">
               {members.map((member, index) => {
                 const playerNumber = index + 2;
                 const isMandatory = index < 4;
@@ -393,19 +387,19 @@ export default function ValkyrieRegisterPage() {
                   <div
                     key={index}
                     className={[
-                      "rounded-xl border p-3.5 sm:p-4 transition-colors",
+                      "border-2 p-3 sm:p-3.5 transition-colors",
                       isDuplicate
-                        ? "border-red-300 bg-red-50/40"
-                        : "border-zinc-200 bg-zinc-50/50 hover:bg-zinc-50",
+                        ? "border-red-600 bg-red-50/50"
+                        : "border-zinc-950 bg-zinc-50/60 hover:bg-zinc-50",
                     ].join(" ")}
                   >
-                    <div className="flex items-center justify-between mb-2.5">
+                    <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
-                        <span className="flex size-5 items-center justify-center rounded-full bg-zinc-200 font-mono text-[10px] font-bold text-zinc-700">
+                        <span className="flex size-5 items-center justify-center border border-zinc-900 bg-zinc-200 font-mono text-[10px] font-bold text-zinc-900">
                           {playerNumber}
                         </span>
-                        <span className="text-xs font-bold text-zinc-800">
-                          Member #{index + 1}
+                        <span className="text-xs font-bold text-zinc-950 font-pixel">
+                          Combatant #{index + 1}
                         </span>
                       </div>
 
@@ -430,14 +424,14 @@ export default function ValkyrieRegisterPage() {
                             handleMemberChange(index, "nickname", e.target.value)
                           }
                           className={[
-                            "h-9 w-full rounded-lg border bg-white px-3 text-xs placeholder:text-zinc-400 focus:outline-none transition",
+                            "h-9 w-full border-2 bg-white px-3 text-xs placeholder:text-zinc-400 focus:outline-none transition",
                             isDuplicate
-                              ? "border-red-400 focus:border-red-500 focus:ring-1 focus:ring-red-500"
-                              : "border-zinc-200 focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900",
+                              ? "border-red-600 bg-red-50/20 text-red-900"
+                              : "border-zinc-900 focus:border-brand-600",
                           ].join(" ")}
                         />
                         {isDuplicate && (
-                          <p className="mt-1 text-[10px] font-semibold text-red-600">
+                          <p className="mt-1 text-[10px] font-bold text-red-600">
                             Duplicate nickname
                           </p>
                         )}
@@ -447,14 +441,14 @@ export default function ValkyrieRegisterPage() {
                         <input
                           type="text"
                           required={isMandatory}
-                          placeholder={`Player ${playerNumber} Discord ID ${
+                          placeholder={`Player ${playerNumber} Discord Tag ${
                             isMandatory ? "(Required)" : "(Optional)"
                           }`}
                           value={member.discordId}
                           onChange={(e) =>
                             handleMemberChange(index, "discordId", e.target.value)
                           }
-                          className="h-9 w-full rounded-lg border border-zinc-200 bg-white px-3 text-xs placeholder:text-zinc-400 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900 transition"
+                          className="h-9 w-full border-2 border-zinc-900 bg-white px-3 text-xs placeholder:text-zinc-400 focus:outline-none focus:border-brand-600 transition"
                         />
                       </div>
                     </div>
@@ -465,11 +459,11 @@ export default function ValkyrieRegisterPage() {
           </Card>
 
           {/* SUBMIT BUTTON */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 rounded-xl border border-zinc-200 bg-white p-4">
-            <div className="text-xs text-zinc-500">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-2 border-zinc-950 bg-white p-4 pixel-shadow">
+            <div className="text-xs text-zinc-600">
               By submitting, your roster of{" "}
-              <strong className="text-zinc-900 font-semibold">{filledCount}</strong> players
-              will enter <strong className="text-zinc-900 font-semibold">Pending</strong> review
+              <strong className="text-zinc-950 font-bold font-mono">{filledCount}</strong> players
+              will enter <strong className="text-amber-800 font-bold">Pending</strong> review
               by guild leadership.
             </div>
 
@@ -501,7 +495,7 @@ export default function ValkyrieRegisterPage() {
             <div className="flex w-full items-center justify-end gap-2">
               <Link href="/valkyrie-cup/teams">
                 <Button variant="secondary" size="sm">
-                  View Teams Directory
+                  View Squads Directory
                 </Button>
               </Link>
               <Link href="/valkyrie-cup/my-registration">
@@ -512,9 +506,9 @@ export default function ValkyrieRegisterPage() {
             </div>
           }
         >
-          <div className="space-y-3 py-2 text-xs text-zinc-600">
-            <div className="rounded-xl border border-emerald-200 bg-emerald-50/60 p-3.5">
-              <div className="font-bold text-emerald-900 text-sm">
+          <div className="space-y-3 py-2 text-xs text-zinc-700">
+            <div className="border-2 border-emerald-700 bg-emerald-50/70 p-3.5 pixel-shadow-sm">
+              <div className="font-bold font-pixel text-emerald-950 text-sm">
                 {submittedTeam.teamName}
               </div>
               <div className="mt-1 flex items-center gap-2">
@@ -528,10 +522,10 @@ export default function ValkyrieRegisterPage() {
             </div>
 
             <p className="leading-relaxed">
-              Your 8-player squad has been submitted. It will immediately appear in the public
-              Registered Teams list as <strong className="text-amber-700 font-semibold">Pending</strong>.
+              Your squad lineup has been submitted. It will immediately appear in the public
+              Registered Squads list as <strong className="text-amber-800 font-bold">Pending</strong>.
               Once administrators complete review, its status will be updated to
-              <strong className="text-emerald-700 font-semibold"> Approved</strong>.
+              <strong className="text-emerald-800 font-bold"> Approved</strong>.
             </p>
           </div>
         </Modal>

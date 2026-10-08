@@ -57,29 +57,40 @@ const navigation = [
   },
 ];
 
+/**
+ * Pixel Brand Header for Admin Navigation
+ * @returns {JSX.Element}
+ */
 function Brand() {
   return (
     <div className="flex min-w-0 items-center gap-2.5">
-      <img
-        src="/logo.png"
-        alt="Legend Army"
-        className="size-8 object-contain"
-      />
+      <div className="flex size-8 shrink-0 items-center justify-center border-2 border-zinc-950 bg-brand-600 pixel-shadow-sm">
+        <img
+          src="/logo.png"
+          alt="Legend Army"
+          className="size-7 object-contain"
+        />
+      </div>
       <div className="min-w-0">
-        <span className="truncate text-sm font-bold tracking-tight text-zinc-900 block leading-tight">
+        <span className="truncate font-pixel text-sm font-bold text-zinc-950 block leading-tight">
           LEGEND ARMY
         </span>
-        <span className="truncate text-[10px] font-medium uppercase tracking-wider text-zinc-400 block leading-tight">
-          Guild Hub
+        <span className="truncate text-[10px] font-mono font-bold uppercase tracking-wider text-brand-700 block leading-tight">
+          Command Hub
         </span>
       </div>
     </div>
   );
 }
 
+/**
+ * Admin Navigation List
+ * @param {Object} props
+ * @returns {JSX.Element}
+ */
 function Navigation({ onNavigate, pathname }) {
   return (
-    <nav className="flex-1 space-y-0.5 overflow-y-auto p-3">
+    <nav className="flex-1 space-y-1 overflow-y-auto p-3">
       {navigation.map((item) => {
         const Icon = item.icon;
         const isActive = item.exact
@@ -92,13 +103,13 @@ function Navigation({ onNavigate, pathname }) {
             href={item.href}
             onClick={onNavigate}
             className={[
-              "flex h-9 items-center gap-3 rounded-lg px-3 text-xs font-medium transition-colors",
+              "flex h-9 items-center gap-2.5 px-3 text-xs font-semibold border-2 transition-transform select-none",
               isActive
-                ? "bg-zinc-100 text-zinc-900 font-semibold"
-                : "text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900",
+                ? "border-zinc-950 bg-zinc-950 text-white pixel-shadow-sm translate-x-[1px] translate-y-[1px]"
+                : "border-transparent text-zinc-700 hover:border-zinc-950 hover:bg-zinc-100 hover:text-zinc-950 active:translate-x-[1px] active:translate-y-[1px]",
             ].join(" ")}
           >
-            <Icon className="size-4 shrink-0 text-zinc-500" />
+            <Icon className="size-4 shrink-0" />
             <span className="truncate">{item.name}</span>
           </Link>
         );
@@ -107,6 +118,18 @@ function Navigation({ onNavigate, pathname }) {
   );
 }
 
+/**
+ * Admin Application Shell Layout
+ *
+ * Why this exists:
+ * The persistent master layout for administrative operations. Implements the
+ * Ragnarok Online-inspired pixel command shell: 2px solid outlines, sharp navigation blocks,
+ * tactile sign-out triggers, and responsive drawer navigation.
+ *
+ * @param {Object} props
+ * @param {React.ReactNode} props.children
+ * @returns {JSX.Element} Rendered admin shell
+ */
 export default function AdminLayout({ children }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -173,20 +196,20 @@ export default function AdminLayout({ children }) {
   return (
     <div className="min-h-screen bg-zinc-50">
       {/* DESKTOP SIDEBAR */}
-      <aside className="fixed inset-y-0 left-0 z-50 hidden w-60 border-r border-zinc-200 bg-white lg:flex lg:flex-col">
-        <div className="flex h-14 shrink-0 items-center border-b border-zinc-200 px-4">
+      <aside className="fixed inset-y-0 left-0 z-50 hidden w-60 border-r-2 border-zinc-950 bg-white lg:flex lg:flex-col">
+        <div className="flex h-14 shrink-0 items-center border-b-2 border-zinc-950 bg-zinc-100 px-4">
           <Brand />
         </div>
 
         <Navigation pathname={pathname} />
 
-        <div className="shrink-0 border-t border-zinc-200 p-3">
+        <div className="shrink-0 border-t-2 border-zinc-950 bg-zinc-50 p-3">
           <button
             type="button"
             onClick={handleLogout}
-            className="flex h-9 w-full items-center gap-2.5 rounded-lg px-3 text-xs font-medium text-zinc-600 transition-colors hover:bg-red-50 hover:text-red-700"
+            className="flex h-9 w-full items-center gap-2 border-2 border-zinc-900 bg-white px-3 text-xs font-semibold text-zinc-800 pixel-shadow-sm hover:bg-red-50 hover:text-red-700 hover:border-red-700 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-colors"
           >
-            <LogOut className="size-4 shrink-0" />
+            <LogOut className="size-3.5 shrink-0" />
             <span>Sign out</span>
           </button>
         </div>
@@ -197,7 +220,7 @@ export default function AdminLayout({ children }) {
         aria-hidden="true"
         onClick={closeMobileMenu}
         className={[
-          "fixed inset-0 z-40 bg-black/30 transition-opacity duration-150 lg:hidden",
+          "fixed inset-0 z-40 bg-black/40 transition-opacity duration-150 lg:hidden",
           mobileMenuOpen
             ? "pointer-events-auto opacity-100"
             : "pointer-events-none opacity-0",
@@ -207,32 +230,32 @@ export default function AdminLayout({ children }) {
       {/* MOBILE DRAWER */}
       <aside
         className={[
-          "fixed inset-y-0 left-0 z-50 flex w-64 max-w-[85vw] flex-col border-r border-zinc-200 bg-white shadow-lg transition-transform duration-150 ease-out will-change-transform lg:hidden",
+          "fixed inset-y-0 left-0 z-50 flex w-64 max-w-[85vw] flex-col border-r-2 border-zinc-950 bg-white pixel-shadow-lg transition-transform duration-150 ease-out will-change-transform lg:hidden",
           mobileMenuOpen ? "translate-x-0" : "-translate-x-full",
         ].join(" ")}
       >
-        <div className="flex h-14 shrink-0 items-center justify-between border-b border-zinc-200 px-4">
+        <div className="flex h-14 shrink-0 items-center justify-between border-b-2 border-zinc-950 bg-zinc-100 px-4">
           <Brand />
 
           <button
             type="button"
             onClick={closeMobileMenu}
-            className="flex size-8 shrink-0 items-center justify-center rounded-lg text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700 transition"
+            className="flex size-7 shrink-0 items-center justify-center border-2 border-zinc-900 bg-white text-zinc-900 hover:bg-zinc-100 active:translate-x-[1px] active:translate-y-[1px] transition-colors"
             aria-label="Close menu"
           >
-            <X className="size-4" />
+            <X className="size-3.5 stroke-[2.5]" />
           </button>
         </div>
 
         <Navigation pathname={pathname} onNavigate={closeMobileMenu} />
 
-        <div className="shrink-0 border-t border-zinc-200 p-3">
+        <div className="shrink-0 border-t-2 border-zinc-950 bg-zinc-50 p-3">
           <button
             type="button"
             onClick={handleLogout}
-            className="flex h-9 w-full items-center gap-2.5 rounded-lg px-3 text-xs font-medium text-zinc-600 transition-colors hover:bg-red-50 hover:text-red-700"
+            className="flex h-9 w-full items-center gap-2 border-2 border-zinc-900 bg-white px-3 text-xs font-semibold text-zinc-800 pixel-shadow-sm hover:bg-red-50 hover:text-red-700 hover:border-red-700 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-colors"
           >
-            <LogOut className="size-4 shrink-0" />
+            <LogOut className="size-3.5 shrink-0" />
             <span>Sign out</span>
           </button>
         </div>
@@ -241,13 +264,13 @@ export default function AdminLayout({ children }) {
       {/* MAIN CONTENT AREA */}
       <div className="min-h-screen lg:pl-60">
         {/* TOP BAR */}
-        <header className="fixed left-0 right-0 top-0 z-30 h-14 border-b border-zinc-200 bg-white/95 backdrop-blur-xs lg:left-60">
+        <header className="fixed left-0 right-0 top-0 z-30 h-14 border-b-2 border-zinc-950 bg-white lg:left-60">
           <div className="flex h-full items-center justify-between px-4 sm:px-6">
             <div className="flex items-center gap-3 lg:hidden">
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(true)}
-                className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-50"
+                className="flex size-8 shrink-0 items-center justify-center border-2 border-zinc-950 bg-white text-zinc-900 pixel-shadow-sm active:translate-x-[1px] active:translate-y-[1px]"
                 aria-label="Open menu"
               >
                 <Menu className="size-4" />
@@ -255,16 +278,20 @@ export default function AdminLayout({ children }) {
               <Brand />
             </div>
 
-            <div className="hidden lg:block" />
+            <div className="hidden lg:flex items-center gap-2">
+              <span className="font-pixel text-xs text-zinc-500 uppercase tracking-wider">
+                Ragnarok Guild Command
+              </span>
+            </div>
 
             <Link
               href="/"
               target="_blank"
               rel="noreferrer"
-              className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-3 text-xs font-medium text-zinc-700 hover:bg-zinc-50 transition-colors"
+              className="inline-flex h-8 items-center gap-1.5 border-2 border-zinc-900 bg-white px-3 text-xs font-semibold text-zinc-900 pixel-shadow-sm hover:bg-zinc-100 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-colors"
             >
               <ExternalLink className="size-3.5" />
-              <span>Public Site</span>
+              <span>Public Portal</span>
             </Link>
           </div>
         </header>

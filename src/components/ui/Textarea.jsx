@@ -3,11 +3,11 @@
 import { forwardRef } from "react";
 
 /**
- * Standard multiline textarea input component.
+ * Standard pixel multiline textarea input component.
  *
  * Why this exists:
- * Standarizes text input styling, auto-resize defaults, focus rings, and labels
- * across strategies, notes, and briefings.
+ * Provides retro RPG multiline text input styling with crisp 2px solid borders, sharp corners,
+ * and high readability for tactical notes, rejection reasons, and strategy playbooks.
  *
  * @param {Object} props - Textarea props
  * @param {string} [props.label] - Field label text
@@ -16,6 +16,7 @@ import { forwardRef } from "react";
  * @param {number} [props.rows=3] - Default row count
  * @param {string} [props.className] - Textarea element custom class
  * @param {string} [props.containerClassName] - Wrapper div custom class
+ * @returns {JSX.Element} Rendered pixel textarea
  */
 const Textarea = forwardRef(function Textarea(
   {
@@ -38,7 +39,7 @@ const Textarea = forwardRef(function Textarea(
       {label && (
         <label
           htmlFor={textareaId}
-          className="block text-xs font-bold text-zinc-700 select-none"
+          className="block text-xs font-bold text-zinc-900 select-none uppercase tracking-wide"
         >
           {label}
         </label>
@@ -49,16 +50,16 @@ const Textarea = forwardRef(function Textarea(
         id={textareaId}
         rows={rows}
         disabled={disabled}
-        className={`w-full rounded-xl border bg-white p-3 text-xs sm:text-sm text-zinc-900 transition-all placeholder:text-zinc-400 focus:outline-none focus:ring-2 disabled:bg-zinc-50 disabled:text-zinc-400 disabled:cursor-not-allowed leading-relaxed ${
+        className={`w-full border-2 bg-white p-3 text-xs sm:text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none disabled:bg-zinc-100 disabled:text-zinc-500 disabled:cursor-not-allowed leading-relaxed ${
           error
-            ? "border-red-300 focus:border-red-500 focus:ring-red-500/20"
-            : "border-zinc-200 hover:border-zinc-300 focus:border-brand-600 focus:ring-brand-500/20"
+            ? "border-red-600 focus:border-red-700 bg-red-50/20"
+            : "border-zinc-900 focus:border-brand-600 focus:ring-1 focus:ring-brand-600/30"
         } ${className}`}
         {...rest}
       />
 
       {error ? (
-        <p className="text-[11px] font-semibold text-red-600 animate-in fade-in duration-150">
+        <p className="text-[11px] font-bold text-red-600">
           {error}
         </p>
       ) : helperText ? (

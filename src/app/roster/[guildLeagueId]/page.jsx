@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { fetchGuildLeagueDetail } from "@/lib/api";
 import Loading from "@/components/ui/Loading";
+import Button from "@/components/ui/Button";
 import GuildLeagueHeaderCard from "@/components/guild-league/GuildLeagueHeaderCard";
 import TacticalDirectivesBar from "@/components/guild-league/TacticalDirectivesBar";
 import LaneGroupSection from "@/components/guild-league/LaneGroupSection";
@@ -39,11 +40,14 @@ const LANE_SECTIONS = [
 ];
 
 /**
- * Public Guild League Lineup View
+ * Public Guild League Lineup View with Retro Pixel Styling
  *
  * Why this exists:
  * Shareable public roster link for guild members to review team slots,
  * tactical duties, and lane strategy before match kickoff without admin login.
+ * Styled after classic Ragnarok Online guild roster charts.
+ *
+ * @returns {JSX.Element} Rendered public roster lineup
  */
 export default function PublicRosterPage() {
   const params = useParams();
@@ -146,20 +150,20 @@ export default function PublicRosterPage() {
   if (error || !guildLeague) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-zinc-50 p-4">
-        <div className="w-full max-w-sm rounded-xl border border-zinc-200 bg-white p-6 text-center">
-          <h2 className="text-base font-semibold text-zinc-900">
+        <div className="w-full max-w-sm border-2 border-zinc-950 bg-white p-6 text-center pixel-shadow">
+          <h2 className="text-base font-bold font-pixel text-zinc-950">
             Event Not Found
           </h2>
-          <p className="mt-1 text-xs text-zinc-500">
+          <p className="mt-1.5 text-xs text-zinc-600">
             {error || "The requested event lineup could not be found."}
           </p>
-          <Link
-            href="/"
-            className="mt-4 inline-flex items-center gap-1.5 rounded-lg bg-zinc-900 px-3.5 py-2 text-xs font-medium text-white hover:bg-zinc-800 transition"
-          >
-            <ArrowLeft className="size-3.5" />
-            <span>Return to Hub</span>
-          </Link>
+          <div className="mt-4">
+            <Link href="/">
+              <Button variant="primary" size="sm" icon={ArrowLeft}>
+                Return to Hub
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
     );
@@ -180,7 +184,7 @@ export default function PublicRosterPage() {
       ? [
           {
             id: "unassigned",
-            label: "Unassigned",
+            label: "Reserve",
             icon: Layers,
             count: laneStats.unassigned?.assignedCount || 0,
           },
@@ -189,32 +193,32 @@ export default function PublicRosterPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-surface-100 text-content-strong pb-12">
+    <div className="min-h-screen bg-zinc-50 text-zinc-950 pb-12 font-sans">
       {/* PUBLIC HEADER */}
-      <header className="border-b border-line bg-white sticky top-0 z-30 shadow-2xs">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <Link href="/" className="flex items-center gap-3">
-            <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-brand-600 shadow-2xs">
+      <header className="border-b-2 border-zinc-950 bg-white sticky top-0 z-30">
+        <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+          <Link href="/" className="flex items-center gap-2.5">
+            <div className="flex size-8 shrink-0 items-center justify-center border-2 border-zinc-950 bg-brand-600 pixel-shadow-sm">
               <img
                 src="/logo.png"
                 alt="Legend Army"
-                className="size-9 object-contain"
+                className="size-7 object-contain"
               />
             </div>
             <div>
-              <div className="text-sm font-bold text-zinc-900">LEGEND ARMY</div>
-              <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-zinc-400">
-                Guild War Roster
+              <div className="font-pixel text-sm font-bold text-zinc-950 leading-tight">
+                LEGEND ARMY
+              </div>
+              <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-brand-700 leading-tight">
+                War Roster
               </div>
             </div>
           </Link>
 
-          <Link
-            href="/"
-            className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-zinc-200 bg-white px-3 text-xs font-bold text-zinc-700 hover:bg-zinc-50 shadow-2xs transition"
-          >
-            <ArrowLeft className="size-3.5" />
-            <span>Back to Hub</span>
+          <Link href="/">
+            <Button variant="secondary" size="xs" icon={ArrowLeft}>
+              Back to Hub
+            </Button>
           </Link>
         </div>
       </header>
@@ -230,7 +234,7 @@ export default function PublicRosterPage() {
           maxTeams={maxTeams}
           actions={
             !isUnified && (
-              <div className="mt-4 border-t border-zinc-100 pt-3.5">
+              <div className="mt-4 border-t-2 border-zinc-950 pt-3.5">
                 <Tabs
                   tabs={tabsList}
                   activeTab={activeTab}
@@ -241,27 +245,27 @@ export default function PublicRosterPage() {
           }
         />
 
-        {/* TACTICAL DIRECTIVES BAR (Hanya untuk Guild League 3-lane format) */}
+        {/* TACTICAL DIRECTIVES BAR */}
         {!isUnified && <TacticalDirectivesBar eventType={eventType} />}
 
         {/* BATTLEFIELD TEAMS / LANE SECTIONS */}
         {isPolarity ? (
-          <div className="space-y-4 animate-in fade-in duration-200">
-            <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between rounded-xl border border-zinc-200 bg-white p-3.5 sm:p-4 shadow-xs">
+          <div className="space-y-4 animate-in fade-in duration-100">
+            <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between border-2 border-zinc-950 bg-white p-3.5 sm:p-4 pixel-shadow-sm">
               <div className="flex items-center gap-2.5 sm:gap-3">
-                <div className="flex size-8 sm:size-9 shrink-0 items-center justify-center rounded-lg bg-zinc-100 text-zinc-700">
+                <div className="flex size-8 shrink-0 items-center justify-center border-2 border-zinc-950 bg-zinc-100 text-zinc-950">
                   <Layers className="size-4" />
                 </div>
                 <div>
-                  <h2 className="text-sm sm:text-base font-semibold text-zinc-900">
+                  <h2 className="text-sm sm:text-base font-bold font-pixel text-zinc-950 uppercase tracking-wide">
                     Polarity Battle Formations
                   </h2>
-                  <p className="text-[11px] text-zinc-500">
-                    Fixed 10 Squads (5 Players / Squad) • Coordinated 50-Player Lineup
+                  <p className="text-[11px] text-zinc-600">
+                    Fixed 10 Parties (5 Players / Party) • Coordinated 50-Player Lineup
                   </p>
                 </div>
               </div>
-              <span className="rounded-md border border-zinc-200 bg-zinc-50 px-2 py-0.5 text-[10px] sm:text-[11px] font-medium text-zinc-700 self-start sm:self-center">
+              <span className="border border-zinc-900 bg-zinc-50 px-2 py-0.5 text-[10px] sm:text-[11px] font-mono font-bold text-zinc-800 self-start sm:self-center">
                 {totalAssigned}/50 Players Deployed
               </span>
             </div>
@@ -288,22 +292,22 @@ export default function PublicRosterPage() {
             </div>
           </div>
         ) : isWoe ? (
-          <div className="space-y-4 animate-in fade-in duration-200">
-            <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between rounded-xl border border-zinc-200 bg-white p-3.5 sm:p-4 shadow-xs">
+          <div className="space-y-4 animate-in fade-in duration-100">
+            <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between border-2 border-zinc-950 bg-white p-3.5 sm:p-4 pixel-shadow-sm">
               <div className="flex items-center gap-2.5 sm:gap-3">
-                <div className="flex size-8 sm:size-9 shrink-0 items-center justify-center rounded-lg bg-zinc-100 text-zinc-700">
+                <div className="flex size-8 shrink-0 items-center justify-center border-2 border-zinc-950 bg-zinc-100 text-zinc-950">
                   <Castle className="size-4" />
                 </div>
                 <div>
-                  <h2 className="text-sm sm:text-base font-semibold text-zinc-900">
+                  <h2 className="text-sm sm:text-base font-bold font-pixel text-zinc-950 uppercase tracking-wide">
                     WOE Battle Formations
                   </h2>
-                  <p className="text-[11px] text-zinc-500">
-                    {maxTeams} Squad Formations • Unified Team Formations (No 3-Lane Division)
+                  <p className="text-[11px] text-zinc-600">
+                    {maxTeams} Squad Formations • Unified Castle Formations
                   </p>
                 </div>
               </div>
-              <span className="rounded-md border border-zinc-200 bg-zinc-50 px-2 py-0.5 text-[10px] sm:text-[11px] font-medium text-zinc-700 self-start sm:self-center">
+              <span className="border border-zinc-900 bg-zinc-50 px-2 py-0.5 text-[10px] sm:text-[11px] font-mono font-bold text-zinc-800 self-start sm:self-center">
                 {totalAssigned}/{maxRoster} Players Deployed
               </span>
             </div>
@@ -355,7 +359,7 @@ export default function PublicRosterPage() {
               laneGroups.unassigned.length > 0 && (
                 <LaneGroupSection
                   id="unassigned"
-                  name="Reserve / Unassigned Formations"
+                  name="Reserve Formations"
                   icon={Layers}
                   teamNumbers={laneGroups.unassigned}
                   teams={teams}

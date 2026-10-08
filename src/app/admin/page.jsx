@@ -12,11 +12,13 @@ import ClassCompositionCard from "@/components/dashboard/ClassCompositionCard";
 import GearLeaderboardCard from "@/components/dashboard/GearLeaderboardCard";
 
 /**
- * Admin Dashboard Overview
+ * Admin Dashboard Overview with Retro Pixel Styling
  *
  * Why this exists:
  * The central overview for guild leadership displaying key metrics,
  * active combatants, class balance, and upcoming events.
+ *
+ * @returns {JSX.Element} Rendered admin overview dashboard
  */
 export default function AdminDashboardPage() {
   const [members, setMembers] = useState([]);
@@ -64,19 +66,19 @@ export default function AdminDashboardPage() {
   }, [guildLeagues]);
 
   if (loading) {
-    return <Loading message="Loading dashboard..." />;
+    return <Loading message="Loading dashboard metrics..." />;
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 font-sans">
       {/* HEADER & ACTIONS */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-zinc-900 tracking-tight">
-            Dashboard
+          <h1 className="text-xl sm:text-2xl font-bold font-pixel text-zinc-950 tracking-tight">
+            Command Dashboard
           </h1>
-          <p className="mt-0.5 text-xs text-zinc-500">
-            Overview of guild roster, battle readiness, and upcoming events
+          <p className="mt-0.5 text-xs text-zinc-600">
+            Overview of guild combatants, battle readiness, and scheduled events
           </p>
         </div>
 

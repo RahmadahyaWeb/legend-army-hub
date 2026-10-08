@@ -398,7 +398,16 @@ export function getClassColor(className) {
 }
 
 /**
- * Clean visual badge component for class/job
+ * Retro Pixel job class badge component
+ *
+ * Why this exists:
+ * Displays character class/job names using standardized color-coded RPG status tags
+ * with crisp borders and sharp corners matching the retro pixel design system.
+ *
+ * @param {Object} props
+ * @param {string} props.className - Ragnarok class name
+ * @param {"xs"|"sm"|"lg"} [props.size="sm"] - Size scale
+ * @returns {JSX.Element|null} Rendered class badge
  */
 export function ClassBadge({ className: jobName, size = "sm" }) {
   if (!jobName) return null;
@@ -406,16 +415,16 @@ export function ClassBadge({ className: jobName, size = "sm" }) {
 
   const sizeClasses =
     size === "xs"
-      ? "px-1.5 py-0.5 text-[10px]"
+      ? "px-1.5 py-0.2 text-[10px]"
       : size === "lg"
       ? "px-2.5 py-1 text-xs"
       : "px-2 py-0.5 text-[11px]";
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-md font-semibold border transition ${config.bg} ${config.text} ${config.border} ${sizeClasses}`}
+      className={`inline-flex items-center gap-1.5 font-bold border select-none tracking-tight ${config.bg} ${config.text} ${config.border} ${sizeClasses}`}
     >
-      <span className={`size-1.5 rounded-full shrink-0 ${config.dot}`} />
+      <span className={`size-1.5 shrink-0 ${config.dot}`} />
       <span className="truncate">{jobName}</span>
     </span>
   );

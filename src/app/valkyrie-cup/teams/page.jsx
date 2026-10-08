@@ -30,7 +30,7 @@ import {
 const PAGE_SIZE_OPTIONS = [10, 25, 50];
 
 /**
- * Public Registered Teams Page
+ * Public Registered Teams Page with Retro Pixel Styling
  *
  * Why this exists:
  * The public directory for all active (Approved and Pending) Valkyrie Cup team registrations.
@@ -131,7 +131,7 @@ export default function ValkyrieCupTeamsPage() {
   }, [sortedTeams, page, pageSize]);
 
   return (
-    <div className="min-h-screen bg-zinc-50 text-zinc-900 flex flex-col">
+    <div className="min-h-screen bg-zinc-50 text-zinc-950 flex flex-col font-sans">
       <ValkyrieHeader />
 
       <main className="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8 space-y-6 flex-1 w-full">
@@ -139,14 +139,14 @@ export default function ValkyrieCupTeamsPage() {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-xl sm:text-2xl font-bold text-zinc-950 tracking-tight">
-                Valkyrie Cup Teams
+              <h1 className="text-xl sm:text-2xl font-bold font-pixel text-zinc-950 tracking-tight">
+                Valkyrie Cup Squads
               </h1>
               <Badge variant="neutral" size="sm">
                 {summary.totalTeams} Total Squads
               </Badge>
             </div>
-            <p className="mt-0.5 text-xs text-zinc-500">
+            <p className="mt-0.5 text-xs text-zinc-600">
               Verified tournament roster registrations and pending lineups
             </p>
           </div>
@@ -154,7 +154,7 @@ export default function ValkyrieCupTeamsPage() {
           <div className="flex items-center gap-2">
             <Link href="/valkyrie-cup/register">
               <Button variant="primary" size="sm" icon={UserPlus}>
-                Register Team
+                Register Squad
               </Button>
             </Link>
           </div>
@@ -162,63 +162,63 @@ export default function ValkyrieCupTeamsPage() {
 
         {/* SUMMARY METRICS CARDS */}
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-5 sm:gap-4">
-          <Card className="p-3.5 bg-white">
-            <div className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">
+          <Card className="p-3 sm:p-3.5 bg-white">
+            <div className="text-[10px] font-bold text-zinc-600 uppercase tracking-wider">
               Total Registered
             </div>
-            <div className="mt-1 text-xl font-bold text-zinc-900 font-mono">
+            <div className="mt-1 text-xl font-black text-zinc-950 font-mono">
               {summary.totalTeams}
             </div>
-            <div className="text-[10px] text-zinc-400">Public rosters</div>
+            <div className="text-[10px] text-zinc-500">Public rosters</div>
           </Card>
 
-          <Card className="p-3.5 bg-white">
-            <div className="text-[10px] font-semibold text-emerald-600 uppercase tracking-wider">
-              Approved Teams
+          <Card className="p-3 sm:p-3.5 bg-white">
+            <div className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider">
+              Approved Squads
             </div>
-            <div className="mt-1 text-xl font-bold text-emerald-600 font-mono">
+            <div className="mt-1 text-xl font-black text-emerald-700 font-mono">
               {summary.approvedTeams}
             </div>
-            <div className="text-[10px] text-zinc-400">Ready to compete</div>
+            <div className="text-[10px] text-zinc-500">Ready to battle</div>
           </Card>
 
-          <Card className="p-3.5 bg-white">
-            <div className="text-[10px] font-semibold text-amber-600 uppercase tracking-wider">
-              Pending Teams
+          <Card className="p-3 sm:p-3.5 bg-white">
+            <div className="text-[10px] font-bold text-amber-800 uppercase tracking-wider">
+              Pending Squads
             </div>
-            <div className="mt-1 text-xl font-bold text-amber-600 font-mono">
+            <div className="mt-1 text-xl font-black text-amber-700 font-mono">
               {summary.pendingTeams}
             </div>
-            <div className="text-[10px] text-zinc-400">In review</div>
+            <div className="text-[10px] text-zinc-500">In review</div>
           </Card>
 
-          <Card className="p-3.5 bg-white">
-            <div className="text-[10px] font-semibold text-zinc-600 uppercase tracking-wider">
+          <Card className="p-3 sm:p-3.5 bg-white">
+            <div className="text-[10px] font-bold text-zinc-800 uppercase tracking-wider">
               LegendArmy1
             </div>
-            <div className="mt-1 text-xl font-bold text-zinc-900 font-mono">
+            <div className="mt-1 text-xl font-black text-zinc-950 font-mono">
               {summary.legendArmy1Teams}
             </div>
-            <div className="text-[10px] text-zinc-400">Guild 1 squads</div>
+            <div className="text-[10px] text-zinc-500">Guild 1 squads</div>
           </Card>
 
-          <Card className="p-3.5 bg-white col-span-2 sm:col-span-1">
-            <div className="text-[10px] font-semibold text-zinc-600 uppercase tracking-wider">
+          <Card className="p-3 sm:p-3.5 bg-white col-span-2 sm:col-span-1">
+            <div className="text-[10px] font-bold text-zinc-800 uppercase tracking-wider">
               LegendArmy2
             </div>
-            <div className="mt-1 text-xl font-bold text-zinc-900 font-mono">
+            <div className="mt-1 text-xl font-black text-zinc-950 font-mono">
               {summary.legendArmy2Teams}
             </div>
-            <div className="text-[10px] text-zinc-400">Guild 2 squads</div>
+            <div className="text-[10px] text-zinc-500">Guild 2 squads</div>
           </Card>
         </div>
 
         {/* SEARCH & FILTERS BAR */}
-        <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between rounded-xl border border-zinc-200 bg-white p-3 sm:p-4">
+        <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between border-2 border-zinc-950 bg-white p-3 sm:p-4 pixel-shadow-sm">
           <div className="flex flex-1 items-center gap-2 sm:max-w-md">
             <Input
               icon={Search}
-              placeholder="Search by Team Name or Captain..."
+              placeholder="Search by Squad Name or Captain..."
               value={search}
               onChange={(e) => {
                 setSearch(e.target.value);
@@ -237,7 +237,7 @@ export default function ValkyrieCupTeamsPage() {
                 setGuildFilter(e.target.value);
                 setPage(1);
               }}
-              className="!h-9 !py-0 text-xs font-medium"
+              className="!h-9 !py-0 text-xs font-bold"
             >
               <option value="all">All Guilds</option>
               <option value="LegendArmy1">LegendArmy1</option>
@@ -251,7 +251,7 @@ export default function ValkyrieCupTeamsPage() {
                 setStatusFilter(e.target.value);
                 setPage(1);
               }}
-              className="!h-9 !py-0 text-xs font-medium"
+              className="!h-9 !py-0 text-xs font-bold"
             >
               <option value="all">All Status</option>
               <option value="approved">Approved</option>
@@ -265,7 +265,7 @@ export default function ValkyrieCupTeamsPage() {
                 setPageSize(Number(e.target.value));
                 setPage(1);
               }}
-              className="!h-9 !py-0 text-xs font-medium"
+              className="!h-9 !py-0 text-xs font-bold"
             >
               {PAGE_SIZE_OPTIONS.map((size) => (
                 <option key={size} value={size}>
@@ -278,19 +278,19 @@ export default function ValkyrieCupTeamsPage() {
 
         {/* TEAMS TABLE */}
         {loading ? (
-          <Loading message="Loading registered teams..." />
+          <Loading message="Loading registered squads..." />
         ) : sortedTeams.length === 0 ? (
           <EmptyState
-            title="No teams found"
+            title="No squads found"
             description={
               search || guildFilter !== "all" || statusFilter !== "all"
-                ? "No registered teams match your selected filters."
-                : "No teams have registered for Valkyrie Cup yet. Be the first to register!"
+                ? "No registered squads match your selected filters."
+                : "No squads have registered for Valkyrie Cup yet. Be the first to register!"
             }
             action={
               <Link href="/valkyrie-cup/register">
                 <Button variant="primary" size="sm" icon={UserPlus}>
-                  Register Team
+                  Register Squad
                 </Button>
               </Link>
             }
@@ -301,12 +301,12 @@ export default function ValkyrieCupTeamsPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-12 text-center">#</TableHead>
-                  <TableHead>Team Name</TableHead>
+                  <TableHead>Squad Name</TableHead>
                   <TableHead>Guild</TableHead>
                   <TableHead>Captain</TableHead>
                   <TableHead className="text-center">Players</TableHead>
                   <TableHead className="text-center">Status</TableHead>
-                  <TableHead>Registered At</TableHead>
+                  <TableHead>Registered</TableHead>
                   <TableHead className="text-right w-24">Action</TableHead>
                 </TableRow>
               </TableHeader>
@@ -317,14 +317,14 @@ export default function ValkyrieCupTeamsPage() {
 
                   return (
                     <TableRow key={team.id || globalIndex}>
-                      <TableCell className="text-center font-mono text-zinc-400 text-xs font-semibold">
+                      <TableCell className="text-center font-mono text-zinc-500 text-xs font-bold">
                         {globalIndex}
                       </TableCell>
 
                       <TableCell>
                         <Link
                           href={`/valkyrie-cup/teams/${team.id}`}
-                          className="font-bold text-zinc-900 text-xs sm:text-sm hover:underline"
+                          className="font-bold text-zinc-950 text-xs sm:text-sm hover:text-brand-700 font-pixel"
                         >
                           {team.teamName}
                         </Link>
@@ -342,12 +342,12 @@ export default function ValkyrieCupTeamsPage() {
                       </TableCell>
 
                       <TableCell>
-                        <div className="font-semibold text-zinc-800 text-xs">
+                        <div className="font-bold text-zinc-950 text-xs">
                           {team.captain}
                         </div>
                       </TableCell>
 
-                      <TableCell className="text-center font-mono text-xs font-semibold text-zinc-700">
+                      <TableCell className="text-center font-mono text-xs font-bold text-zinc-800">
                         {team.totalPlayers || 8} / 8
                       </TableCell>
 
@@ -361,16 +361,15 @@ export default function ValkyrieCupTeamsPage() {
                         </Badge>
                       </TableCell>
 
-                      <TableCell className="text-xs text-zinc-500">
+                      <TableCell className="text-xs font-mono text-zinc-600">
                         {formatDate(team.createdAt)}
                       </TableCell>
 
                       <TableCell className="text-right">
-                        <Link
-                          href={`/valkyrie-cup/teams/${team.id}`}
-                          className="inline-flex h-7 items-center justify-center rounded-md border border-zinc-200 bg-white px-2.5 text-[11px] font-medium text-zinc-700 hover:bg-zinc-50 hover:text-zinc-950 transition"
-                        >
-                          Roster
+                        <Link href={`/valkyrie-cup/teams/${team.id}`}>
+                          <Button variant="secondary" size="xs">
+                            Roster
+                          </Button>
                         </Link>
                       </TableCell>
                     </TableRow>
@@ -381,17 +380,17 @@ export default function ValkyrieCupTeamsPage() {
 
             {/* PAGINATION CONTROLS */}
             {totalPages > 1 && (
-              <div className="flex items-center justify-between rounded-xl border border-zinc-200 bg-white px-4 py-3 text-xs shadow-2xs">
-                <span className="text-zinc-500 font-medium">
+              <div className="flex items-center justify-between border-2 border-zinc-950 bg-white px-4 py-2.5 text-xs pixel-shadow-sm">
+                <span className="text-zinc-600 font-bold font-mono">
                   Showing {(page - 1) * pageSize + 1} to{" "}
                   {Math.min(page * pageSize, sortedTeams.length)} of{" "}
-                  <strong className="text-zinc-900 font-bold">
+                  <strong className="text-zinc-950 font-black">
                     {sortedTeams.length}
                   </strong>{" "}
-                  teams
+                  squads
                 </span>
 
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-2">
                   <Button
                     variant="outline"
                     size="xs"
@@ -402,7 +401,7 @@ export default function ValkyrieCupTeamsPage() {
                     Prev
                   </Button>
 
-                  <span className="px-2 font-bold font-mono text-zinc-700">
+                  <span className="px-2 font-black font-mono text-zinc-900">
                     {page} / {totalPages}
                   </span>
 
@@ -423,20 +422,22 @@ export default function ValkyrieCupTeamsPage() {
       </main>
 
       {/* FOOTER */}
-      <footer className="mt-12 border-t border-zinc-200 bg-white">
+      <footer className="mt-12 border-t-2 border-zinc-950 bg-white">
         <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-6 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
           <div className="flex items-center gap-2.5">
-            <img
-              src="/logo.png"
-              alt="Legend Army"
-              className="size-7 object-contain"
-            />
-            <span className="text-xs font-bold text-zinc-900">
-              Valkyrie Cup · Registered Teams
+            <div className="flex size-6 shrink-0 items-center justify-center border border-zinc-950 bg-brand-600">
+              <img
+                src="/logo.png"
+                alt="Legend Army"
+                className="size-5 object-contain"
+              />
+            </div>
+            <span className="text-xs font-bold font-pixel text-zinc-950">
+              VALKYRIE CUP · SQUADS DIRECTORY
             </span>
           </div>
 
-          <div className="text-xs text-zinc-400">
+          <div className="text-xs font-mono text-zinc-500">
             Legend Army · Guild Management
           </div>
         </div>

@@ -3,11 +3,11 @@
 import { forwardRef } from "react";
 
 /**
- * Standard text input component with built-in label and error handling.
+ * Standard pixel text input component with built-in label and error handling.
  *
  * Why this exists:
- * Consolidates input styling, label typography, error states, and focus rings
- * across all modals and form screens.
+ * Delivers retro RPG input styling with crisp 2px solid borders, sharp rectangular corners,
+ * and high-contrast typography, ensuring seamless readability for numbers, nicknames, and Discord tags.
  *
  * @param {Object} props - Input props
  * @param {string} [props.label] - Field label text
@@ -16,6 +16,7 @@ import { forwardRef } from "react";
  * @param {React.ReactNode} [props.icon] - Left-side icon
  * @param {string} [props.className] - Input element custom class
  * @param {string} [props.containerClassName] - Wrapper div custom class
+ * @returns {JSX.Element} Rendered pixel text input
  */
 const Input = forwardRef(function Input(
   {
@@ -38,7 +39,7 @@ const Input = forwardRef(function Input(
       {label && (
         <label
           htmlFor={inputId}
-          className="block text-xs font-bold text-zinc-700 select-none"
+          className="block text-xs font-bold text-zinc-900 select-none uppercase tracking-wide"
         >
           {label}
         </label>
@@ -46,7 +47,7 @@ const Input = forwardRef(function Input(
 
       <div className="relative flex items-center">
         {Icon && (
-          <div className="pointer-events-none absolute left-3 flex items-center justify-center text-zinc-400">
+          <div className="pointer-events-none absolute left-3 flex items-center justify-center text-zinc-500">
             <Icon className="size-4" />
           </div>
         )}
@@ -55,19 +56,19 @@ const Input = forwardRef(function Input(
           ref={ref}
           id={inputId}
           disabled={disabled}
-          className={`h-10 w-full rounded-xl border bg-white text-xs sm:text-sm text-zinc-900 transition-all placeholder:text-zinc-400 focus:outline-none focus:ring-2 disabled:bg-zinc-50 disabled:text-zinc-400 disabled:cursor-not-allowed ${
-            Icon ? "pl-9 pr-3.5" : "px-3.5"
+          className={`h-9.5 w-full border-2 bg-white text-xs sm:text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none disabled:bg-zinc-100 disabled:text-zinc-500 disabled:cursor-not-allowed ${
+            Icon ? "pl-9 pr-3" : "px-3"
           } ${
             error
-              ? "border-red-300 focus:border-red-500 focus:ring-red-500/20"
-              : "border-zinc-200 hover:border-zinc-300 focus:border-brand-600 focus:ring-brand-500/20"
+              ? "border-red-600 focus:border-red-700 bg-red-50/20"
+              : "border-zinc-900 focus:border-brand-600 focus:ring-1 focus:ring-brand-600/30"
           } ${className}`}
           {...rest}
         />
       </div>
 
       {error ? (
-        <p className="text-[11px] font-semibold text-red-600 animate-in fade-in duration-150">
+        <p className="text-[11px] font-bold text-red-600">
           {error}
         </p>
       ) : helperText ? (

@@ -1,27 +1,37 @@
 "use client";
 
 /**
- * Standard responsive Table primitives.
+ * Standard responsive Pixel Table primitives.
  *
  * Why this exists:
- * Standarizes border colors, header typography, row hover transitions,
- * and horizontal overflow handling across members, attendance, and admin user tables.
+ * Delivers retro RPG data grids with crisp 2px solid boundaries, high-contrast headers,
+ * and effortless scanning across members, attendance records, and tournament teams.
  */
 
+/**
+ * Table container wrapper
+ * @param {Object} props
+ * @returns {JSX.Element}
+ */
 export function Table({ children, className = "", ...rest }) {
   return (
-    <div className="w-full overflow-x-auto rounded-xl border border-zinc-200 bg-white shadow-2xs">
-      <table className={`w-full text-left text-xs sm:text-sm ${className}`} {...rest}>
+    <div className="w-full overflow-x-auto border-2 border-zinc-950 bg-white pixel-shadow-sm">
+      <table className={`w-full text-left text-xs sm:text-sm border-collapse ${className}`} {...rest}>
         {children}
       </table>
     </div>
   );
 }
 
+/**
+ * Table header container
+ * @param {Object} props
+ * @returns {JSX.Element}
+ */
 export function TableHeader({ children, className = "", ...rest }) {
   return (
     <thead
-      className={`border-b border-zinc-200 bg-zinc-50/80 text-[11px] font-bold uppercase tracking-wider text-zinc-500 ${className}`}
+      className={`border-b-2 border-zinc-950 bg-zinc-100 text-[11px] font-bold uppercase tracking-wider text-zinc-900 ${className}`}
       {...rest}
     >
       {children}
@@ -29,18 +39,28 @@ export function TableHeader({ children, className = "", ...rest }) {
   );
 }
 
+/**
+ * Table body container
+ * @param {Object} props
+ * @returns {JSX.Element}
+ */
 export function TableBody({ children, className = "", ...rest }) {
   return (
-    <tbody className={`divide-y divide-zinc-100 ${className}`} {...rest}>
+    <tbody className={`divide-y divide-zinc-200 ${className}`} {...rest}>
       {children}
     </tbody>
   );
 }
 
+/**
+ * Table row
+ * @param {Object} props
+ * @returns {JSX.Element}
+ */
 export function TableRow({ children, className = "", ...rest }) {
   return (
     <tr
-      className={`transition-colors duration-150 hover:bg-zinc-50/70 ${className}`}
+      className={`transition-colors duration-100 hover:bg-zinc-50 ${className}`}
       {...rest}
     >
       {children}
@@ -48,17 +68,27 @@ export function TableRow({ children, className = "", ...rest }) {
   );
 }
 
+/**
+ * Table header cell
+ * @param {Object} props
+ * @returns {JSX.Element}
+ */
 export function TableHead({ children, className = "", ...rest }) {
   return (
-    <th className={`px-4 py-3.5 sm:px-5 font-bold ${className}`} {...rest}>
+    <th className={`px-3.5 py-3 sm:px-4.5 font-bold select-none ${className}`} {...rest}>
       {children}
     </th>
   );
 }
 
+/**
+ * Table data cell
+ * @param {Object} props
+ * @returns {JSX.Element}
+ */
 export function TableCell({ children, className = "", ...rest }) {
   return (
-    <td className={`px-4 py-3 sm:px-5 text-zinc-700 ${className}`} {...rest}>
+    <td className={`px-3.5 py-2.5 sm:px-4.5 text-zinc-800 ${className}`} {...rest}>
       {children}
     </td>
   );

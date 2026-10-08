@@ -15,11 +15,14 @@ import Button from "@/components/ui/Button";
 import Loading from "@/components/ui/Loading";
 
 /**
- * Administrator Login Authentication Page
+ * Administrator Login Authentication Page with Retro Pixel Styling
  *
  * Why this exists:
  * Authenticates guild leadership against PostgreSQL hashed records or environment admin credentials.
  * Establishes standard session cookie (`la_session`) and redirects to `/admin`.
+ * Features Ragnarok Online command console visual identity: sharp borders, retro branding, and tactile form controls.
+ *
+ * @returns {JSX.Element} Rendered admin login view
  */
 export default function LoginPage() {
   const router = useRouter();
@@ -78,137 +81,139 @@ export default function LoginPage() {
   };
 
   if (checkingAuth) {
-    return <Loading fullScreen message="Checking authentication..." />;
+    return <Loading fullScreen message="Verifying session..." />;
   }
 
   return (
-    <main className="min-h-screen bg-zinc-50">
+    <main className="min-h-screen bg-zinc-50 font-sans">
       <div className="grid min-h-screen lg:grid-cols-[1fr_1fr]">
         {/* Left Brand Section */}
-        <section className="relative hidden bg-zinc-950 lg:flex lg:flex-col justify-between p-12 xl:p-16 border-r border-zinc-900">
+        <section className="relative hidden bg-zinc-950 lg:flex lg:flex-col justify-between p-12 xl:p-16 border-r-2 border-zinc-950 pixel-grid-bg">
           <div>
             <Link href="/" className="flex items-center gap-3">
-              <img
-                src="/logo.png"
-                alt="Legend Army"
-                className="size-10 rounded-lg object-contain"
-              />
+              <div className="flex size-10 shrink-0 items-center justify-center border-2 border-white bg-brand-600 pixel-shadow-sm">
+                <img
+                  src="/logo.png"
+                  alt="Legend Army"
+                  className="size-8 object-contain"
+                />
+              </div>
               <div>
-                <div className="text-sm font-bold tracking-tight text-white">
+                <div className="font-pixel text-base font-bold text-white leading-tight">
                   LEGEND ARMY
                 </div>
-                <div className="text-[10px] font-medium uppercase tracking-wider text-zinc-500">
-                  Command Hub
+                <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-brand-400 leading-tight">
+                  Guild Command Core
                 </div>
               </div>
             </Link>
           </div>
 
           <div className="max-w-md">
-            <h1 className="text-3xl font-semibold tracking-tight text-white xl:text-4xl">
-              Guild Operations Management
+            <h1 className="font-pixel text-3xl font-bold tracking-tight text-white xl:text-4xl leading-tight">
+              Guild Operations Console
             </h1>
-            <p className="mt-4 text-sm leading-relaxed text-zinc-400">
-              Access administrative tools for member rosters, event setups, strategic planning, and automated Discord integrations.
+            <p className="mt-4 text-xs sm:text-sm leading-relaxed text-zinc-300">
+              Access administrative controls for battlefield rosters, event deployment, tactical directives, and Discord automation.
             </p>
           </div>
 
-          <div className="text-xs text-zinc-600">
-            © {new Date().getFullYear()} Legend Army. All rights reserved.
+          <div className="text-xs font-mono text-zinc-500">
+            © {new Date().getFullYear()} Legend Army. Classic Ragnarok Operations.
           </div>
         </section>
 
         {/* Right Form Section */}
         <section className="flex items-center justify-center p-6 sm:p-12 lg:p-16 bg-white">
           <div className="w-full max-w-sm">
-            <div className="mb-8">
-              <Link
-                href="/"
-                className="inline-flex items-center gap-2 text-xs font-medium text-zinc-500 hover:text-zinc-900 transition"
-              >
-                <ArrowLeft className="size-3.5" />
-                <span>Back to Hub</span>
+            <div className="mb-6">
+              <Link href="/">
+                <Button variant="secondary" size="xs" icon={ArrowLeft}>
+                  Back to Public Portal
+                </Button>
               </Link>
             </div>
 
-            <div className="mb-6">
-              <h2 className="text-2xl font-semibold tracking-tight text-zinc-900">
-                Sign in
-              </h2>
-              <p className="mt-1 text-xs text-zinc-500">
-                Enter your administrative credentials to continue.
-              </p>
-            </div>
-
-            {error && (
-              <div className="mb-5 rounded-lg border border-red-200 bg-red-50 p-3 text-xs font-medium text-red-700">
-                {error}
+            <div className="border-2 border-zinc-950 bg-white p-6 sm:p-8 pixel-shadow">
+              <div className="mb-6">
+                <h2 className="text-xl sm:text-2xl font-bold font-pixel text-zinc-950 tracking-tight">
+                  Officer Sign In
+                </h2>
+                <p className="mt-1 text-xs text-zinc-600">
+                  Enter authorized administrator credentials.
+                </p>
               </div>
-            )}
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-xs font-medium text-zinc-700">
-                  Email
-                </label>
-                <div className="relative mt-1.5 flex items-center">
-                  <div className="pointer-events-none absolute left-3 flex items-center justify-center text-zinc-400">
-                    <Mail className="size-4" />
-                  </div>
-                  <input
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="admin@legendarmy.com"
-                    className="h-10 w-full rounded-lg border border-zinc-200 pl-10 pr-3.5 text-sm placeholder:text-zinc-400 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900 transition"
-                  />
+              {error && (
+                <div className="mb-5 border-2 border-red-700 bg-red-50 p-3 text-xs font-bold text-red-900 pixel-shadow-sm">
+                  {error}
                 </div>
-              </div>
+              )}
 
-              <div>
-                <label className="block text-xs font-medium text-zinc-700">
-                  Password
-                </label>
-                <div className="relative mt-1.5 flex items-center">
-                  <div className="pointer-events-none absolute left-3 flex items-center justify-center text-zinc-400">
-                    <LockKeyhole className="size-4" />
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-bold font-pixel uppercase tracking-wide text-zinc-950 mb-1">
+                    Email Address
+                  </label>
+                  <div className="relative flex items-center">
+                    <div className="pointer-events-none absolute left-3 flex items-center justify-center text-zinc-500">
+                      <Mail className="size-4" />
+                    </div>
+                    <input
+                      type="email"
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="admin@legendarmy.com"
+                      className="h-10 w-full border-2 border-zinc-950 bg-white pl-9 pr-3 text-xs sm:text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-brand-600 transition"
+                    />
                   </div>
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="h-10 w-full rounded-lg border border-zinc-200 pl-10 pr-10 text-sm placeholder:text-zinc-400 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900 transition"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 flex items-center text-zinc-400 hover:text-zinc-600 p-0.5"
-                    aria-label="Toggle password visibility"
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold font-pixel uppercase tracking-wide text-zinc-950 mb-1">
+                    Password
+                  </label>
+                  <div className="relative flex items-center">
+                    <div className="pointer-events-none absolute left-3 flex items-center justify-center text-zinc-500">
+                      <LockKeyhole className="size-4" />
+                    </div>
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      required
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="••••••••"
+                      className="h-10 w-full border-2 border-zinc-950 bg-white pl-9 pr-10 text-xs sm:text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-brand-600 transition"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 flex items-center text-zinc-500 hover:text-zinc-900 p-0.5"
+                      aria-label="Toggle password visibility"
+                    >
+                      {showPassword ? (
+                        <EyeOff className="size-4" />
+                      ) : (
+                        <Eye className="size-4" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="pt-2">
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    size="md"
+                    loading={loading}
+                    className="w-full !h-10"
                   >
-                    {showPassword ? (
-                      <EyeOff className="size-4" />
-                    ) : (
-                      <Eye className="size-4" />
-                    )}
-                  </button>
+                    Authenticate
+                  </Button>
                 </div>
-              </div>
-
-              <div className="pt-2">
-                <Button
-                  type="submit"
-                  variant="primary"
-                  size="md"
-                  loading={loading}
-                  className="w-full !h-10 font-medium"
-                >
-                  Sign in
-                </Button>
-              </div>
-            </form>
+              </form>
+            </div>
           </div>
         </section>
       </div>

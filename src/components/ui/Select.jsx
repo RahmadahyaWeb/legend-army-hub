@@ -4,11 +4,11 @@ import { forwardRef } from "react";
 import { ChevronDown } from "lucide-react";
 
 /**
- * Standard dropdown select component.
+ * Standard pixel dropdown select component.
  *
  * Why this exists:
- * Provides consistent styling, focus borders, label typography, and custom chevron
- * across status controls, filters, and modal selectors.
+ * Delivers retro RPG select styling with crisp 2px solid borders, sharp rectangular corners,
+ * and high-contrast typography across filters, status selectors, and team lane pickers.
  *
  * @param {Object} props - Select props
  * @param {string} [props.label] - Field label text
@@ -17,6 +17,7 @@ import { ChevronDown } from "lucide-react";
  * @param {React.ReactNode} [props.children] - Option elements or groups
  * @param {string} [props.className] - Select element custom class
  * @param {string} [props.containerClassName] - Wrapper div custom class
+ * @returns {JSX.Element} Rendered pixel select input
  */
 const Select = forwardRef(function Select(
   {
@@ -39,7 +40,7 @@ const Select = forwardRef(function Select(
       {label && (
         <label
           htmlFor={selectId}
-          className="block text-xs font-bold text-zinc-700 select-none"
+          className="block text-xs font-bold text-zinc-900 select-none uppercase tracking-wide"
         >
           {label}
         </label>
@@ -50,23 +51,23 @@ const Select = forwardRef(function Select(
           ref={ref}
           id={selectId}
           disabled={disabled}
-          className={`h-10 w-full appearance-none rounded-xl border bg-white px-3.5 pr-9 text-xs sm:text-sm text-zinc-900 transition-all focus:outline-none focus:ring-2 disabled:bg-zinc-50 disabled:text-zinc-400 disabled:cursor-not-allowed ${
+          className={`h-9.5 w-full appearance-none border-2 bg-white px-3 pr-8 text-xs sm:text-sm text-zinc-900 focus:outline-none disabled:bg-zinc-100 disabled:text-zinc-500 disabled:cursor-not-allowed ${
             error
-              ? "border-red-300 focus:border-red-500 focus:ring-red-500/20"
-              : "border-zinc-200 hover:border-zinc-300 focus:border-brand-600 focus:ring-brand-500/20"
+              ? "border-red-600 focus:border-red-700 bg-red-50/20"
+              : "border-zinc-900 focus:border-brand-600 focus:ring-1 focus:ring-brand-600/30"
           } ${className}`}
           {...rest}
         >
           {children}
         </select>
 
-        <div className="pointer-events-none absolute right-3 flex items-center justify-center text-zinc-400">
+        <div className="pointer-events-none absolute right-2.5 flex items-center justify-center text-zinc-700">
           <ChevronDown className="size-4" />
         </div>
       </div>
 
       {error ? (
-        <p className="text-[11px] font-semibold text-red-600 animate-in fade-in duration-150">
+        <p className="text-[11px] font-bold text-red-600">
           {error}
         </p>
       ) : helperText ? (

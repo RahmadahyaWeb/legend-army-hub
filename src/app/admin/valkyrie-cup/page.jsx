@@ -294,17 +294,17 @@ export default function AdminValkyrieCupPage() {
   return (
     <div className="space-y-6">
       {/* HEADER */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3.5 sm:flex-row sm:items-center sm:justify-between border-b-2 border-zinc-200 pb-4">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-xl sm:text-2xl font-bold text-zinc-900 tracking-tight">
+          <div className="flex flex-wrap items-center gap-2.5">
+            <h1 className="font-pixel text-xl sm:text-2xl font-bold text-zinc-950 tracking-wide">
               Valkyrie Cup Registrations
             </h1>
-            <Badge variant="brand" size="sm">
+            <span className="border-2 border-zinc-950 px-2 py-0.5 text-xs font-mono font-bold bg-zinc-100 text-zinc-950 shadow-[1px_1px_0px_#09090b]">
               {summary.total} Registered
-            </Badge>
+            </span>
           </div>
-          <p className="mt-0.5 text-xs text-zinc-500">
+          <p className="mt-1 text-xs font-mono text-zinc-600">
             Review and approve 8-player squad entries for the Valkyrie Cup tournament
           </p>
         </div>
@@ -313,7 +313,7 @@ export default function AdminValkyrieCupPage() {
           <Link
             href="/valkyrie-cup/teams"
             target="_blank"
-            className="inline-flex h-8.5 items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-3 text-xs font-medium text-zinc-700 hover:bg-zinc-50 transition"
+            className="inline-flex h-9 items-center gap-1.5 border-2 border-zinc-950 bg-white px-3 text-xs font-mono font-bold text-zinc-900 hover:bg-zinc-100 shadow-[2px_2px_0px_#09090b] active:translate-x-[1px] active:translate-y-[1px] transition"
           >
             <ExternalLink className="size-3.5" />
             <span>Public Directory</span>
@@ -323,55 +323,55 @@ export default function AdminValkyrieCupPage() {
 
       {/* METRICS CARDS */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
-        <Card className="p-4 bg-white">
-          <div className="text-[10px] font-semibold uppercase tracking-wider text-amber-600">
+        <div className="border-2 border-amber-950 bg-amber-50/50 p-3.5 sm:p-4 shadow-[3px_3px_0px_#78350f]">
+          <div className="font-pixel text-xs font-bold uppercase tracking-wider text-amber-950">
             Pending Review
           </div>
-          <div className="mt-1 text-2xl font-bold font-mono text-amber-600">
+          <div className="mt-1 text-2xl sm:text-3xl font-bold font-mono text-amber-950">
             {summary.pending}
           </div>
-          <div className="mt-0.5 text-[11px] text-zinc-400">
+          <div className="mt-0.5 text-[11px] font-mono text-amber-800">
             Action required
           </div>
-        </Card>
+        </div>
 
-        <Card className="p-4 bg-white">
-          <div className="text-[10px] font-semibold uppercase tracking-wider text-emerald-600">
+        <div className="border-2 border-emerald-950 bg-emerald-50/50 p-3.5 sm:p-4 shadow-[3px_3px_0px_#064e3b]">
+          <div className="font-pixel text-xs font-bold uppercase tracking-wider text-emerald-950">
             Approved
           </div>
-          <div className="mt-1 text-2xl font-bold font-mono text-emerald-600">
+          <div className="mt-1 text-2xl sm:text-3xl font-bold font-mono text-emerald-950">
             {summary.approved}
           </div>
-          <div className="mt-0.5 text-[11px] text-zinc-400">
+          <div className="mt-0.5 text-[11px] font-mono text-emerald-800">
             Bracket confirmed
           </div>
-        </Card>
+        </div>
 
-        <Card className="p-4 bg-white">
-          <div className="text-[10px] font-semibold uppercase tracking-wider text-red-600">
+        <div className="border-2 border-red-950 bg-red-50/50 p-3.5 sm:p-4 shadow-[3px_3px_0px_#7f1d1d]">
+          <div className="font-pixel text-xs font-bold uppercase tracking-wider text-red-950">
             Rejected
           </div>
-          <div className="mt-1 text-2xl font-bold font-mono text-red-600">
+          <div className="mt-1 text-2xl sm:text-3xl font-bold font-mono text-red-950">
             {summary.rejected}
           </div>
-          <div className="mt-0.5 text-[11px] text-zinc-400">
+          <div className="mt-0.5 text-[11px] font-mono text-red-800">
             Denied submissions
           </div>
-        </Card>
+        </div>
 
-        <Card className="p-4 bg-white">
-          <div className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500">
+        <div className="border-2 border-zinc-950 bg-white p-3.5 sm:p-4 shadow-[3px_3px_0px_#09090b]">
+          <div className="font-pixel text-xs font-bold uppercase tracking-wider text-zinc-950">
             Guild Distribution
           </div>
-          <div className="mt-1 text-xs font-semibold text-zinc-800 space-y-0.5">
-            <div>LegendArmy1: <strong className="font-mono">{summary.legendArmy1}</strong></div>
-            <div>LegendArmy2: <strong className="font-mono">{summary.legendArmy2}</strong></div>
+          <div className="mt-1 text-xs font-mono font-bold text-zinc-900 space-y-1">
+            <div>LegendArmy1: <strong className="text-brand-600">{summary.legendArmy1}</strong></div>
+            <div>LegendArmy2: <strong className="text-indigo-600">{summary.legendArmy2}</strong></div>
           </div>
-        </Card>
+        </div>
       </div>
 
       {/* FILTER & SEARCH BAR */}
-      <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between rounded-xl border border-zinc-200 bg-white p-3 sm:p-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-2 border-zinc-950 bg-white p-3.5 sm:p-4 shadow-[3px_3px_0px_#09090b]">
         <div className="flex flex-1 items-center gap-2 sm:max-w-md">
           <Input
             icon={Search}
@@ -382,7 +382,7 @@ export default function AdminValkyrieCupPage() {
               setPage(1);
             }}
             containerClassName="w-full"
-            className="!h-9 text-xs"
+            className="!h-9 text-xs font-mono"
           />
         </div>
 
@@ -394,7 +394,7 @@ export default function AdminValkyrieCupPage() {
               setStatusFilter(e.target.value);
               setPage(1);
             }}
-            className="!h-9 !py-0 text-xs font-medium"
+            className="!h-9 !py-0 text-xs font-mono font-bold"
           >
             <option value="all">All Status ({summary.total})</option>
             <option value="pending">Pending ({summary.pending})</option>
@@ -409,7 +409,7 @@ export default function AdminValkyrieCupPage() {
               setGuildFilter(e.target.value);
               setPage(1);
             }}
-            className="!h-9 !py-0 text-xs font-medium"
+            className="!h-9 !py-0 text-xs font-mono font-bold"
           >
             <option value="all">All Guilds</option>
             <option value="LegendArmy1">LegendArmy1</option>
@@ -423,7 +423,7 @@ export default function AdminValkyrieCupPage() {
               setPageSize(Number(e.target.value));
               setPage(1);
             }}
-            className="!h-9 !py-0 text-xs font-medium"
+            className="!h-9 !py-0 text-xs font-mono font-bold"
           >
             {PAGE_SIZE_OPTIONS.map((size) => (
               <option key={size} value={size}>
@@ -451,15 +451,15 @@ export default function AdminValkyrieCupPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-12 text-center">#</TableHead>
-                <TableHead>Team Name</TableHead>
-                <TableHead>Guild</TableHead>
-                <TableHead>Captain</TableHead>
-                <TableHead className="text-center">Players</TableHead>
-                <TableHead>Submitted By</TableHead>
-                <TableHead>Submitted At</TableHead>
-                <TableHead className="text-center">Status</TableHead>
-                <TableHead className="text-right w-44">Action</TableHead>
+                <TableHead className="w-12 text-center font-mono">#</TableHead>
+                <TableHead className="font-pixel text-xs tracking-wider">Team Name</TableHead>
+                <TableHead className="font-pixel text-xs tracking-wider">Guild</TableHead>
+                <TableHead className="font-pixel text-xs tracking-wider">Captain</TableHead>
+                <TableHead className="text-center font-pixel text-xs tracking-wider">Players</TableHead>
+                <TableHead className="font-pixel text-xs tracking-wider">Submitted By</TableHead>
+                <TableHead className="font-pixel text-xs tracking-wider">Submitted At</TableHead>
+                <TableHead className="text-center font-pixel text-xs tracking-wider">Status</TableHead>
+                <TableHead className="text-right w-44 font-pixel text-xs tracking-wider">Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -470,7 +470,7 @@ export default function AdminValkyrieCupPage() {
 
                 return (
                   <TableRow key={reg.id || globalIndex}>
-                    <TableCell className="text-center font-mono text-zinc-400 text-xs font-semibold">
+                    <TableCell className="text-center font-mono text-zinc-400 text-xs font-bold">
                       {globalIndex}
                     </TableCell>
 
@@ -478,7 +478,7 @@ export default function AdminValkyrieCupPage() {
                       <button
                         type="button"
                         onClick={() => handleOpenDetail(reg)}
-                        className="font-bold text-zinc-900 text-xs sm:text-sm hover:underline text-left"
+                        className="font-bold text-zinc-950 font-mono text-xs sm:text-sm hover:underline text-left"
                       >
                         {reg.teamName}
                       </button>
@@ -494,17 +494,17 @@ export default function AdminValkyrieCupPage() {
                     </TableCell>
 
                     <TableCell>
-                      <div className="font-semibold text-zinc-900 text-xs flex items-center gap-1">
+                      <div className="font-bold text-zinc-950 font-mono text-xs flex items-center gap-1.5">
                         <Crown className="size-3 text-amber-500 shrink-0" />
                         <span>{reg.captain}</span>
                       </div>
                     </TableCell>
 
-                    <TableCell className="text-center font-mono text-xs font-semibold text-zinc-700">
+                    <TableCell className="text-center font-mono text-xs font-bold text-zinc-700">
                       {reg.totalPlayers || 8} / 8
                     </TableCell>
 
-                    <TableCell className="text-xs text-zinc-500 font-mono">
+                    <TableCell className="text-xs text-zinc-600 font-mono">
                       <span className="truncate block max-w-[120px]" title={reg.userId}>
                         {reg.userId?.startsWith("usr_")
                           ? reg.userId.slice(0, 12) + "..."
@@ -512,7 +512,7 @@ export default function AdminValkyrieCupPage() {
                       </span>
                     </TableCell>
 
-                    <TableCell className="text-xs text-zinc-500">
+                    <TableCell className="text-xs font-mono text-zinc-500">
                       {formatDate(reg.createdAt)}
                     </TableCell>
 
@@ -533,12 +533,12 @@ export default function AdminValkyrieCupPage() {
                     </TableCell>
 
                     <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-1">
+                      <div className="flex items-center justify-end gap-1.5">
                         {/* View Detail Button */}
                         <button
                           type="button"
                           onClick={() => handleOpenDetail(reg)}
-                          className="flex size-7.5 items-center justify-center rounded-lg text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 transition"
+                          className="flex size-7 items-center justify-center border border-zinc-950 bg-white text-zinc-700 hover:bg-zinc-100 shadow-[1px_1px_0px_#09090b] active:translate-x-[1px] active:translate-y-[1px] transition"
                           title="View Registration Detail & Roster"
                         >
                           <Eye className="size-3.5" />
@@ -549,7 +549,7 @@ export default function AdminValkyrieCupPage() {
                           <button
                             type="button"
                             onClick={() => handleApprove(reg.id, reg.teamName)}
-                            className="flex size-7.5 items-center justify-center rounded-lg text-emerald-600 hover:bg-emerald-50 transition"
+                            className="flex size-7 items-center justify-center border border-zinc-950 bg-white text-emerald-800 hover:bg-emerald-50 shadow-[1px_1px_0px_#09090b] active:translate-x-[1px] active:translate-y-[1px] transition font-bold"
                             title="Approve Team"
                           >
                             <Check className="size-3.5" />
@@ -563,7 +563,7 @@ export default function AdminValkyrieCupPage() {
                             onClick={() =>
                               handleOpenRejectDialog(reg.id, reg.teamName)
                             }
-                            className="flex size-7.5 items-center justify-center rounded-lg text-amber-600 hover:bg-amber-50 transition"
+                            className="flex size-7 items-center justify-center border border-zinc-950 bg-white text-amber-800 hover:bg-amber-50 shadow-[1px_1px_0px_#09090b] active:translate-x-[1px] active:translate-y-[1px] transition font-bold"
                             title="Reject Team"
                           >
                             <X className="size-3.5" />
@@ -574,7 +574,7 @@ export default function AdminValkyrieCupPage() {
                         <button
                           type="button"
                           onClick={() => handleDelete(reg.id, reg.teamName)}
-                          className="flex size-7.5 items-center justify-center rounded-lg text-zinc-400 hover:bg-red-50 hover:text-red-600 transition"
+                          className="flex size-7 items-center justify-center border border-zinc-950 bg-white text-zinc-700 hover:bg-red-50 hover:text-red-700 shadow-[1px_1px_0px_#09090b] active:translate-x-[1px] active:translate-y-[1px] transition"
                           title="Delete Registration"
                         >
                           <Trash2 className="size-3.5" />
@@ -589,11 +589,11 @@ export default function AdminValkyrieCupPage() {
 
           {/* PAGINATION CONTROLS */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-between rounded-xl border border-zinc-200 bg-white px-4 py-3 text-xs shadow-2xs">
-              <span className="text-zinc-500 font-medium">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-2 border-zinc-950 bg-white px-4 py-3 text-xs font-mono shadow-[3px_3px_0px_#09090b]">
+              <span className="text-zinc-600 font-medium">
                 Showing {(page - 1) * pageSize + 1} to{" "}
                 {Math.min(page * pageSize, filteredRegistrations.length)} of{" "}
-                <strong className="text-zinc-900 font-bold">
+                <strong className="text-zinc-950 font-bold">
                   {filteredRegistrations.length}
                 </strong>{" "}
                 registrations
@@ -610,7 +610,7 @@ export default function AdminValkyrieCupPage() {
                   Prev
                 </Button>
 
-                <span className="px-2 font-bold font-mono text-zinc-700">
+                <span className="px-2 font-bold font-mono text-zinc-950 border border-zinc-950 bg-zinc-100 py-0.5">
                   {page} / {totalPages}
                 </span>
 
@@ -702,39 +702,39 @@ export default function AdminValkyrieCupPage() {
         {selectedReg && (
           <div className="space-y-4 py-1 text-xs">
             {/* AUDIT / REVIEW INFO */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 rounded-xl border border-zinc-100 bg-zinc-50 p-3">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 border-2 border-zinc-950 bg-zinc-50 p-3 shadow-[2px_2px_0px_#09090b]">
               <div>
-                <div className="text-[10px] uppercase font-semibold text-zinc-400">
+                <div className="text-[10px] uppercase font-mono font-bold text-zinc-500">
                   Guild
                 </div>
-                <div className="font-bold text-zinc-900 mt-0.5">
+                <div className="font-bold font-mono text-zinc-950 mt-0.5">
                   {selectedReg.guild}
                 </div>
               </div>
 
               <div>
-                <div className="text-[10px] uppercase font-semibold text-zinc-400">
+                <div className="text-[10px] uppercase font-mono font-bold text-zinc-500">
                   Submitted By
                 </div>
-                <div className="font-mono text-zinc-700 mt-0.5 truncate" title={selectedReg.userId}>
+                <div className="font-mono text-zinc-800 mt-0.5 truncate" title={selectedReg.userId}>
                   {selectedReg.userId || "Public"}
                 </div>
               </div>
 
               <div>
-                <div className="text-[10px] uppercase font-semibold text-zinc-400">
+                <div className="text-[10px] uppercase font-mono font-bold text-zinc-500">
                   Reviewed By
                 </div>
-                <div className="font-semibold text-zinc-800 mt-0.5">
+                <div className="font-mono font-semibold text-zinc-900 mt-0.5">
                   {selectedReg.reviewedBy || "Pending"}
                 </div>
               </div>
 
               <div>
-                <div className="text-[10px] uppercase font-semibold text-zinc-400">
+                <div className="text-[10px] uppercase font-mono font-bold text-zinc-500">
                   Reviewed At
                 </div>
-                <div className="text-zinc-600 mt-0.5">
+                <div className="text-zinc-700 font-mono mt-0.5">
                   {selectedReg.reviewedAt
                     ? formatDate(selectedReg.reviewedAt)
                     : "—"}
@@ -744,7 +744,7 @@ export default function AdminValkyrieCupPage() {
 
             {/* REJECTION REASON IF PRESENT */}
             {selectedReg.rejectionReason && (
-              <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-red-800">
+              <div className="border-2 border-red-600 bg-red-50 p-3 text-red-950 font-mono shadow-[2px_2px_0px_#b91c1c]">
                 <span className="font-bold">Rejection Reason:</span>{" "}
                 {selectedReg.rejectionReason}
               </div>
@@ -753,10 +753,10 @@ export default function AdminValkyrieCupPage() {
             {/* FULL ROSTER TABLE */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <h4 className="font-bold text-zinc-900 text-xs">
+                <h4 className="font-pixel text-sm font-bold text-zinc-950">
                   Full Roster & Discord Tags
                 </h4>
-                <span className="text-[10px] font-mono text-zinc-400">
+                <span className="text-[10px] font-mono text-zinc-500">
                   {selectedRoster.length} Players
                 </span>
               </div>
@@ -764,14 +764,14 @@ export default function AdminValkyrieCupPage() {
               {detailLoading ? (
                 <Loading message="Loading roster details..." />
               ) : (
-                <div className="rounded-xl border border-zinc-200 overflow-hidden">
+                <div className="border-2 border-zinc-950 overflow-hidden">
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead className="w-10 text-center">#</TableHead>
-                        <TableHead>Nickname</TableHead>
-                        <TableHead>Role</TableHead>
-                        <TableHead>Discord ID</TableHead>
+                        <TableHead className="w-10 text-center font-mono">#</TableHead>
+                        <TableHead className="font-pixel text-xs tracking-wider">Nickname</TableHead>
+                        <TableHead className="font-pixel text-xs tracking-wider">Role</TableHead>
+                        <TableHead className="font-pixel text-xs tracking-wider">Discord ID</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -780,12 +780,12 @@ export default function AdminValkyrieCupPage() {
 
                         return (
                           <TableRow key={player.id || idx}>
-                            <TableCell className="text-center font-mono text-zinc-400 text-xs font-semibold">
+                            <TableCell className="text-center font-mono text-zinc-400 text-xs font-bold">
                               {idx + 1}
                             </TableCell>
 
                             <TableCell>
-                              <div className="font-bold text-zinc-900 text-xs flex items-center gap-1.5">
+                              <div className="font-bold text-zinc-950 font-mono text-xs flex items-center gap-1.5">
                                 {isCaptain && (
                                   <Crown className="size-3 text-amber-500 shrink-0" />
                                 )}
@@ -805,7 +805,7 @@ export default function AdminValkyrieCupPage() {
                               )}
                             </TableCell>
 
-                            <TableCell className="font-mono text-xs font-semibold text-zinc-800">
+                            <TableCell className="font-mono text-xs font-semibold text-zinc-900">
                               {player.discordId || "—"}
                             </TableCell>
                           </TableRow>
@@ -838,9 +838,8 @@ export default function AdminValkyrieCupPage() {
               Cancel
             </Button>
             <Button
-              variant="outline"
+              variant="danger"
               loading={actionLoading}
-              className="text-red-700 bg-red-50 hover:bg-red-100 border-red-200"
               onClick={handleConfirmReject}
             >
               Confirm Rejection
@@ -849,7 +848,7 @@ export default function AdminValkyrieCupPage() {
         }
       >
         <div className="space-y-3 py-1">
-          <label className="block text-xs font-medium text-zinc-700">
+          <label className="block text-xs font-mono font-bold text-zinc-900">
             Rejection Reason (Optional feedback to participant)
           </label>
           <textarea
@@ -857,7 +856,7 @@ export default function AdminValkyrieCupPage() {
             value={rejectionReason}
             onChange={(e) => setRejectionReason(e.target.value)}
             placeholder="e.g. Incomplete Discord tags, duplicate combatant in another squad, or ineligible guild affiliation."
-            className="w-full rounded-lg border border-zinc-200 p-2.5 text-xs placeholder:text-zinc-400 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900 transition"
+            className="w-full border-2 border-zinc-950 p-2.5 text-xs font-mono placeholder:text-zinc-400 focus:outline-hidden"
           />
         </div>
       </Modal>

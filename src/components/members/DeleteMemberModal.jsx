@@ -75,7 +75,7 @@ export default function DeleteMemberModal({ open, member, onClose, onSuccess }) 
         </p>
 
         {error && (
-          <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-xs font-semibold text-red-700 animate-in fade-in duration-150">
+          <div className="border-2 border-red-600 bg-red-50 p-3 text-xs font-mono font-bold text-red-700 shadow-[2px_2px_0px_#b91c1c]">
             {error}
           </div>
         )}

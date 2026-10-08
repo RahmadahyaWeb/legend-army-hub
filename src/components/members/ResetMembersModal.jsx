@@ -75,7 +75,7 @@ export default function ResetMembersModal({ open, memberCount = 0, onClose, onSu
       }
     >
       <div className="space-y-4">
-        <div className="rounded-xl border border-amber-200 bg-amber-50/80 p-3.5 text-xs text-amber-900 flex items-start gap-2.5">
+        <div className="border-2 border-amber-600 bg-amber-50 p-3.5 text-xs font-mono text-amber-950 flex items-start gap-2.5 shadow-[2px_2px_0px_#d97706]">
           <AlertTriangle className="size-4 shrink-0 text-amber-600 mt-0.5" />
           <p className="leading-relaxed">
             This action will permanently delete <strong>{memberCount} member records</strong> stored in the database. After resetting, you can import or re-add a clean member roster from scratch.
@@ -88,11 +88,11 @@ export default function ResetMembersModal({ open, memberCount = 0, onClose, onSu
           value={confirmationInput}
           onChange={(e) => setConfirmationInput(e.target.value)}
           disabled={resetting}
-          className="font-mono font-semibold"
+          className="font-mono font-bold"
         />
 
         {error && (
-          <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-xs font-semibold text-red-700 animate-in fade-in duration-150">
+          <div className="border-2 border-red-600 bg-red-50 p-3 text-xs font-mono font-bold text-red-700 shadow-[2px_2px_0px_#b91c1c]">
             {error}
           </div>
         )}

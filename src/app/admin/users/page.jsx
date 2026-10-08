@@ -114,17 +114,17 @@ export default function AdminUsersPage() {
   return (
     <div className="space-y-6">
       {/* HEADER */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3.5 sm:flex-row sm:items-center sm:justify-between border-b-2 border-zinc-200 pb-4">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-xl sm:text-2xl font-bold text-zinc-900 tracking-tight">
+          <div className="flex flex-wrap items-center gap-2.5">
+            <h1 className="font-pixel text-xl sm:text-2xl font-bold text-zinc-950 tracking-wide">
               Admin Accounts
             </h1>
-            <Badge variant="neutral" size="sm">
+            <span className="border-2 border-zinc-950 px-2 py-0.5 text-xs font-mono font-bold bg-zinc-100 text-zinc-950 shadow-[1px_1px_0px_#09090b]">
               {users.length} Active
-            </Badge>
+            </span>
           </div>
-          <p className="mt-0.5 text-xs text-zinc-500">
+          <p className="mt-1 text-xs font-mono text-zinc-600">
             Authorized administrator credentials for Legend Army Hub
           </p>
         </div>
@@ -132,6 +132,7 @@ export default function AdminUsersPage() {
         <Button
           variant="primary"
           size="sm"
+          icon={UserPlus}
           onClick={() => setModalOpen(true)}
         >
           Add Admin
@@ -139,50 +140,50 @@ export default function AdminUsersPage() {
       </div>
 
       {/* ADMIN USERS LIST */}
-      <Card className="overflow-hidden">
-        <div className="border-b border-zinc-100 bg-zinc-50/75 px-4 sm:px-6 py-3">
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
+      <div className="border-2 border-zinc-950 bg-white shadow-[4px_4px_0px_#09090b] overflow-hidden">
+        <div className="border-b-2 border-zinc-950 bg-zinc-50 px-4 sm:px-6 py-3">
+          <h3 className="font-pixel text-xs sm:text-sm font-bold uppercase tracking-wider text-zinc-900">
             Registered Administrators ({users.length})
           </h3>
         </div>
 
-        <div className="divide-y divide-zinc-100">
+        <div className="divide-y-2 divide-zinc-100">
           {loading ? (
             <Loading message="Loading admins..." />
           ) : users.length === 0 ? (
-            <div className="p-8 text-center text-xs text-zinc-500">
+            <div className="p-8 text-center text-xs font-mono text-zinc-500">
               No administrator accounts registered yet.
             </div>
           ) : (
             users.map((u) => (
               <div
                 key={u.id}
-                className="flex items-center justify-between p-4 sm:px-6 hover:bg-zinc-50/70 transition-colors gap-3"
+                className="flex items-center justify-between p-4 sm:px-6 hover:bg-zinc-50 transition-colors gap-3"
               >
                 <div className="min-w-0">
-                  <div className="text-sm font-semibold text-zinc-900 truncate">
+                  <div className="font-bold text-sm text-zinc-950 truncate font-mono">
                     {u.displayName || "Admin"}
                   </div>
-                  <div className="text-xs text-zinc-500 flex flex-wrap items-center gap-2 mt-0.5">
+                  <div className="text-xs font-mono text-zinc-600 flex flex-wrap items-center gap-2 mt-0.5">
                     <span className="truncate">{u.email}</span>
-                    <span className="text-zinc-300">•</span>
-                    <span className="shrink-0 text-zinc-400">Created {formatDate(u.createdAt)}</span>
+                    <span className="text-zinc-400">•</span>
+                    <span className="shrink-0 text-zinc-500">Created {formatDate(u.createdAt)}</span>
                   </div>
                 </div>
 
                 <button
                   type="button"
                   onClick={() => handleDelete(u.id, u.email)}
-                  className="flex size-8 shrink-0 items-center justify-center rounded-lg text-zinc-400 hover:bg-red-50 hover:text-red-600 transition"
+                  className="flex size-7.5 shrink-0 items-center justify-center border border-zinc-950 bg-white text-zinc-700 hover:bg-red-50 hover:text-red-700 shadow-[1px_1px_0px_#09090b] active:translate-x-[1px] active:translate-y-[1px] transition"
                   title="Remove admin"
                 >
-                  <Trash2 className="size-4" />
+                  <Trash2 className="size-3.5" />
                 </button>
               </div>
             ))
           )}
         </div>
-      </Card>
+      </div>
 
       {/* ADD ADMIN MODAL */}
       <Modal
@@ -240,7 +241,7 @@ export default function AdminUsersPage() {
           />
 
           {error && (
-            <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-xs font-semibold text-red-700 animate-in fade-in duration-150">
+            <div className="border-2 border-red-600 bg-red-50 p-3 text-xs font-mono font-bold text-red-700 shadow-[2px_2px_0px_#b91c1c]">
               {error}
             </div>
           )}

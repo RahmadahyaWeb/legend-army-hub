@@ -21,7 +21,7 @@ const STRATEGY_CATEGORIES = [
  *
  * Why this exists:
  * The authoring environment for match tactical directives, allowing live edits,
- * categorization, Discord channel push, and deletion.
+ * categorization, Discord channel push, and deletion in a retro pixel console style.
  *
  * @param {Object} props - Component props
  * @param {string|null} props.selectedId
@@ -56,19 +56,19 @@ export default function StrategyEditor({
   setContent,
 }) {
   return (
-    <div className="flex flex-col rounded-xl border border-zinc-200 bg-white overflow-hidden shadow-xs h-[680px]">
+    <div className="flex flex-col border-2 border-zinc-950 bg-white overflow-hidden shadow-[4px_4px_0px_#09090b] h-[680px]">
       {/* EDITOR TOOLBAR */}
-      <div className="flex items-center justify-between border-b border-zinc-100 p-4 bg-zinc-50/50">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b-2 border-zinc-950 p-4 bg-zinc-50">
         <div>
-          <h2 className="text-sm font-semibold text-zinc-900">
+          <h2 className="font-pixel text-base sm:text-lg font-bold text-zinc-950">
             {selectedId ? "Edit Playbook" : "New Tactical Playbook"}
           </h2>
-          <p className="text-[11px] text-zinc-500 mt-0.5">
+          <p className="text-[11px] font-mono text-zinc-600 mt-0.5">
             Configure battlefield plans and share with guild members
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {selectedId && (
             <>
               <Button
@@ -112,6 +112,7 @@ export default function StrategyEditor({
           placeholder="e.g. 18:00 MVP Portal Defense & Delay Routine"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
+          className="font-bold text-sm"
         />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -119,6 +120,7 @@ export default function StrategyEditor({
             label="Category / Battlefield Lane"
             value={category}
             onChange={(e) => setCategory(e.target.value)}
+            className="font-mono text-xs font-bold"
           >
             {STRATEGY_CATEGORIES.map((cat) => (
               <option key={cat} value={cat}>
@@ -132,6 +134,7 @@ export default function StrategyEditor({
             placeholder="e.g. Guild League Arena A"
             value={mapName}
             onChange={(e) => setMapName(e.target.value)}
+            className="font-mono text-xs"
           />
         </div>
 

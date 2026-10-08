@@ -3,27 +3,31 @@
 import Link from "next/link";
 import { Card } from "@/components/ui/Card";
 import Badge from "@/components/ui/Badge";
+import Button from "@/components/ui/Button";
 import { formatDate } from "@/utils/formatters";
 
 /**
- * Next Match Highlight Card
+ * Next Match Highlight Card with Retro Pixel Styling
  *
  * Why this exists:
  * Spotlights the imminent Guild Event with date, opponent/target, and lineup capacity progress.
+ * Adopts the Ragnarok Online quest/event banner feel: sharp borders, retro HP-bar style roster meter,
+ * and prominent action trigger.
  *
  * @param {Object} props - Component props
  * @param {Object|null} props.guildLeague - Next match details
  * @param {boolean} [props.isAdmin=false] - When true, directs to admin roster manager
+ * @returns {JSX.Element} Rendered next match banner card
  */
 export default function NextMatchCard({ guildLeague = null, isAdmin = false }) {
   if (!guildLeague) {
     return (
-      <Card className="p-6">
-        <h2 className="text-sm font-semibold text-zinc-900">
-          No Upcoming Events
+      <Card className="p-5 sm:p-6 bg-white">
+        <h2 className="text-sm font-bold font-pixel uppercase tracking-wide text-zinc-950">
+          No Upcoming Events Scheduled
         </h2>
-        <p className="mt-1 text-xs text-zinc-500">
-          There are currently no upcoming events scheduled.
+        <p className="mt-1 text-xs text-zinc-600">
+          There are currently no active matches or guild wars planned.
         </p>
       </Card>
     );
@@ -43,12 +47,12 @@ export default function NextMatchCard({ guildLeague = null, isAdmin = false }) {
     : `/roster/${guildLeague.id}`;
 
   return (
-    <Card className="p-5 sm:p-6">
+    <Card className="p-4.5 sm:p-6 bg-white pixel-shadow">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wide">
-              Next Event
+            <span className="font-pixel text-xs font-bold text-zinc-500 uppercase tracking-wide">
+              Imminent War
             </span>
             {isWoe ? (
               <Badge variant="warning" size="xs">WOE</Badge>
@@ -73,45 +77,45 @@ export default function NextMatchCard({ guildLeague = null, isAdmin = false }) {
             )}
           </div>
 
-          <h2 className="mt-2 text-lg sm:text-xl font-bold text-zinc-900 tracking-tight">
+          <h2 className="mt-2 text-lg sm:text-2xl font-bold font-pixel text-zinc-950 tracking-tight">
             {guildLeague.name}
           </h2>
 
-          <div className="mt-1.5 flex flex-wrap items-center gap-3 text-xs text-zinc-500">
-            <span>{formatDate(eventDate)}</span>
+          <div className="mt-1.5 flex flex-wrap items-center gap-3 text-xs text-zinc-600">
+            <span className="font-mono">{formatDate(eventDate)}</span>
             {guildLeague.opponent && (
               <span>
-                {isWoe ? "Target: " : "Opponent: "}
-                <strong className="text-zinc-800 font-medium">{guildLeague.opponent}</strong>
+                {isWoe ? "Target Castle: " : "Opponent Guild: "}
+                <strong className="text-zinc-950 font-bold">{guildLeague.opponent}</strong>
               </span>
             )}
           </div>
 
           {guildLeague.notes && (
-            <p className="mt-2 text-xs text-zinc-600 max-w-xl">
+            <p className="mt-2 text-xs text-zinc-600 max-w-xl leading-relaxed">
               {guildLeague.notes}
             </p>
           )}
         </div>
 
-        <Link
-          href={targetUrl}
-          className="inline-flex h-9 shrink-0 items-center justify-center rounded-lg bg-zinc-900 px-4 text-xs font-medium text-white hover:bg-zinc-800 transition-colors"
-        >
-          {isAdmin ? "Manage Lineup" : "View Roster"}
+        <Link href={targetUrl} className="shrink-0">
+          <Button variant="primary" size="md">
+            {isAdmin ? "Manage Lineup" : "View Roster"}
+          </Button>
         </Link>
       </div>
 
-      <div className="mt-5 pt-4 border-t border-zinc-100">
-        <div className="flex items-center justify-between text-xs text-zinc-500 mb-1.5">
-          <span>Roster Lineup</span>
-          <span className="font-medium text-zinc-800">
-            {rosterCount} / {maxRoster} Players ({percentage}%)
+      {/* RETRO RPG METER (HP / ROSTER BAR) */}
+      <div className="mt-5 pt-4 border-t-2 border-zinc-950">
+        <div className="flex items-center justify-between text-xs font-bold text-zinc-900 mb-1.5 uppercase">
+          <span>Roster Deployment</span>
+          <span className="font-mono">
+            {rosterCount} / {maxRoster} Combatants ({percentage}%)
           </span>
         </div>
-        <div className="h-1.5 w-full overflow-hidden rounded-full bg-zinc-100">
+        <div className="h-3 w-full border-2 border-zinc-950 bg-zinc-100 p-0.5">
           <div
-            className="h-full bg-zinc-800 rounded-full transition-all duration-200"
+            className="h-full bg-brand-600 pixel-bar-pattern transition-all duration-200"
             style={{ width: `${percentage}%` }}
           />
         </div>
