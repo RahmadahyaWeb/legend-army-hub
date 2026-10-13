@@ -155,6 +155,8 @@ async function handleStrategy(request, env, corsHeaders) {
 	const discordPayload = {
 		username: 'XKGBOT',
 
+		content: '@everyone',
+
 		allowed_mentions: {
 			parse: ['everyone', 'roles', 'users'],
 		},
