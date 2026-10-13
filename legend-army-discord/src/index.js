@@ -135,17 +135,18 @@ async function handleStrategy(request, env, corsHeaders) {
 	const category = String(body.category || '').trim();
 	const mapName = String(body.mapName || '').trim();
 
+	// Why this exists: Clean strategy broadcast without emoji/icon noise for better cross-device readability
 	const fields = [];
 	if (category) {
 		fields.push({
-			name: '📁 Category',
+			name: 'Category',
 			value: `**${category}**`,
 			inline: true,
 		});
 	}
 	if (mapName) {
 		fields.push({
-			name: '🗺️ Map / Arena',
+			name: 'Map / Arena',
 			value: `**${mapName}**`,
 			inline: true,
 		});
@@ -160,7 +161,7 @@ async function handleStrategy(request, env, corsHeaders) {
 
 		embeds: [
 			{
-				title: `⚔️ ${title}`,
+				title,
 
 				description: content,
 
@@ -236,7 +237,7 @@ async function handleGuildLeague(request, env, corsHeaders) {
 		opponent,
 		notes,
 		date,
-		status,
+		status: _status,
 		rosterUrl,
 		assignedPlayers,
 		maxPlayers,
@@ -264,26 +265,26 @@ async function handleGuildLeague(request, env, corsHeaders) {
 	const totalCapacity = isPolarity ? 50 : (Number(maxPlayers) || 60);
 	const fillPercentage = Math.round((totalAssigned / (totalCapacity || 1)) * 100);
 
-	// Why this exists: Strictly contextual and direct lineup broadcast without mixing terminology between events
+	// Why this exists: Clean lineup broadcast without emoji/icon noise for better cross-device readability
 	const fields = [];
 
 	if (isPolarity) {
 		// POLARITY: Share 10-party lineup
 		fields.push({
-			name: '📅 Match Date',
+			name: 'Match Date',
 			value: `**${date}**`,
 			inline: true,
 		});
 
 		fields.push({
-			name: '👥 Polarity Roster',
+			name: 'Polarity Roster',
 			value: `${totalAssigned} / 50 Players (${fillPercentage}%)`,
 			inline: true,
 		});
 
 		if (notes && String(notes).trim()) {
 			fields.push({
-				name: '📝 Notes',
+				name: 'Notes',
 				value: String(notes).slice(0, 1024),
 				inline: false,
 			});
@@ -298,7 +299,7 @@ async function handleGuildLeague(request, env, corsHeaders) {
 				});
 
 				fields.push({
-					name: '📋 Squad Formations (10 Parties)',
+					name: 'Squad Formations (10 Parties)',
 					value: teamLines.join('\n').slice(0, 1024),
 					inline: false,
 				});
@@ -306,35 +307,35 @@ async function handleGuildLeague(request, env, corsHeaders) {
 		}
 
 		fields.push({
-			name: '🌐 Polarity Lineup Link',
-			value: `👉 **[View Polarity Lineup](${rosterUrl})**`,
+			name: 'Polarity Lineup Link',
+			value: `**[View Polarity Lineup](${rosterUrl})**`,
 			inline: false,
 		});
 	} else if (isWoe) {
 		// WOE: Share castle squad lineup
 		fields.push({
-			name: '📅 Match Date',
+			name: 'Match Date',
 			value: `**${date}**`,
 			inline: true,
 		});
 
 		if (opponent && String(opponent).trim()) {
 			fields.push({
-				name: '🏰 Target Castle',
+				name: 'Target Castle',
 				value: `**${opponent}**`,
 				inline: true,
 			});
 		}
 
 		fields.push({
-			name: '👥 WOE Roster',
+			name: 'WOE Roster',
 			value: `${totalAssigned} / ${totalCapacity} Players (${fillPercentage}%)`,
 			inline: true,
 		});
 
 		if (notes && String(notes).trim()) {
 			fields.push({
-				name: '📝 Notes',
+				name: 'Notes',
 				value: String(notes).slice(0, 1024),
 				inline: false,
 			});
@@ -353,7 +354,7 @@ async function handleGuildLeague(request, env, corsHeaders) {
 				}
 
 				fields.push({
-					name: '📋 WOE Squad Formations',
+					name: 'WOE Squad Formations',
 					value: teamLines.join('\n').slice(0, 1024),
 					inline: false,
 				});
@@ -361,33 +362,33 @@ async function handleGuildLeague(request, env, corsHeaders) {
 		}
 
 		fields.push({
-			name: '🌐 WOE Lineup Link',
-			value: `👉 **[View WOE Lineup](${rosterUrl})**`,
+			name: 'WOE Lineup Link',
+			value: `**[View WOE Lineup](${rosterUrl})**`,
 			inline: false,
 		});
 	} else {
 		// GUILD LEAGUE: Lineup 3 Lane
 		fields.push({
-			name: '📅 Match Date',
+			name: 'Match Date',
 			value: `**${date}**`,
 			inline: true,
 		});
 
 		fields.push({
-			name: '⚔️ Opponent',
+			name: 'Opponent',
 			value: opponent ? `**${opponent}**` : '*TBA*',
 			inline: true,
 		});
 
 		fields.push({
-			name: '👥 Guild League Roster',
+			name: 'Guild League Roster',
 			value: `${totalAssigned} / ${totalCapacity} Players (${fillPercentage}%)`,
 			inline: true,
 		});
 
 		if (notes && String(notes).trim()) {
 			fields.push({
-				name: '📝 Notes',
+				name: 'Notes',
 				value: String(notes).slice(0, 1024),
 				inline: false,
 			});
@@ -407,7 +408,7 @@ async function handleGuildLeague(request, env, corsHeaders) {
 				}
 
 				fields.push({
-					name: '📋 Team Formations (3 Lanes)',
+					name: 'Team Formations (3 Lanes)',
 					value: teamLines.join('\n').slice(0, 1024),
 					inline: false,
 				});
@@ -415,8 +416,8 @@ async function handleGuildLeague(request, env, corsHeaders) {
 		}
 
 		fields.push({
-			name: '🌐 Guild League Lineup Link',
-			value: `👉 **[View Guild League Lineup](${rosterUrl})**`,
+			name: 'Guild League Lineup Link',
+			value: `**[View Guild League Lineup](${rosterUrl})**`,
 			inline: false,
 		});
 	}
@@ -424,33 +425,33 @@ async function handleGuildLeague(request, env, corsHeaders) {
 	// Embed Header Description & Color tailoring
 	const embedConfig = isPolarity
 		? {
-				title: `💠 Polarity Lineup: ${name}`,
+				title: `Polarity Lineup: ${name}`,
 				color: 2339316, // Cyan / Aqua
 				description: [
-					'📢 **Polarity lineup has been updated.**',
+					'**Polarity lineup has been updated.**',
 					'Please check your assigned squad and slot position:',
-					`🔗 **[👉 View Polarity Lineup](${rosterUrl})**`,
+					`**[View Polarity Lineup](${rosterUrl})**`,
 				].join('\n'),
 				buttonLabel: 'View Polarity Lineup',
 		  }
 		: isWoe
 		? {
-				title: `🏰 War of Emperium Lineup: ${name}`,
+				title: `War of Emperium Lineup: ${name}`,
 				color: 15844367, // Gold / Amber
 				description: [
-					'📢 **WOE lineup has been updated.**',
+					'**WOE lineup has been updated.**',
 					'Please check your assigned squad and slot position:',
-					`🔗 **[👉 View WOE Lineup](${rosterUrl})**`,
+					`**[View WOE Lineup](${rosterUrl})**`,
 				].join('\n'),
 				buttonLabel: 'View WOE Lineup',
 		  }
 		: {
-				title: `⚔️ Guild League Lineup: ${name}`,
+				title: `Guild League Lineup: ${name}`,
 				color: 15158332, // Crimson / Red
 				description: [
-					'📢 **Guild League lineup has been updated.**',
+					'**Guild League lineup has been updated.**',
 					'Please check your lane assignment (Top/Mid/Bot) and slot position:',
-					`🔗 **[👉 View Guild League Lineup](${rosterUrl})**`,
+					`**[View Guild League Lineup](${rosterUrl})**`,
 				].join('\n'),
 				buttonLabel: 'View Guild League Lineup',
 		  };
