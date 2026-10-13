@@ -63,8 +63,8 @@ export default function CopyRosterModal({
     setError("");
 
     try {
-      await copyRoster(targetLeagueId, selectedSourceId, true);
-      if (onSuccess) onSuccess();
+      const res = await copyRoster(targetLeagueId, selectedSourceId, true);
+      if (onSuccess) onSuccess(res);
       onClose();
     } catch (err) {
       console.error("Copy roster error:", err);
@@ -79,7 +79,7 @@ export default function CopyRosterModal({
       open={open}
       onClose={() => !copying && onClose()}
       title="Copy Roster from Match"
-      description="Duplicate team formations and player slot assignments from a previous match."
+      description="Duplicate team formations and player slot assignments from a previous match. Members not in current members data will be retained and marked."
       icon={Copy}
       size="sm"
       footer={

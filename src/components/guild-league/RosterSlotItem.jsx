@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRightLeft, Trash2, UserPlus } from "lucide-react";
+import { AlertTriangle, ArrowRightLeft, Trash2, UserPlus } from "lucide-react";
 import { ClassBadge } from "@/utils/classColors";
 import { formatNumber } from "@/utils/formatters";
 
@@ -14,12 +14,20 @@ import { formatNumber } from "@/utils/formatters";
  * Adopts the classic Ragnarok Online party roster row aesthetic: clear slot indexing (#1..#10),
  * crisp player nickname contrast, color-coded class badge, and mono Gear Score values.
  *
+ * Tricky logic:
+ * When a player on the roster is no longer found in current master members data
+ * (due to leaving the guild or changing their in-game nickname), we render an amber
+ * warning badge ([NOT IN MEMBERS]) and amber-tinted row. The member is intentionally
+ * kept on the roster so squad formations remain intact until an officer updates them.
+ *
  * @param {Object} props - Component props
  * @param {number} props.slotNumber - 1-indexed slot number (1..10)
  * @param {Object|null} [props.member] - Assigned roster member if present
+ * @param {Object|null} [props.occupant] - Alternative prop for assigned member
  * @param {boolean} [props.readOnly=false] - When true, disables interactive mutations
  * @param {(slot: { teamNumber: number, slotNumber: number }) => void} [props.onAssign]
  * @param {(member: Object) => void} [props.onSelect]
+ * @param {(member: Object) => void} [props.onManage]
  * @param {(member: Object) => void} [props.onRemove]
  * @param {number} props.teamNumber - Parent team number
  * @returns {JSX.Element} Rendered slot row
@@ -84,29 +92,78 @@ export default function RosterSlotItem({
     );
   }
 
-  // 2. OCCUPIED SLOT
+  const isMissing = Boolean(activeMember.isMissingMember);
+  const isInactive = Boolean(activeMember.isInactiveMember);
+  const isNickChanged = Boolean(activeMember.isNicknameChanged);
+
+  // 2. OCCUPIED SLOT (Retained even if not found in data members, with warning marker)
   return (
     <div
       onClick={() => {
         if (!readOnly && handleSelect) handleSelect(activeMember);
       }}
       className={`group flex items-center justify-between px-3 py-1.5 text-xs transition-colors select-none ${
-        readOnly ? "hover:bg-zinc-50" : "cursor-pointer hover:bg-zinc-100/70"
-      }`}
+        isMissing
+          ? "bg-amber-50/70 border-l-2 border-l-amber-500 hover:bg-amber-100/70"
+          : isInactive
+          ? "bg-zinc-100/60 border-l-2 border-l-zinc-400 hover:bg-zinc-100"
+          : readOnly
+          ? "hover:bg-zinc-50"
+          : "cursor-pointer hover:bg-zinc-100/70"
+      } ${!readOnly ? "cursor-pointer" : ""}`}
     >
       <div className="flex min-w-0 items-center gap-2">
-        <span className="w-5 font-bold font-mono text-[11px] text-zinc-500 group-hover:text-zinc-950 transition-colors">
+        <span
+          className={`w-5 font-bold font-mono text-[11px] transition-colors ${
+            isMissing ? "text-amber-800 font-black" : "text-zinc-500 group-hover:text-zinc-950"
+          }`}
+        >
           #{slotNumber}
         </span>
         <div className="min-w-0 pr-1.5">
-          <div className="truncate font-bold text-zinc-950 text-xs sm:text-[13px] leading-tight">
-            {activeMember.nickname}
+          <div className="flex items-center gap-1.5 min-w-0">
+            <span
+              className={`truncate font-bold text-xs sm:text-[13px] leading-tight ${
+                isMissing ? "text-amber-950 font-black" : "text-zinc-950"
+              }`}
+            >
+              {activeMember.nickname}
+            </span>
+
+            {/* Visual warning mark for members not in master members data */}
+            {isMissing && (
+              <span
+                className="inline-flex shrink-0 items-center gap-1 border border-amber-600 bg-amber-200/90 px-1 py-0.2 text-[9px] font-black text-amber-950 uppercase font-mono tracking-tight"
+                title="Member ini tidak ada di data members (kemungkinan ganti nickname atau keluar guild)"
+              >
+                <AlertTriangle className="size-2.5 text-amber-800 shrink-0" />
+                <span>Not in Members</span>
+              </span>
+            )}
+
+            {isInactive && !isMissing && (
+              <span
+                className="inline-flex shrink-0 items-center border border-zinc-400 bg-zinc-200 px-1 py-0.2 text-[9px] font-bold text-zinc-700 font-mono uppercase"
+                title="Member berstatus Nonaktif di master data"
+              >
+                Inactive
+              </span>
+            )}
           </div>
+
           <div className="mt-0.5 flex flex-wrap items-center gap-1.5">
             <ClassBadge className={activeMember.className} size="xs" />
             {Number(activeMember.level) > 0 && (
               <span className="text-[10px] font-mono text-zinc-600 font-bold">
                 Lv. {activeMember.level}
+              </span>
+            )}
+            {isNickChanged && activeMember.currentMemberNickname && (
+              <span
+                className="text-[10px] font-mono text-sky-800 bg-sky-50 border border-sky-300 px-1 py-0.2"
+                title={`Nickname terdaftar di data member: ${activeMember.currentMemberNickname}`}
+              >
+                ➔ {activeMember.currentMemberNickname}
               </span>
             )}
           </div>

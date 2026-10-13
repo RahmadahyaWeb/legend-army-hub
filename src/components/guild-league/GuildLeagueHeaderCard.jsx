@@ -1,5 +1,6 @@
 "use client";
 
+import { AlertTriangle } from "lucide-react";
 import { formatDate, formatNumber } from "@/utils/formatters";
 import Badge from "@/components/ui/Badge";
 
@@ -11,12 +12,17 @@ import Badge from "@/components/ui/Badge";
  * and key formation metrics (deployed roster %, average gear score, active teams)
  * uniformly in both admin and public roster views using sharp Ragnarok Online banner aesthetics.
  *
+ * Tricky logic:
+ * When missingMembersCount > 0, renders a high-visibility amber metric card indicating
+ * how many roster slots currently contain players not found in master members data.
+ *
  * @param {Object} props - Component props
  * @param {Object} props.guildLeague - Guild League match data
  * @param {number} props.totalAssigned - Number of currently deployed players
  * @param {number} props.maxRoster - Maximum allowed roster slots
  * @param {number} props.averageGearScore - Computed average gear score
  * @param {number} props.maxTeams - Number of teams
+ * @param {number} [props.missingMembersCount=0] - Number of roster members not found in master members data
  * @param {React.ReactNode} [props.actions] - Optional actions (e.g. tabs or filter bar)
  * @returns {JSX.Element|null} Rendered event header banner
  */
@@ -26,6 +32,7 @@ export default function GuildLeagueHeaderCard({
   maxRoster = 0,
   averageGearScore = 0,
   maxTeams = 2,
+  missingMembersCount = 0,
   actions = null,
 }) {
   if (!guildLeague) return null;
@@ -123,6 +130,21 @@ export default function GuildLeagueHeaderCard({
               {isPolarity ? "Parties" : "Formations"}
             </span>
           </div>
+
+          {missingMembersCount > 0 && (
+            <div className="border-2 border-amber-600 bg-amber-50 p-2.5 min-w-24 comic-shadow-sm">
+              <span className="text-[10px] font-bold font-sans text-amber-800 block uppercase tracking-wider">
+                Not in Members
+              </span>
+              <span className="text-sm sm:text-base font-bold text-amber-950 font-mono flex items-center gap-1.5">
+                <AlertTriangle className="size-3.5 text-amber-700 shrink-0" />
+                <span>{missingMembersCount}</span>
+              </span>
+              <span className="text-[10px] text-amber-700 block font-sans">
+                Needs attention
+              </span>
+            </div>
+          )}
         </div>
       </div>
 

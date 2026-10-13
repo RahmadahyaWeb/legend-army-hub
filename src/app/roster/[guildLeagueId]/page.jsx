@@ -96,6 +96,12 @@ export default function PublicRosterPage() {
     return Math.round(total / roster.length);
   }, [roster]);
 
+  // Why this exists:
+  // Detect roster members who are not in master members data to show warning metrics
+  const missingMembersCount = useMemo(() => {
+    return roster.filter((r) => r.isMissingMember).length;
+  }, [roster]);
+
   const allTeamNumbers = useMemo(() => {
     return Array.from({ length: maxTeams }, (_, i) => i + 1);
   }, [maxTeams]);
@@ -232,6 +238,7 @@ export default function PublicRosterPage() {
           maxRoster={maxRoster}
           averageGearScore={averageGearScore}
           maxTeams={maxTeams}
+          missingMembersCount={missingMembersCount}
           actions={
             !isUnified && (
               <div className="mt-4 border-t-2 border-zinc-950 pt-3.5">

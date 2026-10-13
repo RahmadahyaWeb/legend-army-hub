@@ -186,10 +186,32 @@ export async function POST(request, { params }) {
     // Synchronize gear scores and stats with current members table
     await syncRosterWithMembers(sql, targetLeagueId);
 
+    // Why this exists:
+    // Determine how many copied members are no longer present in master members table,
+    // so guild officers immediately know if any players require re-assignment or nickname updates.
+    const [missingStats] = await sql`
+      SELECT COUNT(*)::INT AS "missingCount"
+      FROM guild_league_rosters r
+      LEFT JOIN (
+        SELECT DISTINCT ON (LOWER(TRIM(nickname))) id, nickname
+        FROM members
+        ORDER BY LOWER(TRIM(nickname)), updated_at DESC
+      ) m ON (
+        (r.member_id IS NOT NULL AND r.member_id = m.id)
+        OR LOWER(TRIM(r.nickname)) = LOWER(TRIM(m.nickname))
+      )
+      WHERE r.guild_league_id = ${targetLeagueId}
+        AND m.id IS NULL;
+    `;
+    const missingCount = Number(missingStats?.missingCount) || 0;
+
     return NextResponse.json({
       success: true,
       copiedCount: count,
-      message: `Copied ${count} roster members successfully.`,
+      missingCount,
+      message: missingCount > 0
+        ? `Copied ${count} roster members (${missingCount} member tidak ada di data members, telah ditandai).`
+        : `Copied ${count} roster members successfully.`,
     });
   } catch (error) {
     console.error("POST /api/guild-leagues/[id]/copy-roster error:", error);

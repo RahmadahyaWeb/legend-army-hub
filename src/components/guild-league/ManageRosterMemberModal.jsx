@@ -2,10 +2,11 @@
 
 import { useEffect, useMemo, useState } from "react";
 import {
+  AlertTriangle,
   ArrowRightLeft,
   Check,
-  Loader2,
   Trash2,
+  UserPlus,
   X,
 } from "lucide-react";
 import { assignRosterMember, removeRosterMember } from "@/lib/api";
@@ -16,9 +17,16 @@ import Button from "@/components/ui/Button";
  * ManageRosterMemberModal with Retro Pixel Styling
  *
  * Why this exists:
- * Allows guild officers to relocate a player to a new team/slot or perform
- * a mutual swap with another occupant, or cleanly remove the player from the lineup.
+ * Allows guild officers to relocate a player to a new team/slot, perform
+ * a mutual swap with another occupant, cleanly remove the player from the lineup,
+ * or replace an outdated/missing player with an active guild member.
  * Styled after classic Ragnarok Online slot management windows.
+ *
+ * Tricky logic:
+ * When managing a player who is not in master members data (e.g. left guild
+ * or changed nickname), we highlight their status with an alert banner and offer
+ * a direct "Replace with Active Member" button that opens the member assignment picker
+ * directly for this specific slot.
  *
  * @param {Object} props - Component props
  * @param {boolean} props.open - Modal visibility
@@ -31,6 +39,7 @@ import Button from "@/components/ui/Button";
  * @param {() => void} [props.onSuccess]
  * @param {(member: Object, targetTeam: number, targetSlot: number) => void} [props.onMove]
  * @param {(member: Object) => void} [props.onRemove]
+ * @param {(member: Object) => void} [props.onReplace]
  * @returns {JSX.Element|null}
  */
 export default function ManageRosterMemberModal({
@@ -44,6 +53,7 @@ export default function ManageRosterMemberModal({
   onSuccess,
   onMove,
   onRemove,
+  onReplace,
 }) {
   const [targetTeam, setTargetTeam] = useState(1);
   const [targetSlot, setTargetSlot] = useState(1);
@@ -167,13 +177,22 @@ export default function ManageRosterMemberModal({
               T{member.teamNumber}
             </div>
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <h3 className="text-sm sm:text-base font-bold font-sans text-zinc-950">
                   {member.nickname}
                 </h3>
                 <span className="border border-zinc-900 bg-white px-1.5 py-0.2 text-[10px] font-mono font-bold text-zinc-800">
                   Slot #{member.slotNumber}
                 </span>
+                {member.isMissingMember && (
+                  <span
+                    className="inline-flex items-center gap-1 border border-amber-600 bg-amber-200/90 px-1.5 py-0.2 text-[10px] font-black text-amber-950 uppercase font-mono tracking-tight"
+                    title="Member tidak terdaftar di data master members"
+                  >
+                    <AlertTriangle className="size-3 text-amber-800 shrink-0" />
+                    <span>Not in Members</span>
+                  </span>
+                )}
               </div>
               <div className="mt-0.5 flex flex-wrap items-center gap-2 text-xs text-zinc-600">
                 <ClassBadge className={member.className} size="xs" />
@@ -197,6 +216,39 @@ export default function ManageRosterMemberModal({
 
         {/* BODY */}
         <div className="p-5 space-y-4">
+          {/* WARNING BANNER FOR MEMBERS NOT IN DATA MEMBERS */}
+          {member.isMissingMember && (
+            <div className="border-2 border-amber-600 bg-amber-50 p-3.5 text-xs text-amber-950 space-y-2.5 comic-shadow-sm">
+              <div className="flex items-start gap-2.5">
+                <AlertTriangle className="size-4.5 text-amber-700 shrink-0 mt-0.5" />
+                <div className="flex-1 min-w-0">
+                  <div className="font-bold font-sans uppercase tracking-wide text-amber-950">
+                    Member Tidak Terdaftar di Data Members
+                  </div>
+                  <p className="mt-1 text-[11px] text-amber-900 leading-relaxed">
+                    Pemain ini tidak ditemukan di master data (kemungkinan berganti nickname di dalam game atau telah keluar guild). Pemain tetap berada di roster agar struktur formasi tidak hilang.
+                  </p>
+                </div>
+              </div>
+
+              {onReplace && (
+                <div className="pt-2 border-t border-amber-300 flex justify-end">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onClose();
+                      onReplace(member);
+                    }}
+                    className="inline-flex items-center gap-1.5 border-2 border-zinc-950 bg-amber-400 px-3 py-1.5 text-xs font-bold text-zinc-950 hover:bg-amber-300 active:translate-x-[1px] active:translate-y-[1px] transition comic-shadow-sm"
+                  >
+                    <UserPlus className="size-3.5" />
+                    <span>Ganti dengan Member Aktif</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
           {error && (
             <div className="border-2 border-red-700 bg-red-50 p-3 text-xs font-bold text-red-900">
               {error}

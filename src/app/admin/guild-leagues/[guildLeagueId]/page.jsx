@@ -4,12 +4,12 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import {
+  AlertTriangle,
   ArrowLeft,
   Castle,
-  Copy,
   ExternalLink,
+  Filter,
   Layers,
-  Send,
   Shield,
   Swords,
   Zap,
@@ -79,6 +79,7 @@ export default function GuildLeagueDetailPage() {
   const [copyModalOpen, setCopyModalOpen] = useState(false);
   const [sendingDiscord, setSendingDiscord] = useState(false);
   const [discordMsg, setDiscordMsg] = useState("");
+  const [filterMissingOnly, setFilterMissingOnly] = useState(false);
 
   // In-flight mutations counter to prevent race conditions during rapid actions
   const inFlightOpsRef = useRef(0);
@@ -94,7 +95,7 @@ export default function GuildLeagueDetailPage() {
       if (!silent && !data) {
         setLoading(true);
       }
-      const res = await fetchGuildLeagueDetail(guildLeagueId);
+      const res = await fetchGuildLeagueDetail(guildLeagueId, true);
       // Only set full state if no rapid mutations are currently in flight
       if (inFlightOpsRef.current === 0) {
         setData(res);
@@ -136,6 +137,21 @@ export default function GuildLeagueDetailPage() {
       0
     );
     return Math.round(total / roster.length);
+  }, [roster]);
+
+  // Why this exists:
+  // Detect roster members who are not in master members data (e.g. left guild or changed nickname).
+  // The system flags them visually and preserves their formation positions so squads don't break.
+  const missingMembersCount = useMemo(() => {
+    return roster.filter((r) => r.isMissingMember).length;
+  }, [roster]);
+
+  const teamsWithMissing = useMemo(() => {
+    const set = new Set();
+    roster.forEach((r) => {
+      if (r.isMissingMember) set.add(Number(r.teamNumber));
+    });
+    return set;
   }, [roster]);
 
   // Group all teams by lane (Top, Mid, Bot, or Unassigned)
@@ -270,6 +286,8 @@ export default function GuildLeagueDetailPage() {
         gearScore: Number(member.gearScore) || 0,
         teamNumber: targetTeam,
         slotNumber: targetSlot,
+        isMissingMember: false,
+        isInactiveMember: member.isActive === false,
       };
 
       // Remove previous occupant of this slot or this member anywhere else
@@ -609,6 +627,7 @@ export default function GuildLeagueDetailPage() {
         maxRoster={maxRoster}
         averageGearScore={averageGearScore}
         maxTeams={maxTeams}
+        missingMembersCount={missingMembersCount}
         actions={
           !isUnified && (
             <div className="mt-4 border-t-2 border-zinc-200 pt-3.5">
@@ -621,6 +640,36 @@ export default function GuildLeagueDetailPage() {
           )
         }
       />
+
+      {/* WARNING BANNER FOR MEMBERS NOT IN DATA MEMBERS */}
+      {missingMembersCount > 0 && (
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-2 border-amber-600 bg-amber-50 p-3.5 text-xs text-amber-950 comic-shadow-sm">
+          <div className="flex items-start sm:items-center gap-2.5">
+            <AlertTriangle className="size-5 text-amber-700 shrink-0 mt-0.5 sm:mt-0" />
+            <div>
+              <span className="font-bold font-sans text-amber-950">
+                Perhatian: Terdapat {missingMembersCount} member di roster yang tidak ada di data members.
+              </span>
+              <p className="text-[11px] text-amber-900 mt-0.5">
+                Member tetap disimpan di formasi dan ditandai [NOT IN MEMBERS] agar susunan tim tidak hilang. Kemungkinan member telah berganti nickname di game atau keluar guild.
+              </p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setFilterMissingOnly(!filterMissingOnly)}
+            className={`inline-flex shrink-0 items-center gap-1.5 border-2 border-zinc-950 px-3 py-1.5 text-xs font-bold transition active:translate-x-[1px] active:translate-y-[1px] comic-shadow-sm ${
+              filterMissingOnly
+                ? "bg-amber-600 text-white hover:bg-amber-700"
+                : "bg-white text-zinc-950 hover:bg-zinc-100"
+            }`}
+          >
+            <Filter className="size-3.5" />
+            <span>{filterMissingOnly ? "Tampilkan Semua Formasi" : `Filter Perlu Dicek (${missingMembersCount})`}</span>
+          </button>
+        </div>
+      )}
 
       {/* TACTICAL DIRECTIVES BAR (Guild League 3-lane format only) */}
       {!isUnified && <TacticalDirectivesBar eventType={eventType} />}
@@ -648,7 +697,7 @@ export default function GuildLeagueDetailPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-            {allTeamNumbers.map((tNum) => {
+            {(filterMissingOnly ? allTeamNumbers.filter((tNum) => teamsWithMissing.has(tNum)) : allTeamNumbers).map((tNum) => {
               const team = teams.find((t) => Number(t.teamNumber) === tNum);
               const teamMembers = roster.filter(
                 (r) => Number(r.teamNumber) === tNum
@@ -692,7 +741,7 @@ export default function GuildLeagueDetailPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
-            {allTeamNumbers.map((tNum) => {
+            {(filterMissingOnly ? allTeamNumbers.filter((tNum) => teamsWithMissing.has(tNum)) : allTeamNumbers).map((tNum) => {
               const team = teams.find((t) => Number(t.teamNumber) === tNum);
               const teamMembers = roster.filter(
                 (r) => Number(r.teamNumber) === tNum
@@ -719,13 +768,18 @@ export default function GuildLeagueDetailPage() {
           {LANE_SECTIONS.map((lane) => {
             if (activeTab !== "all" && activeTab !== lane.id) return null;
 
+            const baseTeams = laneGroups[lane.id] || [];
+            const effectiveTeams = filterMissingOnly
+              ? baseTeams.filter((tNum) => teamsWithMissing.has(tNum))
+              : baseTeams;
+
             return (
               <LaneGroupSection
                 key={lane.id}
                 id={lane.id}
                 name={lane.name}
                 icon={lane.icon}
-                teamNumbers={laneGroups[lane.id] || []}
+                teamNumbers={effectiveTeams}
                 teams={teams}
                 roster={roster}
                 stat={laneStats[lane.id]}
@@ -745,7 +799,11 @@ export default function GuildLeagueDetailPage() {
                 id="unassigned"
                 name="Reserve / Unassigned Formations"
                 icon={Layers}
-                teamNumbers={laneGroups.unassigned}
+                teamNumbers={
+                  filterMissingOnly
+                    ? laneGroups.unassigned.filter((tNum) => teamsWithMissing.has(tNum))
+                    : laneGroups.unassigned
+                }
                 teams={teams}
                 roster={roster}
                 stat={laneStats.unassigned}
@@ -786,13 +844,25 @@ export default function GuildLeagueDetailPage() {
         onSuccess={() => loadDetail(true)}
         onMove={handleMoveMember}
         onRemove={handleRemoveMember}
+        onReplace={(member) => {
+          setSelectedMember(null);
+          setAssignSlot({
+            teamNumber: Number(member.teamNumber),
+            slotNumber: Number(member.slotNumber),
+          });
+        }}
       />
 
       <CopyRosterModal
         open={copyModalOpen}
         targetLeagueId={guildLeagueId}
         onClose={() => setCopyModalOpen(false)}
-        onSuccess={() => loadDetail(true)}
+        onSuccess={(result) => {
+          if (result?.message) {
+            success("Roster Copied", result.message);
+          }
+          loadDetail(true);
+        }}
       />
     </div>
   );
