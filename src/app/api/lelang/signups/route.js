@@ -81,21 +81,21 @@ export async function POST(request) {
 
     if (!nickname || nickname.length < 2) {
       return NextResponse.json(
-        { error: "In-game Name wajib diisi (minimal 2 karakter)." },
+        { error: "In-game Character Name (IGN) is required (minimum 2 characters)." },
         { status: 400 }
       );
     }
 
     if (!discordTag || discordTag.length < 2) {
       return NextResponse.json(
-        { error: "Discord Name wajib diisi untuk keperluan mention saat lelang." },
+        { error: "Discord Tag is required for queue notifications." },
         { status: 400 }
       );
     }
 
     if (!itemTitle) {
       return NextResponse.json(
-        { error: "Item lelang wajib dipilih." },
+        { error: "Auction item selection is required." },
         { status: 400 }
       );
     }
@@ -132,13 +132,13 @@ export async function POST(request) {
 
     return NextResponse.json({
       ok: true,
-      message: `Pendaftaran berhasil dikirim! Menunggu konfirmasi admin untuk masuk ke antrian ${itemTitle}.`,
+      message: `Registration submitted! Awaiting leadership confirmation to enter the ${itemTitle} queue.`,
       signupId,
     });
   } catch (err) {
     console.error("POST /api/lelang/signups error:", err);
     return NextResponse.json(
-      { error: err.message || "Gagal mengirim pendaftaran antrian." },
+      { error: err.message || "Failed to submit queue registration." },
       { status: 500 }
     );
   }

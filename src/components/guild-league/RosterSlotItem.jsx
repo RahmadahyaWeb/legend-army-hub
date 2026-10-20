@@ -134,7 +134,7 @@ export default function RosterSlotItem({
             {isMissing && (
               <span
                 className="inline-flex shrink-0 items-center gap-1 border border-amber-600 bg-amber-200/90 px-1 py-0.2 text-[9px] font-black text-amber-950 uppercase font-mono tracking-tight"
-                title="Member ini tidak ada di data members (kemungkinan ganti nickname atau keluar guild)"
+                title="Member not found in master member roster (possibly renamed or left guild)"
               >
                 <AlertTriangle className="size-2.5 text-amber-800 shrink-0" />
                 <span>Not in Members</span>
@@ -144,7 +144,7 @@ export default function RosterSlotItem({
             {isInactive && !isMissing && (
               <span
                 className="inline-flex shrink-0 items-center border border-zinc-400 bg-zinc-200 px-1 py-0.2 text-[9px] font-bold text-zinc-700 font-mono uppercase"
-                title="Member berstatus Nonaktif di master data"
+                title="Member is marked inactive in guild master roster"
               >
                 Inactive
               </span>
@@ -161,7 +161,7 @@ export default function RosterSlotItem({
             {isNickChanged && activeMember.currentMemberNickname && (
               <span
                 className="text-[10px] font-mono text-sky-800 bg-sky-50 border border-sky-300 px-1 py-0.2"
-                title={`Nickname terdaftar di data member: ${activeMember.currentMemberNickname}`}
+                title={`Registered nickname in member roster: ${activeMember.currentMemberNickname}`}
               >
                 ➔ {activeMember.currentMemberNickname}
               </span>

@@ -95,7 +95,7 @@ export default function PublicDashboard() {
           <div className="flex items-center gap-2">
             <Link href="/lelang">
               <Button variant="secondary" size="xs" icon={Gavel} className="!border-brand-600 !bg-brand-50 !text-brand-950 font-bold">
-                Arena Bid
+                Auction Arena
               </Button>
             </Link>
 
@@ -134,7 +134,7 @@ export default function PublicDashboard() {
             <div className="flex flex-wrap items-center gap-2.5 shrink-0">
               <Link href="/lelang">
                 <Button variant="primary" size="md" icon={Gavel} className="!bg-brand-600 !text-white hover:!bg-brand-700">
-                  Arena Bid Lelang
+                  Auction Arena
                 </Button>
               </Link>
               <Link href="/valkyrie-cup">

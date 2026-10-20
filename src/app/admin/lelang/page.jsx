@@ -120,7 +120,7 @@ export default function AdminAuctionPage() {
     itemId: "",
     itemTitle: "",
     nickname: "",
-    note: "Sesi Lelang Guild",
+    note: "Guild Auction Session",
     vacateSlotNumber: "",
   });
 
@@ -138,7 +138,7 @@ export default function AdminAuctionPage() {
       setData(res);
     } catch (err) {
       console.error("Admin auction load error:", err);
-      toastError("Gagal memuat data lelang.");
+      toastError("Failed to load auction data.");
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -173,12 +173,12 @@ export default function AdminAuctionPage() {
       setReviewModalOpen(false);
       success(
         reviewAction === "approve"
-          ? `Pendaftaran ${targetSignup.nickname} berhasil disetujui!`
-          : `Pendaftaran ${targetSignup.nickname} berhasil ditolak.`
+          ? `Registration for "${targetSignup.nickname}" approved successfully!`
+          : `Registration for "${targetSignup.nickname}" rejected.`
       );
       loadData(true);
     } catch (err) {
-      toastError(err.message || "Gagal memproses review.");
+      toastError(err.message || "Failed to process review.");
     } finally {
       setActionLoading(false);
     }
@@ -186,13 +186,13 @@ export default function AdminAuctionPage() {
 
   // Delete Signup
   const handleDeleteSignup = async (id, nick) => {
-    if (!confirm(`Hapus pendaftaran untuk "${nick}"?`)) return;
+    if (!confirm(`Delete registration for "${nick}"?`)) return;
     try {
       await deleteAuctionSignup(id);
-      success("Pendaftaran berhasil dihapus.");
+      success("Registration deleted successfully.");
       loadData(true);
     } catch (err) {
-      toastError(err.message || "Gagal menghapus.");
+      toastError(err.message || "Failed to delete registration.");
     }
   };
 
@@ -229,23 +229,23 @@ export default function AdminAuctionPage() {
         ...itemForm,
       });
       setItemModalOpen(false);
-      success(`Item "${itemForm.title}" berhasil disimpan.`);
+      success(`Item "${itemForm.title}" saved successfully.`);
       loadData(true);
     } catch (err) {
-      toastError(err.message || "Gagal menyimpan item.");
+      toastError(err.message || "Failed to save item.");
     } finally {
       setActionLoading(false);
     }
   };
 
   const handleDeleteItem = async (id, title) => {
-    if (!confirm(`Hapus item "${title}" beserta semua slot antriannya?`)) return;
+    if (!confirm(`Delete item "${title}" and all its queue slots?`)) return;
     try {
       await deleteAuctionItem(id);
-      success(`Item "${title}" berhasil dihapus.`);
+      success(`Item "${title}" deleted successfully.`);
       loadData(true);
     } catch (err) {
-      toastError(err.message || "Gagal menghapus item.");
+      toastError(err.message || "Failed to delete item.");
     }
   };
 
@@ -281,23 +281,23 @@ export default function AdminAuctionPage() {
         ...slotForm,
       });
       setSlotModalOpen(false);
-      success(`Slot #${slotForm.slotNumber} berhasil diperbarui.`);
+      success(`Slot #${slotForm.slotNumber} updated successfully.`);
       loadData(true);
     } catch (err) {
-      toastError(err.message || "Gagal menyimpan slot.");
+      toastError(err.message || "Failed to save slot.");
     } finally {
       setActionLoading(false);
     }
   };
 
   const handleDeleteSlot = async (itemId, slotNumber, nick) => {
-    if (!confirm(`Kosongkan Slot #${slotNumber} (${nick})?`)) return;
+    if (!confirm(`Vacate Slot #${slotNumber} (${nick})?`)) return;
     try {
       await deleteAuctionSlot({ itemId, slotNumber });
-      success(`Slot #${slotNumber} berhasil dikosongkan.`);
+      success(`Slot #${slotNumber} vacated successfully.`);
       loadData(true);
     } catch (err) {
-      toastError(err.message || "Gagal mengosongkan slot.");
+      toastError(err.message || "Failed to vacate slot.");
     }
   };
 
@@ -307,7 +307,7 @@ export default function AdminAuctionPage() {
       itemId: item.id,
       itemTitle: item.title,
       nickname: slot.nickname,
-      note: "Pemenang Lelang",
+      note: "Auction Winner",
       vacateSlotNumber: String(slot.slot_number),
     });
     setWinnerModalOpen(true);
@@ -319,28 +319,28 @@ export default function AdminAuctionPage() {
     try {
       await saveAuctionWinner(winnerForm);
       setWinnerModalOpen(false);
-      success(`Pemenang ${winnerForm.nickname} berhasil dicatat!`);
+      success(`Winner "${winnerForm.nickname}" recorded successfully!`);
       loadData(true);
     } catch (err) {
-      toastError(err.message || "Gagal mencatat pemenang.");
+      toastError(err.message || "Failed to record winner.");
     } finally {
       setActionLoading(false);
     }
   };
 
   const handleDeleteWinner = async (id, nick) => {
-    if (!confirm(`Hapus catatan pemenang ${nick}?`)) return;
+    if (!confirm(`Delete winner record for "${nick}"?`)) return;
     try {
       await deleteAuctionWinner(id);
-      success("Catatan pemenang berhasil dihapus.");
+      success("Winner record deleted successfully.");
       loadData(true);
     } catch (err) {
-      toastError(err.message || "Gagal menghapus catatan.");
+      toastError(err.message || "Failed to delete winner record.");
     }
   };
 
   if (loading) {
-    return <Loading fullScreen message="Memuat Dashboard Admin Lelang..." />;
+    return <Loading fullScreen message="Loading Auction Arena Dashboard..." />;
   }
 
   return (
@@ -357,13 +357,13 @@ export default function AdminAuctionPage() {
               target="_blank"
               className="inline-flex items-center gap-1 text-xs text-zinc-500 hover:text-brand-600 font-mono"
             >
-              <span>Buka Halaman Publik</span>
+              <span>View Public Page</span>
               <ExternalLink className="size-3" />
             </Link>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black font-sans text-zinc-950 tracking-tight flex items-center gap-2">
             <Gavel className="size-7 text-brand-600" />
-            <span>Manajemen Arena Bid & Lelang</span>
+            <span>Auction Arena Management</span>
           </h1>
         </div>
 
@@ -375,7 +375,7 @@ export default function AdminAuctionPage() {
             onClick={() => loadData(false)}
             disabled={refreshing}
           >
-            {refreshing ? "Memuat..." : "Refresh Data"}
+            {refreshing ? "Refreshing..." : "Refresh"}
           </Button>
 
           <Button
@@ -385,7 +385,7 @@ export default function AdminAuctionPage() {
             onClick={() => handleOpenItemModal()}
             className="!bg-brand-600 text-white hover:!bg-brand-700"
           >
-            Tambah Item
+            Add Item
           </Button>
         </div>
       </div>
@@ -402,46 +402,46 @@ export default function AdminAuctionPage() {
           <div className="text-2xl sm:text-3xl font-black font-mono text-amber-600">
             {data.summary.pendingSignups}
           </div>
-          <span className="text-[10px] text-zinc-500 font-medium">Menunggu persetujuan</span>
+          <span className="text-[10px] text-zinc-500 font-medium">Awaiting admin review</span>
         </div>
 
         <div className="border-2 border-zinc-950 bg-white p-4 shadow-[2px_2px_0px_#18181b]">
           <div className="flex items-center justify-between text-zinc-500 mb-1">
             <span className="text-[11px] font-mono font-bold uppercase">
-              Katalog Item
+              Active Items
             </span>
             <Coins className="size-4 text-zinc-600" />
           </div>
           <div className="text-2xl sm:text-3xl font-black font-mono text-zinc-950">
             {data.summary.totalActiveItems}
           </div>
-          <span className="text-[10px] text-zinc-500 font-medium">Item aktif di arena</span>
+          <span className="text-[10px] text-zinc-500 font-medium">Listed in auction arena</span>
         </div>
 
         <div className="border-2 border-zinc-950 bg-white p-4 shadow-[2px_2px_0px_#18181b]">
           <div className="flex items-center justify-between text-zinc-500 mb-1">
             <span className="text-[11px] font-mono font-bold uppercase">
-              Slot Terisi
+              Occupied Slots
             </span>
             <Users className="size-4 text-brand-600" />
           </div>
           <div className="text-2xl sm:text-3xl font-black font-mono text-brand-700">
             {data.summary.totalQueuedSlots}
           </div>
-          <span className="text-[10px] text-zinc-500 font-medium">Total pemain di antrian</span>
+          <span className="text-[10px] text-zinc-500 font-medium">Total queued players</span>
         </div>
 
         <div className="border-2 border-zinc-950 bg-white p-4 shadow-[2px_2px_0px_#18181b]">
           <div className="flex items-center justify-between text-zinc-500 mb-1">
             <span className="text-[11px] font-mono font-bold uppercase">
-              Total Pemenang
+              Total Winners
             </span>
             <Trophy className="size-4 text-emerald-600" />
           </div>
           <div className="text-2xl sm:text-3xl font-black font-mono text-emerald-700">
             {data.summary.totalWinners}
           </div>
-          <span className="text-[10px] text-zinc-500 font-medium">Transaksi lelang selesai</span>
+          <span className="text-[10px] text-zinc-500 font-medium">Auction distributions completed</span>
         </div>
       </div>
 
@@ -456,7 +456,7 @@ export default function AdminAuctionPage() {
                 : "bg-white text-zinc-700 hover:bg-zinc-100"
             }`}
           >
-            <span>Pendaftaran Web</span>
+            <span>Registrations</span>
             {data.summary.pendingSignups > 0 && (
               <span className="bg-amber-400 text-amber-950 text-[10px] font-mono font-black px-1.5 py-0.2 rounded">
                 {data.summary.pendingSignups}
@@ -472,7 +472,7 @@ export default function AdminAuctionPage() {
                 : "bg-white text-zinc-700 hover:bg-zinc-100"
             }`}
           >
-            <span>Katalog & Slot Antrian ({data.items.length})</span>
+            <span>Catalog & Queue Slots ({data.items.length})</span>
           </button>
 
           <button
@@ -483,14 +483,14 @@ export default function AdminAuctionPage() {
                 : "bg-white text-zinc-700 hover:bg-zinc-100"
             }`}
           >
-            <span>Riwayat Pemenang ({data.winners.length})</span>
+            <span>Winners Log ({data.winners.length})</span>
           </button>
         </div>
 
         {/* Search for Signups or Items */}
         <div className="w-full sm:w-64">
           <Input
-            placeholder="Cari nama/item..."
+            placeholder="Search player or item..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             icon={Search}
@@ -505,7 +505,7 @@ export default function AdminAuctionPage() {
           {/* Status Filter Badges */}
           <div className="flex items-center gap-2">
             {[
-              { id: "all", label: "Semua", count: data.summary.totalSignups },
+              { id: "all", label: "All", count: data.summary.totalSignups },
               { id: "pending", label: "Pending", count: data.summary.pendingSignups },
               { id: "approved", label: "Approved", count: data.summary.approvedSignups },
               { id: "rejected", label: "Rejected", count: data.summary.rejectedSignups },
@@ -528,19 +528,19 @@ export default function AdminAuctionPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Pemain</TableHead>
-                  <TableHead>Item Yang Dibid</TableHead>
+                  <TableHead>Player</TableHead>
+                  <TableHead>Requested Item</TableHead>
                   <TableHead>Level / Qty</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead>Waktu</TableHead>
-                  <TableHead className="text-right">Aksi</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {data.signups.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={6} className="text-center py-8 text-zinc-500">
-                      Tidak ada pendaftaran yang sesuai dengan filter.
+                      No registrations match the selected filter.
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -611,7 +611,7 @@ export default function AdminAuctionPage() {
                                 onClick={() => handleOpenReview(reg, "reject")}
                                 className="!text-red-600 !border-red-600 hover:!bg-red-50"
                               >
-                                Tolak
+                                Reject
                               </Button>
                             </>
                           )}
@@ -734,7 +734,7 @@ export default function AdminAuctionPage() {
                                 )}
                               </div>
                             ) : (
-                              <span className="italic text-zinc-400">Slot Kosong</span>
+                              <span className="italic text-zinc-400">Available Slot</span>
                             )}
                           </div>
 
@@ -747,7 +747,7 @@ export default function AdminAuctionPage() {
                                   icon={Crown}
                                   onClick={() => handleOpenWinnerFromSlot(item, slot)}
                                   className="!bg-amber-200 !text-amber-950 !border-amber-600 !p-1"
-                                  title="Tandai Sebagai Pemenang"
+                                  title="Mark as Winner"
                                 />
                                 <Button
                                   size="xs"
@@ -767,7 +767,7 @@ export default function AdminAuctionPage() {
                                     handleDeleteSlot(item.id, slot.slot_number, slot.nickname)
                                   }
                                   className="!p-1 text-zinc-400 hover:text-red-600"
-                                  title="Kosongkan Slot"
+                                  title="Vacate Slot"
                                 />
                               </>
                             ) : (
@@ -778,7 +778,7 @@ export default function AdminAuctionPage() {
                                 onClick={() => handleOpenSlotModal(item.id, slot.slot_number)}
                                 className="!py-0.5 !px-2 text-[10px]"
                               >
-                                + Isi
+                                + Fill
                               </Button>
                             )}
                           </div>
@@ -795,7 +795,7 @@ export default function AdminAuctionPage() {
                       className="w-full font-mono text-[11px]"
                       onClick={() => handleOpenSlotModal(item.id, (filledSlots.length || 0) + 1)}
                     >
-                      + Tambah Antrian Manual
+                      + Add Queue Slot Manually
                     </Button>
                   </div>
                 </div>
@@ -818,14 +818,14 @@ export default function AdminAuctionPage() {
                   itemId: "",
                   itemTitle: "",
                   nickname: "",
-                  note: "Sesi Lelang Guild",
+                  note: "Guild Auction Session",
                   vacateSlotNumber: "",
                 });
                 setWinnerModalOpen(true);
               }}
               className="!bg-amber-500 hover:!bg-amber-600 text-zinc-950 font-bold"
             >
-              + Catat Pemenang Manual
+              + Record Winner Manually
             </Button>
           </div>
 
@@ -833,18 +833,18 @@ export default function AdminAuctionPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Pemenang</TableHead>
-                  <TableHead>Item Yang Dimenangkan</TableHead>
-                  <TableHead>Keterangan / Sesi</TableHead>
-                  <TableHead>Waktu Menang</TableHead>
-                  <TableHead className="text-right">Aksi</TableHead>
+                  <TableHead>Winner</TableHead>
+                  <TableHead>Item Won</TableHead>
+                  <TableHead>Session Notes</TableHead>
+                  <TableHead>Acquired Date</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {data.winners.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={5} className="text-center py-8 text-zinc-500">
-                      Belum ada pemenang yang tercatat.
+                      No winners recorded yet.
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -888,34 +888,34 @@ export default function AdminAuctionPage() {
         open={reviewModalOpen}
         isOpen={reviewModalOpen}
         onClose={() => setReviewModalOpen(false)}
-        title={reviewAction === "approve" ? "✔ Persetujuan Pendaftaran" : "✗ Penolakan Pendaftaran"}
-        description={`Konfirmasi tindakan review untuk pendaftaran ${targetSignup?.nickname} (${targetSignup?.item_title}).`}
+        title={reviewAction === "approve" ? "✔ Approve Registration" : "✗ Reject Registration"}
+        description={`Confirm review action for registration by ${targetSignup?.nickname} (${targetSignup?.item_title}).`}
       >
         <form onSubmit={handleExecuteReview} className="space-y-4 pt-2">
           {reviewAction === "approve" && (
             <div>
               <label className="block text-xs font-mono font-bold uppercase text-zinc-700 mb-1">
-                Alokasi Nomor Slot (Opsional)
+                Designated Slot Number (Optional)
               </label>
               <Input
                 type="number"
                 min={1}
-                placeholder="Kosongkan untuk otomatis mengisi slot berikutnya"
+                placeholder="Leave blank to automatically assign the next available slot"
                 value={designatedSlot}
                 onChange={(e) => setDesignatedSlot(e.target.value)}
               />
               <span className="text-[10px] text-zinc-500 mt-1 block">
-                Jika dikosongkan, sistem otomatis memberikan nomor slot urut paling belakang.
+                If left blank, the system will automatically place the player in the next sequential slot.
               </span>
             </div>
           )}
 
           <div>
             <label className="block text-xs font-mono font-bold uppercase text-zinc-700 mb-1">
-              Catatan Admin (Opsional)
+              Admin Notes (Optional)
             </label>
             <Input
-              placeholder={reviewAction === "approve" ? "Contoh: Prioritas Main Roster" : "Alasan penolakan..."}
+              placeholder={reviewAction === "approve" ? "e.g., Priority Main Roster" : "Reason for rejection..."}
               value={adminNotes}
               onChange={(e) => setAdminNotes(e.target.value)}
             />
@@ -928,7 +928,7 @@ export default function AdminAuctionPage() {
               size="sm"
               onClick={() => setReviewModalOpen(false)}
             >
-              Batal
+              Cancel
             </Button>
             <Button
               type="submit"
@@ -942,10 +942,10 @@ export default function AdminAuctionPage() {
               }
             >
               {actionLoading
-                ? "Memproses..."
+                ? "Processing..."
                 : reviewAction === "approve"
-                ? "Konfirmasi Approve"
-                : "Konfirmasi Tolak"}
+                ? "Confirm Approval"
+                : "Confirm Rejection"}
             </Button>
           </div>
         </form>
@@ -956,16 +956,16 @@ export default function AdminAuctionPage() {
         open={itemModalOpen}
         isOpen={itemModalOpen}
         onClose={() => setItemModalOpen(false)}
-        title={editingItem ? "Edit Item Lelang" : "Tambah Item Lelang Baru"}
-        description="Atur nama item, kategori (Card / Gear), serta deskripsi ringkas."
+        title={editingItem ? "Edit Auction Item" : "Add New Auction Item"}
+        description="Configure item title, category (Card / Gear / Relic), and search hints."
       >
         <form onSubmit={handleSaveItem} className="space-y-4 pt-2">
           <div>
             <label className="block text-xs font-mono font-bold uppercase text-zinc-700 mb-1">
-              Nama Item <span className="text-red-500">*</span>
+              Item Name <span className="text-red-500">*</span>
             </label>
             <Input
-              placeholder="Contoh: Orc Hero (Headwear)"
+              placeholder="e.g., Orc Hero (Headwear)"
               value={itemForm.title}
               onChange={(e) => setItemForm({ ...itemForm, title: e.target.value })}
               required
@@ -975,7 +975,7 @@ export default function AdminAuctionPage() {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-mono font-bold uppercase text-zinc-700 mb-1">
-                Kategori
+                Category
               </label>
               <Select
                 value={itemForm.category}
@@ -989,7 +989,7 @@ export default function AdminAuctionPage() {
 
             <div>
               <label className="block text-xs font-mono font-bold uppercase text-zinc-700 mb-1">
-                Urutan (Sort Order)
+                Sort Order
               </label>
               <Input
                 type="number"
@@ -1003,10 +1003,10 @@ export default function AdminAuctionPage() {
 
           <div>
             <label className="block text-xs font-mono font-bold uppercase text-zinc-700 mb-1">
-              Keterangan / Hint
+              Search Hint / Description
             </label>
             <Input
-              placeholder="Contoh: MVP Card · Headwear / Accessory INT"
+              placeholder="e.g., MVP Card · Headwear / Accessory INT"
               value={itemForm.hint}
               onChange={(e) => setItemForm({ ...itemForm, hint: e.target.value })}
             />
@@ -1019,7 +1019,7 @@ export default function AdminAuctionPage() {
               size="sm"
               onClick={() => setItemModalOpen(false)}
             >
-              Batal
+              Cancel
             </Button>
             <Button
               type="submit"
@@ -1028,7 +1028,7 @@ export default function AdminAuctionPage() {
               disabled={actionLoading}
               className="!bg-brand-600 hover:!bg-brand-700 text-white"
             >
-              {actionLoading ? "Menyimpan..." : "Simpan Item"}
+              {actionLoading ? "Saving..." : "Save Item"}
             </Button>
           </div>
         </form>
@@ -1039,14 +1039,14 @@ export default function AdminAuctionPage() {
         open={slotModalOpen}
         isOpen={slotModalOpen}
         onClose={() => setSlotModalOpen(false)}
-        title={`Kelola Slot #${slotForm.slotNumber}`}
-        description="Atur nama pemain, Discord tag, level, serta catatan slot antrian."
+        title={`Manage Slot #${slotForm.slotNumber}`}
+        description="Configure player name, Discord tag, level, and queue slot notes."
       >
         <form onSubmit={handleSaveSlot} className="space-y-4 pt-2">
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-mono font-bold uppercase text-zinc-700 mb-1">
-                Nomor Slot <span className="text-red-500">*</span>
+                Slot Number <span className="text-red-500">*</span>
               </label>
               <Input
                 type="number"
@@ -1061,7 +1061,7 @@ export default function AdminAuctionPage() {
 
             <div>
               <label className="block text-xs font-mono font-bold uppercase text-zinc-700 mb-1">
-                Level Karakter
+                Character Level
               </label>
               <Select
                 value={String(slotForm.level)}
@@ -1078,10 +1078,10 @@ export default function AdminAuctionPage() {
 
           <div>
             <label className="block text-xs font-mono font-bold uppercase text-zinc-700 mb-1">
-              In-Game Nickname <span className="text-red-500">*</span>
+              Character Name (IGN) <span className="text-red-500">*</span>
             </label>
             <Input
-              placeholder="Contoh: ValkyraBeast"
+              placeholder="e.g., ValkyraBeast"
               value={slotForm.nickname}
               onChange={(e) => setSlotForm({ ...slotForm, nickname: e.target.value })}
               required
@@ -1093,7 +1093,7 @@ export default function AdminAuctionPage() {
               Discord Tag
             </label>
             <Input
-              placeholder="Contoh: valkyra.beast"
+              placeholder="e.g., valkyra.beast"
               value={slotForm.discordTag}
               onChange={(e) => setSlotForm({ ...slotForm, discordTag: e.target.value })}
             />
@@ -1101,10 +1101,10 @@ export default function AdminAuctionPage() {
 
           <div>
             <label className="block text-xs font-mono font-bold uppercase text-zinc-700 mb-1">
-              Catatan Slot (Opsional)
+              Slot Notes (Optional)
             </label>
             <Input
-              placeholder="Contoh: Prio 1, Siap Zeny"
+              placeholder="e.g., Priority 1, Ready Zeny"
               value={slotForm.note}
               onChange={(e) => setSlotForm({ ...slotForm, note: e.target.value })}
             />
@@ -1117,7 +1117,7 @@ export default function AdminAuctionPage() {
               size="sm"
               onClick={() => setSlotModalOpen(false)}
             >
-              Batal
+              Cancel
             </Button>
             <Button
               type="submit"
@@ -1126,7 +1126,7 @@ export default function AdminAuctionPage() {
               disabled={actionLoading}
               className="!bg-brand-600 hover:!bg-brand-700 text-white"
             >
-              {actionLoading ? "Menyimpan..." : "Simpan Slot"}
+              {actionLoading ? "Saving..." : "Save Slot"}
             </Button>
           </div>
         </form>
@@ -1137,13 +1137,13 @@ export default function AdminAuctionPage() {
         open={winnerModalOpen}
         isOpen={winnerModalOpen}
         onClose={() => setWinnerModalOpen(false)}
-        title="👑 Catat Pemenang Lelang"
-        description="Dokumentasikan pemain yang berhasil memenangkan lelang item."
+        title="👑 Record Auction Winner"
+        description="Document player who successfully acquired this item in auction."
       >
         <form onSubmit={handleSaveWinner} className="space-y-4 pt-2">
           <div>
             <label className="block text-xs font-mono font-bold uppercase text-zinc-700 mb-1">
-              Item Dimenangkan <span className="text-red-500">*</span>
+              Item Won <span className="text-red-500">*</span>
             </label>
             <Input
               value={winnerForm.itemTitle}
@@ -1154,7 +1154,7 @@ export default function AdminAuctionPage() {
 
           <div>
             <label className="block text-xs font-mono font-bold uppercase text-zinc-700 mb-1">
-              In-Game Nickname Pemenang <span className="text-red-500">*</span>
+              Winner Character Name (IGN) <span className="text-red-500">*</span>
             </label>
             <Input
               value={winnerForm.nickname}
@@ -1165,19 +1165,19 @@ export default function AdminAuctionPage() {
 
           <div>
             <label className="block text-xs font-mono font-bold uppercase text-zinc-700 mb-1">
-              Catatan Sesi / Sumber Item
+              Session Notes / Source
             </label>
             <Input
               value={winnerForm.note}
               onChange={(e) => setWinnerForm({ ...winnerForm, note: e.target.value })}
-              placeholder="Contoh: Weekly Guild Raid, Zeny 45jt"
+              placeholder="e.g., Weekly Guild Raid, 45M Zeny"
             />
           </div>
 
           {winnerForm.vacateSlotNumber && (
             <div className="p-3 border-2 border-amber-500 bg-amber-50 text-amber-950 text-xs rounded">
-              <span className="font-bold block mb-1">Pergeseran Antrian Otomatis:</span>
-              Slot #{winnerForm.vacateSlotNumber} akan dikosongkan, dan pemain di slot setelahnya otomatis naik 1 nomor antrian.
+              <span className="font-bold block mb-1">Automatic Queue Shift:</span>
+              Slot #{winnerForm.vacateSlotNumber} will be vacated, and subsequent players will automatically advance up by 1 slot.
             </div>
           )}
 
@@ -1188,7 +1188,7 @@ export default function AdminAuctionPage() {
               size="sm"
               onClick={() => setWinnerModalOpen(false)}
             >
-              Batal
+              Cancel
             </Button>
             <Button
               type="submit"
@@ -1197,7 +1197,7 @@ export default function AdminAuctionPage() {
               disabled={actionLoading}
               className="!bg-amber-500 hover:!bg-amber-600 text-zinc-950 font-bold"
             >
-              {actionLoading ? "Menyimpan..." : "Catat Pemenang"}
+              {actionLoading ? "Saving..." : "Record Winner"}
             </Button>
           </div>
         </form>

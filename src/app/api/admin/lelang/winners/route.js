@@ -42,11 +42,11 @@ export async function POST(request) {
     } = body;
 
     if (!itemTitle || !itemTitle.trim()) {
-      return NextResponse.json({ error: "Nama item pemenang wajib diisi." }, { status: 400 });
+      return NextResponse.json({ error: "Item title is required." }, { status: 400 });
     }
 
     if (!nickname || !nickname.trim()) {
-      return NextResponse.json({ error: "Nickname pemenang wajib diisi." }, { status: 400 });
+      return NextResponse.json({ error: "Winner character name is required." }, { status: 400 });
     }
 
     const winnerId = `win-${crypto.randomUUID()}`;
@@ -82,13 +82,13 @@ export async function POST(request) {
 
     return NextResponse.json({
       ok: true,
-      message: `Pemenang ${nickname.trim()} untuk "${itemTitle.trim()}" berhasil dicatat!`,
+      message: `Winner "${nickname.trim()}" for "${itemTitle.trim()}" recorded successfully!`,
       winnerId,
     });
   } catch (err) {
     console.error("POST /api/admin/lelang/winners error:", err);
     return NextResponse.json(
-      { error: err.message || "Gagal mencatat pemenang lelang." },
+      { error: err.message || "Failed to record auction winner." },
       { status: 500 }
     );
   }
@@ -127,12 +127,12 @@ export async function DELETE(request) {
 
     return NextResponse.json({
       ok: true,
-      message: "Data pemenang lelang berhasil dihapus.",
+      message: "Auction winner record deleted successfully.",
     });
   } catch (err) {
     console.error("DELETE /api/admin/lelang/winners error:", err);
     return NextResponse.json(
-      { error: err.message || "Gagal menghapus data pemenang." },
+      { error: err.message || "Failed to delete winner record." },
       { status: 500 }
     );
   }

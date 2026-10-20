@@ -34,11 +34,11 @@ export async function POST(request) {
     }
 
     if (!slotNumber || slotNumber < 1) {
-      return NextResponse.json({ error: "Nomor slot valid (>= 1) wajib diisi." }, { status: 400 });
+      return NextResponse.json({ error: "A valid slot number (>= 1) is required." }, { status: 400 });
     }
 
     if (!nickname || !nickname.trim()) {
-      return NextResponse.json({ error: "Nickname pemain wajib diisi." }, { status: 400 });
+      return NextResponse.json({ error: "Player character name is required." }, { status: 400 });
     }
 
     const slotId = `slot-${crypto.randomUUID()}`;
@@ -66,12 +66,12 @@ export async function POST(request) {
 
     return NextResponse.json({
       ok: true,
-      message: `Slot #${slotNumber} berhasil diperbarui untuk ${nickname.trim()}.`,
+      message: `Slot #${slotNumber} updated successfully for ${nickname.trim()}.`,
     });
   } catch (err) {
     console.error("POST /api/admin/lelang/slots error:", err);
     return NextResponse.json(
-      { error: err.message || "Gagal memperbarui slot antrian." },
+      { error: err.message || "Failed to update queue slot." },
       { status: 500 }
     );
   }
@@ -110,19 +110,19 @@ export async function DELETE(request) {
       `;
     } else {
       return NextResponse.json(
-        { error: "Slot ID atau pasangan itemId & slotNumber wajib disertakan." },
+        { error: "Slot ID or both itemId and slotNumber are required." },
         { status: 400 }
       );
     }
 
     return NextResponse.json({
       ok: true,
-      message: "Slot antrian berhasil dikosongkan.",
+      message: "Queue slot vacated successfully.",
     });
   } catch (err) {
     console.error("DELETE /api/admin/lelang/slots error:", err);
     return NextResponse.json(
-      { error: err.message || "Gagal mengosongkan slot antrian." },
+      { error: err.message || "Failed to vacate queue slot." },
       { status: 500 }
     );
   }

@@ -210,7 +210,7 @@ export async function POST(request, { params }) {
       copiedCount: count,
       missingCount,
       message: missingCount > 0
-        ? `Copied ${count} roster members (${missingCount} member tidak ada di data members, telah ditandai).`
+        ? `Copied ${count} roster members (${missingCount} members not in active directory, tagged accordingly).`
         : `Copied ${count} roster members successfully.`,
     });
   } catch (error) {

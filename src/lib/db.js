@@ -342,47 +342,47 @@ async function seedDefaultAuctionData(sql) {
     `;
   }
 
-  // Seed rules
+  // Seed rules in English
   const defaultRules = [
     {
       id: "rule-1",
-      title: "Prosedur Pendaftaran Antrian Lelang",
+      title: "Queue Registration Procedure",
       sort_order: 1,
       lines: JSON.stringify([
-        "Pilih item yang ingin Anda bid dari tab CARD atau GEAR, kemudian klik tombol '+ JOIN QUEUE'.",
-        "Isi formulir dengan In-game Name (IGN) dan Discord Name (Username Discord yang aktif untuk mention).",
-        "Pendaftaran Anda akan berstatus ⏳ PENDING menunggu verifikasi Admin Guild.",
-        "Setelah disetujui (Approved), nama Anda otomatis masuk ke slot nomor antrian berikutnya pada item bersangkutan."
+        "Select the item you want to bid on from the CARD or GEAR tab, then click '+ JOIN QUEUE'.",
+        "Fill in the form with your In-game Character Name (IGN) and Discord Tag (active username for queue notifications).",
+        "Your registration starts as ⏳ PENDING until verified by Guild Leadership.",
+        "Once approved, your name automatically advances into the next available queue slot for that item."
       ]),
     },
     {
       id: "rule-2",
-      title: "Format Perintah Bid Mingguan di Discord",
+      title: "Discord Bidding Command Syntax",
       sort_order: 2,
       lines: JSON.stringify([
-        "Gunakan perintah MauBid-NamaItem saat lelang dibuka di Discord channel #info-bid-mingguan.",
-        "Gunakan perintah CancelBid-NamaItem jika ingin membatalkan antrian sebelum sesi lelang dimulai.",
-        "Gunakan perintah SkipBid-NamaItem jika ingin melewati giliran tanpa kehilangan posisi antrian.",
-        "Gunakan perintah DoneBid-NamaItem setelah transaksi lelang item berhasil diselesaikan."
+        "Use the command 'MauBid-[ItemName]' when the auction opens in Discord channel #weekly-bid-info.",
+        "Use 'CancelBid-[ItemName]' to step down from the queue before the auction session begins.",
+        "Use 'SkipBid-[ItemName]' to pass your current turn without forfeiting your queue position.",
+        "Use 'DoneBid-[ItemName]' once the transaction and item transfer have been successfully completed."
       ]),
     },
     {
       id: "rule-3",
-      title: "Ketentuan Slot Antrian & Eksekusi",
+      title: "Queue Slots & Leading Bidder Priority",
       sort_order: 3,
       lines: JSON.stringify([
-        "Setiap item menampilkan slot antrian 1 sampai 10 secara terurut berdasarkan giliran antri.",
-        "Slot #1 (👑 Leading) adalah pemain yang berhak mengambil item pertama kali saat item drop/tersedia.",
-        "Setelah pemain Slot #1 dinyatakan menang (Won), nama mereka dicatat di daftar pemenang dan slot antrian di bawahnya akan naik satu tingkat."
+        "Each item displays queue slots 1 through 10 ordered by priority order.",
+        "Slot #1 (👑 Leading) holds first rights of acquisition when the item drops in guild runs.",
+        "When Slot #1 claims the item, the winner is permanently recorded in the Winners Log and all queue slots advance up by one tier."
       ]),
     },
     {
       id: "rule-4",
-      title: "Sanksi Hit & Run / Pembatalan Mendadak",
+      title: "Fair Play & Cancellation Policy",
       sort_order: 4,
       lines: JSON.stringify([
-        "Pemain yang membatalkan bid saat giliran tiba tanpa konfirmasi sebelumnya akan dikenakan sanksi timeout antrian selama 2 minggu.",
-        "Pastikan kecukupan Zeny atau alokasi DKP sebelum mendaftarkan diri pada antrian lelang."
+        "Players who abandon their bid without prior notice when their turn arrives are subject to a 2-week queue suspension.",
+        "Please confirm your in-game funds or DKP allocation before submitting an auction registration."
       ]),
     },
   ];
@@ -391,7 +391,7 @@ async function seedDefaultAuctionData(sql) {
     await sql`
       INSERT INTO auction_rules (id, title, sort_order, lines)
       VALUES (${rule.id}, ${rule.title}, ${rule.sort_order}, ${rule.lines}::jsonb)
-      ON CONFLICT (id) DO NOTHING;
+      ON CONFLICT (id) DO UPDATE SET title = EXCLUDED.title, lines = EXCLUDED.lines;
     `;
   }
 

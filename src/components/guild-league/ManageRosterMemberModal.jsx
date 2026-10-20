@@ -187,7 +187,7 @@ export default function ManageRosterMemberModal({
                 {member.isMissingMember && (
                   <span
                     className="inline-flex items-center gap-1 border border-amber-600 bg-amber-200/90 px-1.5 py-0.2 text-[10px] font-black text-amber-950 uppercase font-mono tracking-tight"
-                    title="Member tidak terdaftar di data master members"
+                    title="Member not found in guild master list"
                   >
                     <AlertTriangle className="size-3 text-amber-800 shrink-0" />
                     <span>Not in Members</span>
@@ -223,10 +223,10 @@ export default function ManageRosterMemberModal({
                 <AlertTriangle className="size-4.5 text-amber-700 shrink-0 mt-0.5" />
                 <div className="flex-1 min-w-0">
                   <div className="font-bold font-sans uppercase tracking-wide text-amber-950">
-                    Member Tidak Terdaftar di Data Members
+                    Member Not Found in Guild List
                   </div>
                   <p className="mt-1 text-[11px] text-amber-900 leading-relaxed">
-                    Pemain ini tidak ditemukan di master data (kemungkinan berganti nickname di dalam game atau telah keluar guild). Pemain tetap berada di roster agar struktur formasi tidak hilang.
+                    This player is missing from the master member roster (they may have renamed in-game or left the guild). Their position is preserved to keep team assignments intact.
                   </p>
                 </div>
               </div>
@@ -242,7 +242,7 @@ export default function ManageRosterMemberModal({
                     className="inline-flex items-center gap-1.5 border-2 border-zinc-950 bg-amber-400 px-3 py-1.5 text-xs font-bold text-zinc-950 hover:bg-amber-300 active:translate-x-[1px] active:translate-y-[1px] transition comic-shadow-sm"
                   >
                     <UserPlus className="size-3.5" />
-                    <span>Ganti dengan Member Aktif</span>
+                    <span>Replace with Active Member</span>
                   </button>
                 </div>
               )}

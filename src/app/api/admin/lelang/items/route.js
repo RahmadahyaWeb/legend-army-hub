@@ -38,7 +38,7 @@ export async function POST(request) {
     } = body;
 
     if (!title || !title.trim()) {
-      return NextResponse.json({ error: "Nama item wajib diisi." }, { status: 400 });
+      return NextResponse.json({ error: "Item name is required." }, { status: 400 });
     }
 
     const isEdit = Boolean(id);
@@ -75,13 +75,13 @@ export async function POST(request) {
 
     return NextResponse.json({
       ok: true,
-      message: `Item "${title.trim()}" berhasil disimpan.`,
+      message: `Item "${title.trim()}" saved successfully.`,
       itemId,
     });
   } catch (err) {
     console.error("POST /api/admin/lelang/items error:", err);
     return NextResponse.json(
-      { error: err.message || "Gagal menyimpan item lelang." },
+      { error: err.message || "Failed to save auction item." },
       { status: 500 }
     );
   }
@@ -110,7 +110,7 @@ export async function DELETE(request) {
     const id = searchParams.get("id");
 
     if (!id) {
-      return NextResponse.json({ error: "Item ID wajib disertakan." }, { status: 400 });
+      return NextResponse.json({ error: "Item ID is required." }, { status: 400 });
     }
 
     await sql`
@@ -120,12 +120,12 @@ export async function DELETE(request) {
 
     return NextResponse.json({
       ok: true,
-      message: "Item lelang berhasil dihapus.",
+      message: "Auction item deleted successfully.",
     });
   } catch (err) {
     console.error("DELETE /api/admin/lelang/items error:", err);
     return NextResponse.json(
-      { error: err.message || "Gagal menghapus item lelang." },
+      { error: err.message || "Failed to delete auction item." },
       { status: 500 }
     );
   }

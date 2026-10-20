@@ -27,7 +27,7 @@ const navigation = [
     exact: true,
   },
   {
-    name: "Arena Bid",
+    name: "Auction Arena",
     href: "/admin/lelang",
     icon: Gavel,
   },

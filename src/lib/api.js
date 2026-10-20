@@ -564,7 +564,7 @@ export async function fetchAuctionBoard(force = false) {
   const res = await fetch("/api/lelang", { cache: "no-store" });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    throw new Error(err.error || "Gagal memuat arena bid.");
+    throw new Error(err.error || "Failed to load auction board.");
   }
 
   const data = await res.json();
@@ -587,7 +587,7 @@ export async function submitAuctionSignup(signupData) {
 
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
-    throw new Error(data.error || "Gagal mengirim pendaftaran antrian.");
+    throw new Error(data.error || "Failed to submit queue registration.");
   }
 
   clearCache("auction");
@@ -650,7 +650,7 @@ export async function fetchAdminAuctionData(params = {}) {
 
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    throw new Error(err.error || "Gagal memuat data admin lelang.");
+    throw new Error(err.error || "Failed to load admin auction data.");
   }
 
   return await res.json();
@@ -671,7 +671,7 @@ export async function reviewAuctionSignup(payload) {
 
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
-    throw new Error(data.error || "Gagal memproses review pendaftaran.");
+    throw new Error(data.error || "Failed to process registration review.");
   }
 
   clearCache("auction");
@@ -691,7 +691,7 @@ export async function deleteAuctionSignup(id) {
   });
 
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || "Gagal menghapus pendaftaran.");
+  if (!res.ok) throw new Error(data.error || "Failed to delete registration.");
   clearCache("auction");
   return data;
 }
@@ -710,7 +710,7 @@ export async function saveAuctionSlot(slotData) {
   });
 
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || "Gagal menyimpan slot.");
+  if (!res.ok) throw new Error(data.error || "Failed to save queue slot.");
   clearCache("auction");
   return data;
 }
@@ -729,7 +729,7 @@ export async function deleteAuctionSlot(params) {
   });
 
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || "Gagal mengosongkan slot.");
+  if (!res.ok) throw new Error(data.error || "Failed to vacate queue slot.");
   clearCache("auction");
   return data;
 }
@@ -748,7 +748,7 @@ export async function saveAuctionItem(itemData) {
   });
 
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || "Gagal menyimpan item lelang.");
+  if (!res.ok) throw new Error(data.error || "Failed to save auction item.");
   clearCache("auction");
   return data;
 }
@@ -766,7 +766,7 @@ export async function deleteAuctionItem(id) {
   });
 
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || "Gagal menghapus item lelang.");
+  if (!res.ok) throw new Error(data.error || "Failed to delete auction item.");
   clearCache("auction");
   return data;
 }
@@ -785,7 +785,7 @@ export async function saveAuctionWinner(winnerData) {
   });
 
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || "Gagal mencatat pemenang.");
+  if (!res.ok) throw new Error(data.error || "Failed to record auction winner.");
   clearCache("auction");
   return data;
 }
@@ -803,7 +803,7 @@ export async function deleteAuctionWinner(id) {
   });
 
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || "Gagal menghapus data pemenang.");
+  if (!res.ok) throw new Error(data.error || "Failed to delete auction winner.");
   clearCache("auction");
   return data;
 }

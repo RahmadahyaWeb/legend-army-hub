@@ -88,7 +88,7 @@ export default function PublicAuctionPage() {
       setPublicSignups(signups);
     } catch (err) {
       console.error("Auction load error:", err);
-      if (!silent) toastError("Gagal memuat pembaruan arena bid.");
+      if (!silent) toastError("Failed to update auction board.");
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -162,17 +162,17 @@ export default function PublicAuctionPage() {
     const activeItem = formItem || boardData.items[0]?.title;
 
     if (!formNick.trim() || formNick.trim().length < 2) {
-      setFormErr("In-game Name wajib diisi (minimal 2 huruf).");
+      setFormErr("Character In-Game Name (IGN) is required (at least 2 characters).");
       return;
     }
 
     if (!formDiscord.trim() || formDiscord.trim().length < 2) {
-      setFormErr("Discord Name wajib diisi agar pengurus dapat mention giliran Anda.");
+      setFormErr("Discord Username is required so officers can notify your turn.");
       return;
     }
 
     if (!activeItem) {
-      setFormErr("Silakan pilih item yang ingin dibid.");
+      setFormErr("Please select an item to bid on.");
       return;
     }
 
@@ -190,12 +190,12 @@ export default function PublicAuctionPage() {
 
       setModalOpen(false);
       success(
-        "Pendaftaran Terkirim!",
-        `${formNick} → ${activeItem}. Menunggu konfirmasi admin.`
+        "Registration Submitted!",
+        `${formNick} → ${activeItem}. Awaiting leadership approval.`
       );
       loadData(true);
     } catch (err) {
-      setFormErr(err.message || "Gagal mengirim pendaftaran.");
+      setFormErr(err.message || "Failed to submit queue registration.");
     } finally {
       setSubmitting(false);
     }
@@ -212,7 +212,7 @@ export default function PublicAuctionPage() {
   };
 
   if (loading) {
-    return <Loading fullScreen message="Memuat Arena Bid & Antrian Guild..." />;
+    return <Loading fullScreen message="Loading Auction Arena & Bidding Queue..." />;
   }
 
   return (
@@ -234,7 +234,7 @@ export default function PublicAuctionPage() {
                   LEGEND ARMY
                 </span>
                 <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-brand-700 block leading-tight">
-                  Arena Bid
+                  Auction Arena
                 </span>
               </div>
             </Link>
@@ -255,7 +255,7 @@ export default function PublicAuctionPage() {
               disabled={refreshing}
               className={refreshing ? "opacity-50" : ""}
             >
-              {refreshing ? "Memuat..." : "Refresh"}
+              {refreshing ? "Loading..." : "Refresh"}
             </Button>
 
             <Link href="/valkyrie-cup">
@@ -271,7 +271,7 @@ export default function PublicAuctionPage() {
 
             <Link href="/admin/lelang">
               <Button variant="outline" size="xs" icon={Gavel}>
-                Admin Lelang
+                Auction Admin
               </Button>
             </Link>
           </div>
@@ -285,15 +285,15 @@ export default function PublicAuctionPage() {
             <div className="max-w-2xl">
               <div className="inline-flex items-center gap-2 border-2 border-amber-600 bg-amber-50 px-2.5 py-1 text-[11px] font-bold text-amber-950 mb-3 shadow-[1.5px_1.5px_0px_#d97706]">
                 <Gavel className="size-3.5 text-amber-600 shrink-0" />
-                <span>Arena Lelang & Antrian Bidding Item Drop</span>
+                <span>Live Guild Item Auction & Bidding Queue</span>
               </div>
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black font-sans tracking-tight text-zinc-950 leading-tight">
-                ⚔ ARENA BID — LIVE QUEUE
+                ⚔ AUCTION ARENA — LIVE QUEUE
               </h1>
               <p className="mt-2 text-sm sm:text-base text-zinc-600 font-medium leading-relaxed">
-                Antrian resmi lelang item guild Legend Army. Pilih slot item drop, daftar antrian langsung dari web, dan eksekusi bidding di Discord channel{" "}
+                Official item drop auction and priority queue for Legend Army guild. Select drop items, register your priority spot directly from the web, and execute live bids in Discord channel{" "}
                 <span className="font-mono font-bold text-brand-700 bg-brand-50 px-1.5 py-0.5 border border-brand-200 rounded">
-                  #info-bid-mingguan
+                  #weekly-bid-info
                 </span>.
               </p>
             </div>
@@ -324,7 +324,7 @@ export default function PublicAuctionPage() {
               <div className="text-2xl sm:text-3xl font-black font-mono text-zinc-950">
                 {boardData.stats.totalItems || 0}
               </div>
-              <span className="text-[10px] text-zinc-500 font-medium">Card & Gear aktif</span>
+              <span className="text-[10px] text-zinc-500 font-medium">Active Cards & Gear</span>
             </div>
 
             <div className="border-2 border-zinc-950 bg-white p-3 sm:p-4 shadow-[2px_2px_0px_#18181b]">
@@ -337,7 +337,7 @@ export default function PublicAuctionPage() {
               <div className="text-2xl sm:text-3xl font-black font-mono text-brand-700">
                 {boardData.stats.totalQueued || 0}
               </div>
-              <span className="text-[10px] text-zinc-500 font-medium">Pemain mengantri</span>
+              <span className="text-[10px] text-zinc-500 font-medium">Queued Players</span>
             </div>
 
             <div className="border-2 border-zinc-950 bg-white p-3 sm:p-4 shadow-[2px_2px_0px_#18181b]">
@@ -350,7 +350,7 @@ export default function PublicAuctionPage() {
               <div className="text-2xl sm:text-3xl font-black font-mono text-emerald-700">
                 {boardData.stats.totalSignups || 0}
               </div>
-              <span className="text-[10px] text-zinc-500 font-medium">Total pendaftaran web</span>
+              <span className="text-[10px] text-zinc-500 font-medium">Total Registrations</span>
             </div>
           </div>
         </div>
@@ -375,7 +375,7 @@ export default function PublicAuctionPage() {
                   ? "bg-brand-700 border-brand-500 text-white"
                   : "bg-zinc-100 border-zinc-300 text-zinc-700"
               }`}>
-                {categoryCounts.card.items} item · {categoryCounts.card.queued} q
+                {categoryCounts.card.items} items · {categoryCounts.card.queued} queued
               </span>
             </button>
 
@@ -393,7 +393,7 @@ export default function PublicAuctionPage() {
                   ? "bg-brand-700 border-brand-500 text-white"
                   : "bg-zinc-100 border-zinc-300 text-zinc-700"
               }`}>
-                {categoryCounts.gear.items} item · {categoryCounts.gear.queued} q
+                {categoryCounts.gear.items} items · {categoryCounts.gear.queued} queued
               </span>
             </button>
 
@@ -429,7 +429,7 @@ export default function PublicAuctionPage() {
           {(activeTab === "card" || activeTab === "gear") && (
             <div className="w-full sm:w-64">
               <Input
-                placeholder="Cari item..."
+                placeholder="Search items..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 icon={Search}
@@ -445,11 +445,11 @@ export default function PublicAuctionPage() {
             {displayedItems.length === 0 ? (
               <EmptyState
                 icon={Coins}
-                title="Tidak Ada Item Ditemukan"
+                title="No Items Found"
                 description={
                   searchQuery
-                    ? `Tidak ada item yang cocok dengan "${searchQuery}".`
-                    : "Katalog item belum memiliki daftar aktif."
+                    ? `No items match "${searchQuery}".`
+                    : "No items are currently listed in this catalog."
                 }
               />
             ) : (
@@ -529,7 +529,7 @@ export default function PublicAuctionPage() {
                                   </span>
 
                                   <span className="truncate font-medium">
-                                    {isFilled ? row.nickname : "Slot Kosong"}
+                                    {isFilled ? row.nickname : "Available Slot"}
                                   </span>
 
                                   {isFilled && row.level && (
@@ -541,9 +541,9 @@ export default function PublicAuctionPage() {
 
                                 <div className="text-[10px] font-mono text-zinc-500 shrink-0">
                                   {isFilled ? (
-                                    <span className="text-zinc-600 font-semibold">{row.note || "Antri"}</span>
+                                    <span className="text-zinc-600 font-semibold">{row.note || "Queued"}</span>
                                   ) : (
-                                    <span className="italic">Ready</span>
+                                    <span className="italic">Open</span>
                                   )}
                                 </div>
                               </div>
@@ -554,7 +554,7 @@ export default function PublicAuctionPage() {
                         {/* PROGRESS BAR */}
                         <div className="mt-3 pt-2 border-t border-zinc-200">
                           <div className="flex items-center justify-between text-[10px] font-mono text-zinc-500 mb-1">
-                            <span>Kapasitas Antrian</span>
+                            <span>Queue Capacity</span>
                             <span>{fillPercentage}%</span>
                           </div>
                           <div className="h-2 w-full bg-zinc-200 border border-zinc-400 overflow-hidden">
@@ -593,19 +593,19 @@ export default function PublicAuctionPage() {
               <div className="flex items-center gap-2 mb-2">
                 <Flame className="size-4 text-amber-700" />
                 <h3 className="font-bold text-sm sm:text-base text-amber-950 uppercase font-sans">
-                  Format Perintah Bidding Discord (#info-bid-mingguan)
+                  Discord Bidding Commands (#weekly-bid-info)
                 </h3>
               </div>
               <p className="text-xs text-amber-900 mb-4 leading-relaxed">
-                Salin format perintah berikut saat sesi lelang mingguan guild diumumkan di Discord. Klik perintah untuk menyalin teks secara otomatis.
+                Copy the command syntax below when weekly guild auctions open on Discord. Click any command to copy automatically.
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5">
                 {[
-                  { cmd: "MauBid-[Nama Item]", desc: "Maju mengambil giliran bid item" },
-                  { cmd: "CancelBid-[Nama Item]", desc: "Membatalkan diri dari antrian" },
-                  { cmd: "SkipBid-[Nama Item]", desc: "Melewati giliran tanpa keluar antrian" },
-                  { cmd: "DoneBid-[Nama Item]", desc: "Konfirmasi item telah berhasil diambil" },
+                  { cmd: "MauBid-[ItemName]", desc: "Claim your bidding turn for this item" },
+                  { cmd: "CancelBid-[ItemName]", desc: "Step down from the queue before session" },
+                  { cmd: "SkipBid-[ItemName]", desc: "Pass current turn without losing queue spot" },
+                  { cmd: "DoneBid-[ItemName]", desc: "Confirm successful item acquisition" },
                 ].map(({ cmd, desc }) => (
                   <button
                     key={cmd}
@@ -682,8 +682,8 @@ export default function PublicAuctionPage() {
             {boardData.winners.length === 0 ? (
               <EmptyState
                 icon={Trophy}
-                title="Belum Ada Catatan Pemenang"
-                description="Catatan pemenang lelang akan tampil di sini setelah transaksi selesai diverifikasi oleh admin."
+                title="No Winners Recorded Yet"
+                description="Confirmed auction winners will appear here once transactions are verified by guild leadership."
               />
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -728,7 +728,7 @@ export default function PublicAuctionPage() {
             <div className="flex items-center gap-2">
               <Clock className="size-4 text-brand-600" />
               <h3 className="font-bold text-sm sm:text-base text-zinc-950 uppercase font-sans">
-                Aktivitas Pendaftaran Web Terakhir
+                Recent Queue Registrations
               </h3>
             </div>
             <span className="text-[11px] font-mono text-zinc-500 font-semibold">
@@ -738,7 +738,7 @@ export default function PublicAuctionPage() {
 
           {publicSignups.length === 0 ? (
             <p className="text-xs text-zinc-500 py-3 italic">
-              Belum ada pendaftaran antrian terbaru. Jadilah yang pertama mendaftar! ⚔
+              No recent queue registrations. Be the first to join the queue! ⚔
             </p>
           ) : (
             <div className="divide-y divide-zinc-200">
@@ -760,7 +760,7 @@ export default function PublicAuctionPage() {
                       {reg.status === "approved"
                         ? "✔ QUEUED"
                         : reg.status === "rejected"
-                        ? "✗ DITOLAK"
+                        ? "✗ REJECTED"
                         : "⏳ PENDING"}
                     </span>
 
@@ -794,7 +794,7 @@ export default function PublicAuctionPage() {
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         title="⚔ JOIN BID QUEUE"
-        description="Daftarkan diri Anda ke dalam antrian lelang item. Setelah disetujui admin, nama Anda akan langsung mengisi slot antrian berikutnya."
+        description="Register your spot in the item bidding queue. Once approved by leadership, your character will occupy the next priority slot."
       >
         <form onSubmit={handleFormSubmit} className="space-y-4 pt-2">
           {formErr && (
@@ -806,7 +806,7 @@ export default function PublicAuctionPage() {
 
           <div>
             <label className="block text-xs font-mono font-bold uppercase text-zinc-700 mb-1">
-              PILIH ITEM LELANG <span className="text-red-500">*</span>
+              SELECT AUCTION ITEM <span className="text-red-500">*</span>
             </label>
             <Select
               value={formItem}
@@ -814,9 +814,9 @@ export default function PublicAuctionPage() {
               required
             >
               {boardData.items.length === 0 && (
-                <option value="">Memuat item...</option>
+                <option value="">Loading items...</option>
               )}
-              <optgroup label="🃏 CARD DROP">
+              <optgroup label="🃏 CARD DROPS">
                 {boardData.items
                   .filter((i) => i.category === "card")
                   .map((i) => (
@@ -835,7 +835,7 @@ export default function PublicAuctionPage() {
                   ))}
               </optgroup>
               {boardData.items.filter((i) => i.category !== "card" && i.category !== "gear").length > 0 && (
-                <optgroup label="🔮 ITEM LAINNYA">
+                <optgroup label="🔮 OTHER ITEMS">
                   {boardData.items
                     .filter((i) => i.category !== "card" && i.category !== "gear")
                     .map((i) => (
@@ -850,10 +850,10 @@ export default function PublicAuctionPage() {
 
           <div>
             <label className="block text-xs font-mono font-bold uppercase text-zinc-700 mb-1">
-              IN-GAME NAME (IGN) <span className="text-red-500">*</span>
+              CHARACTER NAME (IGN) <span className="text-red-500">*</span>
             </label>
             <Input
-              placeholder="Contoh: ValkyraBeast"
+              placeholder="e.g. ValkyraBeast"
               value={formNick}
               onChange={(e) => setFormNick(e.target.value)}
               maxLength={30}
@@ -878,7 +878,7 @@ export default function PublicAuctionPage() {
 
             <div>
               <label className="block text-xs font-mono font-bold uppercase text-zinc-700 mb-1">
-                QUANTITY / SLOT
+                QUANTITY / SLOTS
               </label>
               <Input
                 type="number"
@@ -895,14 +895,14 @@ export default function PublicAuctionPage() {
               DISCORD USERNAME <span className="text-red-500">*</span>
             </label>
             <Input
-              placeholder="Contoh: valkyra.beast"
+              placeholder="e.g. valkyra.beast"
               value={formDiscord}
               onChange={(e) => setFormDiscord(e.target.value)}
               maxLength={40}
               required
             />
             <span className="text-[10px] text-zinc-500 mt-1 block">
-              Wajib diisi agar admin & officer dapat mention saat giliran Anda tiba.
+              Required so officers can mention you on Discord when your turn arrives.
             </span>
           </div>
 
@@ -913,7 +913,7 @@ export default function PublicAuctionPage() {
               size="sm"
               onClick={() => setModalOpen(false)}
             >
-              Batal
+              Cancel
             </Button>
             <Button
               type="submit"
@@ -923,7 +923,7 @@ export default function PublicAuctionPage() {
               disabled={submitting}
               className="!bg-brand-600 hover:!bg-brand-700 text-white"
             >
-              {submitting ? "Mengirim..." : "Kirim Pendaftaran"}
+              {submitting ? "Submitting..." : "Submit Registration"}
             </Button>
           </div>
         </form>
@@ -933,7 +933,7 @@ export default function PublicAuctionPage() {
       <footer className="border-t-2 border-zinc-950 bg-white py-6 text-center text-xs text-zinc-500 font-mono">
         <p className="max-w-xl mx-auto leading-relaxed px-4">
           ⚔ LEGEND ARMY — Live Guild Auction Hub & Queue Arena.<br />
-          Data otomatis diperbarui setelah persetujuan admin guild. Rekap mingguan tetap berlangsung di Discord #info-bid-mingguan.
+          Real-time queue updates after leadership review. Weekly settlement takes place in Discord #weekly-bid-info.
         </p>
       </footer>
     </div>

@@ -648,10 +648,10 @@ export default function GuildLeagueDetailPage() {
             <AlertTriangle className="size-5 text-amber-700 shrink-0 mt-0.5 sm:mt-0" />
             <div>
               <span className="font-bold font-sans text-amber-950">
-                Perhatian: Terdapat {missingMembersCount} member di roster yang tidak ada di data members.
+                Attention: There are {missingMembersCount} members in the roster who are not in the active members directory.
               </span>
               <p className="text-[11px] text-amber-900 mt-0.5">
-                Member tetap disimpan di formasi dan ditandai [NOT IN MEMBERS] agar susunan tim tidak hilang. Kemungkinan member telah berganti nickname di game atau keluar guild.
+                Members are retained in formation and tagged [NOT IN MEMBERS] to protect team structures. They may have updated their in-game nickname or departed the guild.
               </p>
             </div>
           </div>
@@ -666,7 +666,7 @@ export default function GuildLeagueDetailPage() {
             }`}
           >
             <Filter className="size-3.5" />
-            <span>{filterMissingOnly ? "Tampilkan Semua Formasi" : `Filter Perlu Dicek (${missingMembersCount})`}</span>
+            <span>{filterMissingOnly ? "Show All Formations" : `Review Required (${missingMembersCount})`}</span>
           </button>
         </div>
       )}

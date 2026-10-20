@@ -70,7 +70,7 @@ export async function POST(request) {
 
       return NextResponse.json({
         ok: true,
-        message: `Pendaftaran ${signup.nickname} berhasil ditolak.`,
+        message: `Registration for "${signup.nickname}" was rejected.`,
       });
     }
 
@@ -87,7 +87,7 @@ export async function POST(request) {
           itemId = itemMatch[0].id;
         } else {
           return NextResponse.json(
-            { error: `Item "${signup.item_title}" belum terdaftar di katalog. Tambahkan item terlebih dahulu.` },
+            { error: `Item "${signup.item_title}" is not registered in the catalog yet. Add the item first.` },
             { status: 400 }
           );
         }
@@ -142,19 +142,19 @@ export async function POST(request) {
 
       return NextResponse.json({
         ok: true,
-        message: `Pendaftaran ${signup.nickname} disetujui dan dimasukkan ke Slot #${slotNumber}!`,
+        message: `Registration for "${signup.nickname}" approved and placed in Slot #${slotNumber}!`,
         assignedSlot: slotNumber,
       });
     }
 
     return NextResponse.json(
-      { error: "Aksi tidak dikenali. Pilih 'approve' atau 'reject'." },
+      { error: "Unknown action. Choose 'approve' or 'reject'." },
       { status: 400 }
     );
   } catch (err) {
     console.error("POST /api/admin/lelang/signups error:", err);
     return NextResponse.json(
-      { error: err.message || "Gagal memproses pendaftaran." },
+      { error: err.message || "Failed to process registration." },
       { status: 500 }
     );
   }
@@ -196,12 +196,12 @@ export async function DELETE(request) {
 
     return NextResponse.json({
       ok: true,
-      message: "Data pendaftaran berhasil dihapus.",
+      message: "Registration deleted successfully.",
     });
   } catch (err) {
     console.error("DELETE /api/admin/lelang/signups error:", err);
     return NextResponse.json(
-      { error: err.message || "Gagal menghapus data pendaftaran." },
+      { error: err.message || "Failed to delete registration." },
       { status: 500 }
     );
   }
