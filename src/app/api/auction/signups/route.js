@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import crypto from "crypto";
 import { getDb, initDatabase } from "@/lib/db";
+import { notifyAuctionSignupSubmitted } from "@/services/auction/auctionDiscordService";
 
 /**
  * Public Auction Signups Handler
@@ -129,6 +130,16 @@ export async function POST(request) {
         'pending'
       );
     `;
+
+    // Why this exists: Dispatches Discord webhook alert to inform officers of a pending bid request
+    notifyAuctionSignupSubmitted({
+      signupId,
+      nickname,
+      discordTag,
+      itemTitle,
+      level,
+      quantity,
+    }).catch((err) => console.error("Discord auction notification failed:", err));
 
     return NextResponse.json({
       ok: true,

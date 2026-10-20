@@ -2,6 +2,10 @@ import { NextResponse } from "next/server";
 import crypto from "crypto";
 import { getDb } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
+import {
+  notifyAuctionSignupApproved,
+  notifyAuctionSignupRejected,
+} from "@/services/auction/auctionDiscordService";
 
 /**
  * Admin Auction Signup Review Handler
@@ -36,7 +40,7 @@ export async function POST(request) {
 
     if (!signupId || !action) {
       return NextResponse.json(
-        { error: "Signup ID dan action ('approve' | 'reject') wajib disertakan." },
+        { error: "Signup ID and action ('approve' | 'reject') are required." },
         { status: 400 }
       );
     }
@@ -67,6 +71,12 @@ export async function POST(request) {
           updated_at = NOW()
         WHERE id = ${signupId};
       `;
+
+      // Why this exists: Dispatches Discord webhook alert to inform channel of denied registration
+      notifyAuctionSignupRejected({
+        signup,
+        adminNotes,
+      }).catch((err) => console.error("Discord rejection notification failed:", err));
 
       return NextResponse.json({
         ok: true,
@@ -139,6 +149,13 @@ export async function POST(request) {
           updated_at = NOW()
         WHERE id = ${signupId};
       `;
+
+      // Why this exists: Dispatches Discord webhook alert to announce verified bidder and slot assignment
+      notifyAuctionSignupApproved({
+        signup,
+        slotNumber,
+        adminNotes,
+      }).catch((err) => console.error("Discord approval notification failed:", err));
 
       return NextResponse.json({
         ok: true,
