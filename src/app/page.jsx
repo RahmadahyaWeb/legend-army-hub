@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { Lock, Trophy } from "lucide-react";
+import { Gavel, Lock, Trophy } from "lucide-react";
 import { fetchMembers, fetchGuildLeagues } from "@/lib/api";
 import { formatDate, formatNumber, isMemberActive } from "@/utils/formatters";
 import Loading from "@/components/ui/Loading";
@@ -93,6 +93,12 @@ export default function PublicDashboard() {
           </Link>
 
           <div className="flex items-center gap-2">
+            <Link href="/lelang">
+              <Button variant="secondary" size="xs" icon={Gavel} className="!border-brand-600 !bg-brand-50 !text-brand-950 font-bold">
+                Arena Bid
+              </Button>
+            </Link>
+
             <Link href="/valkyrie-cup">
               <Button variant="secondary" size="xs" icon={Trophy} className="!border-amber-600 !bg-amber-50 !text-amber-950">
                 Valkyrie Cup
@@ -121,18 +127,23 @@ export default function PublicDashboard() {
                 Legend Army Hub
               </h1>
               <p className="mt-2 text-xs sm:text-sm text-zinc-700 leading-relaxed font-medium">
-                Ragnarok guild war rosters, class balance composition, tactical battle formations, and tournament management.
+                Ragnarok guild war rosters, class balance composition, tactical battle formations, and live item auction queue.
               </p>
             </div>
 
             <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+              <Link href="/lelang">
+                <Button variant="primary" size="md" icon={Gavel} className="!bg-brand-600 !text-white hover:!bg-brand-700">
+                  Arena Bid Lelang
+                </Button>
+              </Link>
               <Link href="/valkyrie-cup">
-                <Button variant="primary" size="md" icon={Trophy}>
+                <Button variant="secondary" size="md" icon={Trophy}>
                   Enter Valkyrie Cup
                 </Button>
               </Link>
               <Link href="/valkyrie-cup/teams">
-                <Button variant="secondary" size="md">
+                <Button variant="outline" size="md">
                   View Squads
                 </Button>
               </Link>

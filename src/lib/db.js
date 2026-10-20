@@ -192,7 +192,221 @@ export async function initDatabase() {
     CREATE INDEX IF NOT EXISTS idx_vc_members_reg_id ON valkyrie_cup_members(valkyrie_cup_registration_id);
   `;
 
+  // Auction / Arena Bid Tables
+  // Why this exists:
+  // Stores auction items, queue slots, public queue signups, winners, and rules
+  // for the live guild bidding system.
+  await sql`
+    CREATE TABLE IF NOT EXISTS auction_items (
+      id VARCHAR(64) PRIMARY KEY,
+      category VARCHAR(32) NOT NULL DEFAULT 'card',
+      title VARCHAR(255) NOT NULL,
+      hint VARCHAR(255) DEFAULT '',
+      image_url VARCHAR(255) DEFAULT '',
+      sort_order INT DEFAULT 0,
+      is_active BOOLEAN DEFAULT TRUE,
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      updated_at TIMESTAMPTZ DEFAULT NOW()
+    );
+  `;
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS auction_slots (
+      id VARCHAR(64) PRIMARY KEY,
+      item_id VARCHAR(64) NOT NULL REFERENCES auction_items(id) ON DELETE CASCADE,
+      slot_number INT NOT NULL,
+      nickname VARCHAR(128) NOT NULL,
+      discord_tag VARCHAR(128) DEFAULT '',
+      level INT DEFAULT 100,
+      note VARCHAR(255) DEFAULT '',
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      updated_at TIMESTAMPTZ DEFAULT NOW(),
+      CONSTRAINT uq_auction_item_slot UNIQUE (item_id, slot_number)
+    );
+  `;
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS auction_signups (
+      id VARCHAR(64) PRIMARY KEY,
+      item_id VARCHAR(64) REFERENCES auction_items(id) ON DELETE SET NULL,
+      item_title VARCHAR(255) NOT NULL,
+      nickname VARCHAR(128) NOT NULL,
+      discord_tag VARCHAR(128) NOT NULL,
+      level INT DEFAULT 100,
+      quantity INT DEFAULT 1,
+      status VARCHAR(32) DEFAULT 'pending',
+      admin_notes TEXT DEFAULT '',
+      assigned_slot INT,
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      updated_at TIMESTAMPTZ DEFAULT NOW()
+    );
+  `;
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS auction_winners (
+      id VARCHAR(64) PRIMARY KEY,
+      item_id VARCHAR(64) REFERENCES auction_items(id) ON DELETE SET NULL,
+      item_title VARCHAR(255) NOT NULL,
+      nickname VARCHAR(128) NOT NULL,
+      note VARCHAR(255) DEFAULT '',
+      won_at TIMESTAMPTZ DEFAULT NOW(),
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    );
+  `;
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS auction_rules (
+      id VARCHAR(64) PRIMARY KEY,
+      title VARCHAR(255) NOT NULL,
+      lines JSONB NOT NULL DEFAULT '[]',
+      sort_order INT DEFAULT 0,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    );
+  `;
+
+  await sql`CREATE INDEX IF NOT EXISTS idx_auction_items_category ON auction_items(category);`;
+  await sql`CREATE INDEX IF NOT EXISTS idx_auction_slots_item_id ON auction_slots(item_id);`;
+  await sql`CREATE INDEX IF NOT EXISTS idx_auction_signups_status ON auction_signups(status);`;
+  await sql`CREATE INDEX IF NOT EXISTS idx_auction_signups_created_at ON auction_signups(created_at DESC);`;
+  await sql`CREATE INDEX IF NOT EXISTS idx_auction_winners_won_at ON auction_winners(won_at DESC);`;
+
+  // Seed default auction items if table is empty
+  // Why this exists:
+  // Provides instant, rich data matching the guild's reference catalog upon initial setup.
+  const existingItems = await sql`SELECT COUNT(*)::int as count FROM auction_items;`;
+  if (existingItems[0]?.count === 0) {
+    await seedDefaultAuctionData(sql);
+  }
+
   return { success: true, message: "Database schema initialized successfully." };
+}
+
+/**
+ * Seeds default Ragnarok / Legend Army auction items and rules.
+ *
+ * Why this exists:
+ * Seeds authentic Guild Auction catalog items (Card & Gear) and procedure guidelines
+ * so the arena is immediately usable and fully populated.
+ *
+ * @param {any} sql - Neon SQL instance
+ * @returns {Promise<void>}
+ */
+async function seedDefaultAuctionData(sql) {
+  const defaultItems = [
+    // CARD category
+    { id: "item-card-1", category: "card", title: "Orc Hero (Headwear)", hint: "MVP Card · Headwear", sort_order: 1 },
+    { id: "item-card-2", category: "card", title: "Orc Leader (Headwear)", hint: "MVP Card · Headwear", sort_order: 2 },
+    { id: "item-card-3", category: "card", title: "Dracula (Facewear)", hint: "MVP Card · Facewear", sort_order: 3 },
+    { id: "item-card-4", category: "card", title: "Mistress (Backwear)", hint: "MVP Card · Backwear", sort_order: 4 },
+    { id: "item-card-5", category: "card", title: "Angeling (Backwear)", hint: "Mini Card · Backwear", sort_order: 5 },
+    { id: "item-card-6", category: "card", title: "Phreeoni (Mouthwear)", hint: "MVP Card · Mouthwear", sort_order: 6 },
+    { id: "item-card-7", category: "card", title: "Osiris (Mouthwear)", hint: "MVP Card · Mouthwear", sort_order: 7 },
+
+    // GEAR category
+    { id: "item-gear-1", category: "gear", title: "Royal Eye of Dullahan", hint: "Accessory · MATK / INT", sort_order: 1 },
+    { id: "item-gear-2", category: "gear", title: "Royal Safety Ring", hint: "Accessory · DEF / MDEF", sort_order: 2 },
+    { id: "item-gear-3", category: "gear", title: "Royal Kind Heart", hint: "Accessory · Heal & HP Recovery", sort_order: 3 },
+    { id: "item-gear-4", category: "gear", title: "Royal Nile Rose", hint: "Accessory · Ranged ATK", sort_order: 4 },
+    { id: "item-gear-5", category: "gear", title: "Royal Baradium Brooch", hint: "Accessory · AGI / FLEE", sort_order: 5 },
+    { id: "item-gear-6", category: "gear", title: "Royal Cold Heart", hint: "Accessory · Critical DMG", sort_order: 6 },
+    { id: "item-gear-7", category: "gear", title: "Royal Golden Ball", hint: "Accessory · Physical ATK", sort_order: 7 },
+    { id: "item-gear-8", category: "gear", title: "Royal Morrigane's Pendant", hint: "Accessory · LUK / Crit", sort_order: 8 },
+    { id: "item-gear-9", category: "gear", title: "Royal Rogue's Treasure", hint: "Accessory · ASPD / ATK", sort_order: 9 },
+    { id: "item-gear-10", category: "gear", title: "Royal Orleans Necklace", hint: "Accessory · Cast Time Reduction", sort_order: 10 },
+    { id: "item-gear-11", category: "gear", title: "Royal Orleans Glove", hint: "Accessory · Magic Pen / MATK", sort_order: 11 },
+    { id: "item-gear-12", category: "gear", title: "Royal Morrigane's Belt", hint: "Accessory · Crit Resistance", sort_order: 12 },
+  ];
+
+  for (const item of defaultItems) {
+    await sql`
+      INSERT INTO auction_items (id, category, title, hint, sort_order)
+      VALUES (${item.id}, ${item.category}, ${item.title}, ${item.hint}, ${item.sort_order})
+      ON CONFLICT (id) DO NOTHING;
+    `;
+  }
+
+  // Seed default sample queue slots for realistic preview
+  const defaultSlots = [
+    { id: "slot-c1-1", item_id: "item-card-1", slot_number: 1, nickname: "ValkyraBeast", discord_tag: "valkyra.beast", level: 100, note: "Prio 1" },
+    { id: "slot-c1-2", item_id: "item-card-1", slot_number: 2, nickname: "NightStalker", discord_tag: "night.stalker", level: 100, note: "" },
+    { id: "slot-c3-1", item_id: "item-card-3", slot_number: 1, nickname: "ShadowKnight", discord_tag: "shadow.k", level: 100, note: "Ready" },
+    { id: "slot-g1-1", item_id: "item-gear-1", slot_number: 1, nickname: "ArcaneMage", discord_tag: "arcane.m", level: 100, note: "Prio INT" },
+    { id: "slot-g1-2", item_id: "item-gear-1", slot_number: 2, nickname: "FrostWeaver", discord_tag: "frost.w", level: 90, note: "" },
+  ];
+
+  for (const slot of defaultSlots) {
+    await sql`
+      INSERT INTO auction_slots (id, item_id, slot_number, nickname, discord_tag, level, note)
+      VALUES (${slot.id}, ${slot.item_id}, ${slot.slot_number}, ${slot.nickname}, ${slot.discord_tag}, ${slot.level}, ${slot.note})
+      ON CONFLICT (item_id, slot_number) DO NOTHING;
+    `;
+  }
+
+  // Seed rules
+  const defaultRules = [
+    {
+      id: "rule-1",
+      title: "Prosedur Pendaftaran Antrian Lelang",
+      sort_order: 1,
+      lines: JSON.stringify([
+        "Pilih item yang ingin Anda bid dari tab CARD atau GEAR, kemudian klik tombol '+ JOIN QUEUE'.",
+        "Isi formulir dengan In-game Name (IGN) dan Discord Name (Username Discord yang aktif untuk mention).",
+        "Pendaftaran Anda akan berstatus ⏳ PENDING menunggu verifikasi Admin Guild.",
+        "Setelah disetujui (Approved), nama Anda otomatis masuk ke slot nomor antrian berikutnya pada item bersangkutan."
+      ]),
+    },
+    {
+      id: "rule-2",
+      title: "Format Perintah Bid Mingguan di Discord",
+      sort_order: 2,
+      lines: JSON.stringify([
+        "Gunakan perintah MauBid-NamaItem saat lelang dibuka di Discord channel #info-bid-mingguan.",
+        "Gunakan perintah CancelBid-NamaItem jika ingin membatalkan antrian sebelum sesi lelang dimulai.",
+        "Gunakan perintah SkipBid-NamaItem jika ingin melewati giliran tanpa kehilangan posisi antrian.",
+        "Gunakan perintah DoneBid-NamaItem setelah transaksi lelang item berhasil diselesaikan."
+      ]),
+    },
+    {
+      id: "rule-3",
+      title: "Ketentuan Slot Antrian & Eksekusi",
+      sort_order: 3,
+      lines: JSON.stringify([
+        "Setiap item menampilkan slot antrian 1 sampai 10 secara terurut berdasarkan giliran antri.",
+        "Slot #1 (👑 Leading) adalah pemain yang berhak mengambil item pertama kali saat item drop/tersedia.",
+        "Setelah pemain Slot #1 dinyatakan menang (Won), nama mereka dicatat di daftar pemenang dan slot antrian di bawahnya akan naik satu tingkat."
+      ]),
+    },
+    {
+      id: "rule-4",
+      title: "Sanksi Hit & Run / Pembatalan Mendadak",
+      sort_order: 4,
+      lines: JSON.stringify([
+        "Pemain yang membatalkan bid saat giliran tiba tanpa konfirmasi sebelumnya akan dikenakan sanksi timeout antrian selama 2 minggu.",
+        "Pastikan kecukupan Zeny atau alokasi DKP sebelum mendaftarkan diri pada antrian lelang."
+      ]),
+    },
+  ];
+
+  for (const rule of defaultRules) {
+    await sql`
+      INSERT INTO auction_rules (id, title, sort_order, lines)
+      VALUES (${rule.id}, ${rule.title}, ${rule.sort_order}, ${rule.lines}::jsonb)
+      ON CONFLICT (id) DO NOTHING;
+    `;
+  }
+
+  // Seed a sample winner
+  await sql`
+    INSERT INTO auction_winners (id, item_title, nickname, note, won_at)
+    VALUES (
+      'win-sample-1',
+      'Dracula (Facewear)',
+      'LordCommander',
+      'Weekly Guild Raid',
+      NOW() - INTERVAL '3 days'
+    )
+    ON CONFLICT (id) DO NOTHING;
+  `;
 }
 
 /**

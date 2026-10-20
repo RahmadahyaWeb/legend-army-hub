@@ -129,3 +129,73 @@ CREATE INDEX IF NOT EXISTS idx_vc_registrations_guild ON valkyrie_cup_registrati
 CREATE INDEX IF NOT EXISTS idx_vc_registrations_user_id ON valkyrie_cup_registrations(user_id);
 CREATE INDEX IF NOT EXISTS idx_vc_members_reg_id ON valkyrie_cup_members(valkyrie_cup_registration_id);
 
+-- Auction / Arena Bid Tables
+-- Why this exists:
+-- Persists guild auction items, ordered queue slots, public signup requests,
+-- winner records, and procedural rules for the live Arena Bid feature.
+
+CREATE TABLE IF NOT EXISTS auction_items (
+  id VARCHAR(64) PRIMARY KEY,
+  category VARCHAR(32) NOT NULL DEFAULT 'card',
+  title VARCHAR(255) NOT NULL,
+  hint VARCHAR(255) DEFAULT '',
+  image_url VARCHAR(255) DEFAULT '',
+  sort_order INT DEFAULT 0,
+  is_active BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS auction_slots (
+  id VARCHAR(64) PRIMARY KEY,
+  item_id VARCHAR(64) NOT NULL REFERENCES auction_items(id) ON DELETE CASCADE,
+  slot_number INT NOT NULL,
+  nickname VARCHAR(128) NOT NULL,
+  discord_tag VARCHAR(128) DEFAULT '',
+  level INT DEFAULT 100,
+  note VARCHAR(255) DEFAULT '',
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  CONSTRAINT uq_auction_item_slot UNIQUE (item_id, slot_number)
+);
+
+CREATE TABLE IF NOT EXISTS auction_signups (
+  id VARCHAR(64) PRIMARY KEY,
+  item_id VARCHAR(64) REFERENCES auction_items(id) ON DELETE SET NULL,
+  item_title VARCHAR(255) NOT NULL,
+  nickname VARCHAR(128) NOT NULL,
+  discord_tag VARCHAR(128) NOT NULL,
+  level INT DEFAULT 100,
+  quantity INT DEFAULT 1,
+  status VARCHAR(32) DEFAULT 'pending',
+  admin_notes TEXT DEFAULT '',
+  assigned_slot INT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  CONSTRAINT chk_auction_signup_status CHECK (status IN ('pending', 'approved', 'rejected'))
+);
+
+CREATE TABLE IF NOT EXISTS auction_winners (
+  id VARCHAR(64) PRIMARY KEY,
+  item_id VARCHAR(64) REFERENCES auction_items(id) ON DELETE SET NULL,
+  item_title VARCHAR(255) NOT NULL,
+  nickname VARCHAR(128) NOT NULL,
+  note VARCHAR(255) DEFAULT '',
+  won_at TIMESTAMPTZ DEFAULT NOW(),
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS auction_rules (
+  id VARCHAR(64) PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  lines JSONB NOT NULL DEFAULT '[]',
+  sort_order INT DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_auction_items_category ON auction_items(category);
+CREATE INDEX IF NOT EXISTS idx_auction_slots_item_id ON auction_slots(item_id);
+CREATE INDEX IF NOT EXISTS idx_auction_signups_status ON auction_signups(status);
+CREATE INDEX IF NOT EXISTS idx_auction_signups_created_at ON auction_signups(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_auction_winners_won_at ON auction_winners(won_at DESC);
+

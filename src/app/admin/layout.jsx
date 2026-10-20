@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   ExternalLink,
+  Gavel,
   LayoutDashboard,
   LogOut,
   Menu,
@@ -24,6 +25,11 @@ const navigation = [
     href: "/admin",
     icon: LayoutDashboard,
     exact: true,
+  },
+  {
+    name: "Arena Bid",
+    href: "/admin/lelang",
+    icon: Gavel,
   },
   {
     name: "Valkyrie Cup",

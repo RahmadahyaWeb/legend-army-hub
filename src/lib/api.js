@@ -541,3 +541,242 @@ export async function deleteValkyrieRegistration(id) {
   return data;
 }
 
+// ==========================================
+// AUCTION / ARENA BID API CLIENT METHODS
+// ==========================================
+
+/**
+ * Fetches the public live auction board, items, slots, rules, and winners.
+ *
+ * Why this exists:
+ * Powers the public /lelang Arena Bid view with cached read performance.
+ *
+ * @param {boolean} [force=false] - Invalidate local cache
+ * @returns {Promise<Object>} Auction board payload
+ */
+export async function fetchAuctionBoard(force = false) {
+  const cacheKey = "auction_board";
+  if (!force) {
+    const cached = getCached(cacheKey);
+    if (cached) return cached;
+  }
+
+  const res = await fetch("/api/lelang", { cache: "no-store" });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || "Gagal memuat arena bid.");
+  }
+
+  const data = await res.json();
+  setCached(cacheKey, data);
+  return data;
+}
+
+/**
+ * Submits a new member signup for an item bidding queue.
+ *
+ * @param {Object} signupData - { nickname, discordTag, itemTitle, itemId, level, quantity }
+ * @returns {Promise<Object>} Response payload
+ */
+export async function submitAuctionSignup(signupData) {
+  const res = await fetch("/api/lelang/signups", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(signupData),
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(data.error || "Gagal mengirim pendaftaran antrian.");
+  }
+
+  clearCache("auction");
+  return data;
+}
+
+/**
+ * Fetches recent public auction signups.
+ *
+ * @param {number} [limit=15]
+ * @returns {Promise<Array>}
+ */
+export async function fetchPublicAuctionSignups(limit = 15) {
+  const res = await fetch(`/api/lelang/signups?limit=${limit}&_=${Date.now()}`, {
+    cache: "no-store",
+  });
+  if (!res.ok) return [];
+  const data = await res.json().catch(() => ({ signups: [] }));
+  return data.signups || [];
+}
+
+/**
+ * Admin: Fetches complete auction dataset for leadership management.
+ *
+ * @param {Object} [params={}] - { status, search }
+ * @returns {Promise<Object>}
+ */
+export async function fetchAdminAuctionData(params = {}) {
+  const query = new URLSearchParams();
+  if (params.status) query.set("status", params.status);
+  if (params.search) query.set("search", params.search);
+
+  const res = await fetch(`/api/admin/lelang?${query.toString()}`, {
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || "Gagal memuat data admin lelang.");
+  }
+
+  return await res.json();
+}
+
+/**
+ * Admin: Reviews a pending auction signup.
+ *
+ * @param {Object} payload - { signupId, action: 'approve'|'reject', adminNotes, designatedSlot }
+ * @returns {Promise<Object>}
+ */
+export async function reviewAuctionSignup(payload) {
+  const res = await fetch("/api/admin/lelang/signups", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(data.error || "Gagal memproses review pendaftaran.");
+  }
+
+  clearCache("auction");
+  return data;
+}
+
+/**
+ * Admin: Deletes an auction signup.
+ *
+ * @param {string} id - Signup ID
+ * @returns {Promise<Object>}
+ */
+export async function deleteAuctionSignup(id) {
+  const res = await fetch(`/api/admin/lelang/signups?id=${encodeURIComponent(id)}`, {
+    method: "DELETE",
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || "Gagal menghapus pendaftaran.");
+  clearCache("auction");
+  return data;
+}
+
+/**
+ * Admin: Saves or updates a queue slot.
+ *
+ * @param {Object} slotData - { itemId, slotNumber, nickname, discordTag, level, note }
+ * @returns {Promise<Object>}
+ */
+export async function saveAuctionSlot(slotData) {
+  const res = await fetch("/api/admin/lelang/slots", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(slotData),
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || "Gagal menyimpan slot.");
+  clearCache("auction");
+  return data;
+}
+
+/**
+ * Admin: Vacates or removes a queue slot.
+ *
+ * @param {Object} params - { id } or { itemId, slotNumber }
+ * @returns {Promise<Object>}
+ */
+export async function deleteAuctionSlot(params) {
+  const query = new URLSearchParams(params);
+  const res = await fetch(`/api/admin/lelang/slots?${query.toString()}`, {
+    method: "DELETE",
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || "Gagal mengosongkan slot.");
+  clearCache("auction");
+  return data;
+}
+
+/**
+ * Admin: Saves or updates an auction catalog item.
+ *
+ * @param {Object} itemData - { id, category, title, hint, imageUrl, sortOrder, isActive }
+ * @returns {Promise<Object>}
+ */
+export async function saveAuctionItem(itemData) {
+  const res = await fetch("/api/admin/lelang/items", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(itemData),
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || "Gagal menyimpan item lelang.");
+  clearCache("auction");
+  return data;
+}
+
+/**
+ * Admin: Deletes an auction catalog item.
+ *
+ * @param {string} id - Item ID
+ * @returns {Promise<Object>}
+ */
+export async function deleteAuctionItem(id) {
+  const res = await fetch(`/api/admin/lelang/items?id=${encodeURIComponent(id)}`, {
+    method: "DELETE",
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || "Gagal menghapus item lelang.");
+  clearCache("auction");
+  return data;
+}
+
+/**
+ * Admin: Records an auction winner.
+ *
+ * @param {Object} winnerData - { itemId, itemTitle, nickname, note, wonAt, vacateSlotNumber }
+ * @returns {Promise<Object>}
+ */
+export async function saveAuctionWinner(winnerData) {
+  const res = await fetch("/api/admin/lelang/winners", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(winnerData),
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || "Gagal mencatat pemenang.");
+  clearCache("auction");
+  return data;
+}
+
+/**
+ * Admin: Deletes an auction winner entry.
+ *
+ * @param {string} id - Winner ID
+ * @returns {Promise<Object>}
+ */
+export async function deleteAuctionWinner(id) {
+  const res = await fetch(`/api/admin/lelang/winners?id=${encodeURIComponent(id)}`, {
+    method: "DELETE",
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || "Gagal menghapus data pemenang.");
+  clearCache("auction");
+  return data;
+}
+
