@@ -73,6 +73,12 @@ export default function LoginPage() {
 
       if (typeof window !== "undefined") {
         localStorage.setItem("la_auth", JSON.stringify(data.user));
+        try {
+          const token = btoa(JSON.stringify({ ...data.user, loginAt: Date.now() }));
+          document.cookie = `la_session=${token}; path=/; max-age=604800; SameSite=Lax`;
+        } catch {
+          // Ignore
+        }
       }
 
       router.replace("/admin");

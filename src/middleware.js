@@ -2,15 +2,22 @@ import { NextResponse } from "next/server";
 
 export function middleware(request) {
   const { pathname } = request.nextUrl;
-  const sessionCookie = request.cookies.get("la_session")?.value;
+  let sessionCookie = request.cookies.get("la_session")?.value;
+
+  if (!sessionCookie) {
+    const rawCookie = request.headers.get("cookie") || "";
+    const match = rawCookie.match(/(?:^|;\s*)la_session=([^;]+)/);
+    if (match) {
+      sessionCookie = match[1];
+    }
+  }
 
   let isAuthenticated = false;
   if (sessionCookie) {
     try {
-      const decoded = JSON.parse(
-        Buffer.from(sessionCookie, "base64").toString("utf-8")
-      );
-      if (decoded && (decoded.email || decoded.role === "admin")) {
+      const decodedStr = Buffer.from(decodeURIComponent(sessionCookie), "base64").toString("utf-8");
+      const decoded = JSON.parse(decodedStr);
+      if (decoded && (decoded.email || decoded.role === "admin" || decoded.displayName || decoded.id)) {
         isAuthenticated = true;
       }
     } catch {

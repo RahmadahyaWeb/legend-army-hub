@@ -885,6 +885,7 @@ export default function AdminAuctionPage() {
 
       {/* REVIEW SIGNUP MODAL */}
       <Modal
+        open={reviewModalOpen}
         isOpen={reviewModalOpen}
         onClose={() => setReviewModalOpen(false)}
         title={reviewAction === "approve" ? "✔ Persetujuan Pendaftaran" : "✗ Penolakan Pendaftaran"}
@@ -952,6 +953,7 @@ export default function AdminAuctionPage() {
 
       {/* ITEM CREATE/EDIT MODAL */}
       <Modal
+        open={itemModalOpen}
         isOpen={itemModalOpen}
         onClose={() => setItemModalOpen(false)}
         title={editingItem ? "Edit Item Lelang" : "Tambah Item Lelang Baru"}
@@ -1034,6 +1036,7 @@ export default function AdminAuctionPage() {
 
       {/* SLOT EDIT/ADD MODAL */}
       <Modal
+        open={slotModalOpen}
         isOpen={slotModalOpen}
         onClose={() => setSlotModalOpen(false)}
         title={`Kelola Slot #${slotForm.slotNumber}`}
@@ -1131,6 +1134,7 @@ export default function AdminAuctionPage() {
 
       {/* WINNER LOGGING MODAL */}
       <Modal
+        open={winnerModalOpen}
         isOpen={winnerModalOpen}
         onClose={() => setWinnerModalOpen(false)}
         title="👑 Catat Pemenang Lelang"

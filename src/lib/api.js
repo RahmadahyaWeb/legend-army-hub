@@ -610,6 +610,29 @@ export async function fetchPublicAuctionSignups(limit = 15) {
 }
 
 /**
+ * Extracts and encodes authenticated admin session credentials for API fetch requests.
+ * Why: Some hosting platforms or non-HTTPS dev proxies might drop or strip httpOnly cookies
+ * during client-side transitions; providing a fallback Bearer token ensures authenticated admin
+ * mutations succeed without session dropping.
+ *
+ * @returns {Record<string, string>} Authorization headers if admin auth is stored locally
+ */
+function getAuthHeaders() {
+  const headers = {};
+  if (typeof window !== "undefined") {
+    const localAuth = localStorage.getItem("la_auth");
+    if (localAuth) {
+      try {
+        headers["Authorization"] = `Bearer ${btoa(localAuth)}`;
+      } catch {
+        // Silently skip if btoa fails on non-ASCII characters
+      }
+    }
+  }
+  return headers;
+}
+
+/**
  * Admin: Fetches complete auction dataset for leadership management.
  *
  * @param {Object} [params={}] - { status, search }
@@ -622,6 +645,7 @@ export async function fetchAdminAuctionData(params = {}) {
 
   const res = await fetch(`/api/admin/lelang?${query.toString()}`, {
     cache: "no-store",
+    headers: { ...getAuthHeaders() },
   });
 
   if (!res.ok) {
@@ -641,7 +665,7 @@ export async function fetchAdminAuctionData(params = {}) {
 export async function reviewAuctionSignup(payload) {
   const res = await fetch("/api/admin/lelang/signups", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...getAuthHeaders() },
     body: JSON.stringify(payload),
   });
 
@@ -663,6 +687,7 @@ export async function reviewAuctionSignup(payload) {
 export async function deleteAuctionSignup(id) {
   const res = await fetch(`/api/admin/lelang/signups?id=${encodeURIComponent(id)}`, {
     method: "DELETE",
+    headers: { ...getAuthHeaders() },
   });
 
   const data = await res.json().catch(() => ({}));
@@ -680,7 +705,7 @@ export async function deleteAuctionSignup(id) {
 export async function saveAuctionSlot(slotData) {
   const res = await fetch("/api/admin/lelang/slots", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...getAuthHeaders() },
     body: JSON.stringify(slotData),
   });
 
@@ -700,6 +725,7 @@ export async function deleteAuctionSlot(params) {
   const query = new URLSearchParams(params);
   const res = await fetch(`/api/admin/lelang/slots?${query.toString()}`, {
     method: "DELETE",
+    headers: { ...getAuthHeaders() },
   });
 
   const data = await res.json().catch(() => ({}));
@@ -717,7 +743,7 @@ export async function deleteAuctionSlot(params) {
 export async function saveAuctionItem(itemData) {
   const res = await fetch("/api/admin/lelang/items", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...getAuthHeaders() },
     body: JSON.stringify(itemData),
   });
 
@@ -736,6 +762,7 @@ export async function saveAuctionItem(itemData) {
 export async function deleteAuctionItem(id) {
   const res = await fetch(`/api/admin/lelang/items?id=${encodeURIComponent(id)}`, {
     method: "DELETE",
+    headers: { ...getAuthHeaders() },
   });
 
   const data = await res.json().catch(() => ({}));
@@ -753,7 +780,7 @@ export async function deleteAuctionItem(id) {
 export async function saveAuctionWinner(winnerData) {
   const res = await fetch("/api/admin/lelang/winners", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...getAuthHeaders() },
     body: JSON.stringify(winnerData),
   });
 
@@ -772,6 +799,7 @@ export async function saveAuctionWinner(winnerData) {
 export async function deleteAuctionWinner(id) {
   const res = await fetch(`/api/admin/lelang/winners?id=${encodeURIComponent(id)}`, {
     method: "DELETE",
+    headers: { ...getAuthHeaders() },
   });
 
   const data = await res.json().catch(() => ({}));
@@ -779,4 +807,5 @@ export async function deleteAuctionWinner(id) {
   clearCache("auction");
   return data;
 }
+
 

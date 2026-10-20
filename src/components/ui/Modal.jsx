@@ -25,6 +25,7 @@ import { X } from "lucide-react";
  */
 export default function Modal({
   open,
+  isOpen,
   onClose,
   title,
   description,
@@ -34,19 +35,21 @@ export default function Modal({
   footer,
   className = "",
 }) {
+  const isVisible = Boolean(open ?? isOpen);
+
   // Lock body scroll when modal is open
   useEffect(() => {
-    if (!open) return undefined;
+    if (!isVisible) return undefined;
     const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = originalOverflow;
     };
-  }, [open]);
+  }, [isVisible]);
 
   // Handle Escape key
   useEffect(() => {
-    if (!open) return undefined;
+    if (!isVisible) return undefined;
     const handleKeyDown = (event) => {
       if (event.key === "Escape") {
         onClose?.();
@@ -54,9 +57,9 @@ export default function Modal({
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [open, onClose]);
+  }, [isVisible, onClose]);
 
-  if (!open) return null;
+  if (!isVisible) return null;
 
   const sizeClasses = {
     sm: "max-w-md",

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import crypto from "crypto";
-import { getDb } from "@/lib/db";
+import { getDb, initDatabase } from "@/lib/db";
 
 /**
  * Public Auction Signups Handler
@@ -63,6 +63,12 @@ export async function POST(request) {
         { error: "Database connection not configured." },
         { status: 500 }
       );
+    }
+
+    try {
+      await sql`SELECT 1 FROM auction_signups LIMIT 1;`;
+    } catch {
+      await initDatabase();
     }
 
     const body = await request.json();

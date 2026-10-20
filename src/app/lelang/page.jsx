@@ -143,7 +143,8 @@ export default function PublicAuctionPage() {
   const openJoinModal = (itemTitle = "") => {
     setFormNick("");
     setFormDiscord("");
-    setFormItem(itemTitle || (boardData.items[0]?.title || ""));
+    const defaultItem = itemTitle || boardData.items[0]?.title || "";
+    setFormItem(defaultItem);
     setFormLevel("100");
     setFormQty(1);
     setFormErr("");
@@ -158,6 +159,8 @@ export default function PublicAuctionPage() {
     e.preventDefault();
     setFormErr("");
 
+    const activeItem = formItem || boardData.items[0]?.title;
+
     if (!formNick.trim() || formNick.trim().length < 2) {
       setFormErr("In-game Name wajib diisi (minimal 2 huruf).");
       return;
@@ -168,25 +171,28 @@ export default function PublicAuctionPage() {
       return;
     }
 
-    if (!formItem) {
+    if (!activeItem) {
       setFormErr("Silakan pilih item yang ingin dibid.");
       return;
     }
 
     setSubmitting(true);
     try {
-      const selectedObj = boardData.items.find((i) => i.title === formItem);
+      const selectedObj = boardData.items.find((i) => i.title === activeItem);
       await submitAuctionSignup({
         nickname: formNick.trim(),
         discordTag: formDiscord.trim(),
-        itemTitle: formItem,
+        itemTitle: activeItem,
         itemId: selectedObj?.id || null,
         level: parseInt(formLevel, 10) || 100,
         quantity: Math.max(1, parseInt(formQty, 10) || 1),
       });
 
       setModalOpen(false);
-      success(`Pendaftaran antrian terkirim! ${formNick} → ${formItem}. Menunggu konfirmasi admin.`);
+      success(
+        "Pendaftaran Terkirim!",
+        `${formNick} → ${activeItem}. Menunggu konfirmasi admin.`
+      );
       loadData(true);
     } catch (err) {
       setFormErr(err.message || "Gagal mengirim pendaftaran.");
@@ -784,6 +790,7 @@ export default function PublicAuctionPage() {
 
       {/* MODAL: JOIN BID QUEUE */}
       <Modal
+        open={modalOpen}
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         title="⚔ JOIN BID QUEUE"
@@ -806,6 +813,9 @@ export default function PublicAuctionPage() {
               onChange={(e) => setFormItem(e.target.value)}
               required
             >
+              {boardData.items.length === 0 && (
+                <option value="">Memuat item...</option>
+              )}
               <optgroup label="🃏 CARD DROP">
                 {boardData.items
                   .filter((i) => i.category === "card")
@@ -824,6 +834,17 @@ export default function PublicAuctionPage() {
                     </option>
                   ))}
               </optgroup>
+              {boardData.items.filter((i) => i.category !== "card" && i.category !== "gear").length > 0 && (
+                <optgroup label="🔮 ITEM LAINNYA">
+                  {boardData.items
+                    .filter((i) => i.category !== "card" && i.category !== "gear")
+                    .map((i) => (
+                      <option key={i.id} value={i.title}>
+                        {i.title}
+                      </option>
+                    ))}
+                </optgroup>
+              )}
             </Select>
           </div>
 

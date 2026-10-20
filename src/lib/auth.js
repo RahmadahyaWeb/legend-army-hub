@@ -17,18 +17,37 @@ export async function getSessionUser(request) {
 
     if (request && typeof request.cookies?.get === "function") {
       sessionCookie = request.cookies.get("la_session")?.value;
-    } else {
-      const cookieStore = await cookies();
-      sessionCookie = cookieStore.get("la_session")?.value;
+    }
+
+    if (!sessionCookie) {
+      try {
+        const cookieStore = await cookies();
+        sessionCookie = cookieStore.get("la_session")?.value;
+      } catch {
+        // Ignored if outside request context
+      }
+    }
+
+    // Fallback: check raw Cookie header or Authorization Bearer header
+    if (!sessionCookie && request && typeof request.headers?.get === "function") {
+      const rawCookie = request.headers.get("cookie") || "";
+      const match = rawCookie.match(/(?:^|;\s*)la_session=([^;]+)/);
+      if (match) {
+        sessionCookie = match[1];
+      } else {
+        const authHeader = request.headers.get("authorization");
+        if (authHeader && authHeader.startsWith("Bearer ")) {
+          sessionCookie = authHeader.slice(7).trim();
+        }
+      }
     }
 
     if (!sessionCookie) return null;
 
-    const decoded = JSON.parse(
-      Buffer.from(sessionCookie, "base64").toString("utf-8")
-    );
+    const decodedStr = Buffer.from(decodeURIComponent(sessionCookie), "base64").toString("utf-8");
+    const decoded = JSON.parse(decodedStr);
 
-    if (decoded && (decoded.role === "admin" || decoded.email)) {
+    if (decoded && (decoded.role === "admin" || decoded.email || decoded.displayName)) {
       return decoded;
     }
 

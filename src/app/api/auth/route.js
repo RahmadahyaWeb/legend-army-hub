@@ -107,6 +107,11 @@ export async function POST(request) {
       );
     }
 
+    const isHttps =
+      request.headers.get("x-forwarded-proto") === "https" ||
+      request.url?.startsWith("https://");
+    const isProductionHttps = process.env.NODE_ENV === "production" && isHttps;
+
     const cookieStore = await cookies();
     const sessionToken = Buffer.from(
       JSON.stringify({
@@ -115,18 +120,24 @@ export async function POST(request) {
       })
     ).toString("base64");
 
-    cookieStore.set("la_session", sessionToken, {
+    const cookieOptions = {
       httpOnly: false,
-      secure: process.env.NODE_ENV === "production",
+      secure: isProductionHttps,
       sameSite: "lax",
       maxAge: 60 * 60 * 24 * 7, // 7 days
       path: "/",
-    });
+    };
 
-    return NextResponse.json({
+    cookieStore.set("la_session", sessionToken, cookieOptions);
+
+    const response = NextResponse.json({
       success: true,
       user: authenticatedUser,
     });
+
+    response.cookies.set("la_session", sessionToken, cookieOptions);
+
+    return response;
   } catch (error) {
     console.error("POST /api/auth error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });

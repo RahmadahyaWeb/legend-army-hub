@@ -152,9 +152,21 @@ export default function AdminLayout({ children }) {
   useEffect(() => {
     const checkAuth = async () => {
       try {
+        const localAuth = typeof window !== "undefined" && localStorage.getItem("la_auth");
+
+        // Keep document.cookie in sync with localAuth so server middleware never redirects authenticated admins
+        if (localAuth && typeof document !== "undefined" && !document.cookie.includes("la_session=")) {
+          try {
+            const user = JSON.parse(localAuth);
+            const token = btoa(JSON.stringify({ ...user, loginAt: Date.now() }));
+            document.cookie = `la_session=${token}; path=/; max-age=604800; SameSite=Lax`;
+          } catch {
+            // Ignore
+          }
+        }
+
         const res = await fetch("/api/auth");
         const data = await res.json();
-        const localAuth = typeof window !== "undefined" && localStorage.getItem("la_auth");
         if (!data.authenticated && !localAuth) {
           router.replace("/login");
           return;
