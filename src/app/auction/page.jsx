@@ -269,7 +269,7 @@ export default function PublicAuctionPage() {
               </Button>
             </Link>
 
-            <Link href="/admin/lelang">
+            <Link href="/admin/auction">
               <Button variant="outline" size="xs" icon={Gavel}>
                 Auction Admin
               </Button>

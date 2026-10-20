@@ -86,7 +86,7 @@ export async function POST(request) {
       winnerId,
     });
   } catch (err) {
-    console.error("POST /api/admin/lelang/winners error:", err);
+    console.error("POST /api/admin/auction/winners error:", err);
     return NextResponse.json(
       { error: err.message || "Failed to record auction winner." },
       { status: 500 }
@@ -130,7 +130,7 @@ export async function DELETE(request) {
       message: "Auction winner record deleted successfully.",
     });
   } catch (err) {
-    console.error("DELETE /api/admin/lelang/winners error:", err);
+    console.error("DELETE /api/admin/auction/winners error:", err);
     return NextResponse.json(
       { error: err.message || "Failed to delete winner record." },
       { status: 500 }

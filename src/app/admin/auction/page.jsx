@@ -353,7 +353,7 @@ export default function AdminAuctionPage() {
               Command Console
             </span>
             <Link
-              href="/lelang"
+              href="/auction"
               target="_blank"
               className="inline-flex items-center gap-1 text-xs text-zinc-500 hover:text-brand-600 font-mono"
             >

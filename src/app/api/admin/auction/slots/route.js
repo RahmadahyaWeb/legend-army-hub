@@ -69,7 +69,7 @@ export async function POST(request) {
       message: `Slot #${slotNumber} updated successfully for ${nickname.trim()}.`,
     });
   } catch (err) {
-    console.error("POST /api/admin/lelang/slots error:", err);
+    console.error("POST /api/admin/auction/slots error:", err);
     return NextResponse.json(
       { error: err.message || "Failed to update queue slot." },
       { status: 500 }
@@ -120,7 +120,7 @@ export async function DELETE(request) {
       message: "Queue slot vacated successfully.",
     });
   } catch (err) {
-    console.error("DELETE /api/admin/lelang/slots error:", err);
+    console.error("DELETE /api/admin/auction/slots error:", err);
     return NextResponse.json(
       { error: err.message || "Failed to vacate queue slot." },
       { status: 500 }

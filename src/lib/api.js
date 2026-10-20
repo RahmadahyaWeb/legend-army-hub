@@ -549,7 +549,7 @@ export async function deleteValkyrieRegistration(id) {
  * Fetches the public live auction board, items, slots, rules, and winners.
  *
  * Why this exists:
- * Powers the public /lelang Arena Bid view with cached read performance.
+ * Powers the public /auction Arena Bid view with cached read performance.
  *
  * @param {boolean} [force=false] - Invalidate local cache
  * @returns {Promise<Object>} Auction board payload
@@ -561,7 +561,7 @@ export async function fetchAuctionBoard(force = false) {
     if (cached) return cached;
   }
 
-  const res = await fetch("/api/lelang", { cache: "no-store" });
+  const res = await fetch("/api/auction", { cache: "no-store" });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     throw new Error(err.error || "Failed to load auction board.");
@@ -579,7 +579,7 @@ export async function fetchAuctionBoard(force = false) {
  * @returns {Promise<Object>} Response payload
  */
 export async function submitAuctionSignup(signupData) {
-  const res = await fetch("/api/lelang/signups", {
+  const res = await fetch("/api/auction/signups", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(signupData),
@@ -601,7 +601,7 @@ export async function submitAuctionSignup(signupData) {
  * @returns {Promise<Array>}
  */
 export async function fetchPublicAuctionSignups(limit = 15) {
-  const res = await fetch(`/api/lelang/signups?limit=${limit}&_=${Date.now()}`, {
+  const res = await fetch(`/api/auction/signups?limit=${limit}&_=${Date.now()}`, {
     cache: "no-store",
   });
   if (!res.ok) return [];
@@ -643,7 +643,7 @@ export async function fetchAdminAuctionData(params = {}) {
   if (params.status) query.set("status", params.status);
   if (params.search) query.set("search", params.search);
 
-  const res = await fetch(`/api/admin/lelang?${query.toString()}`, {
+  const res = await fetch(`/api/admin/auction?${query.toString()}`, {
     cache: "no-store",
     headers: { ...getAuthHeaders() },
   });
@@ -663,7 +663,7 @@ export async function fetchAdminAuctionData(params = {}) {
  * @returns {Promise<Object>}
  */
 export async function reviewAuctionSignup(payload) {
-  const res = await fetch("/api/admin/lelang/signups", {
+  const res = await fetch("/api/admin/auction/signups", {
     method: "POST",
     headers: { "Content-Type": "application/json", ...getAuthHeaders() },
     body: JSON.stringify(payload),
@@ -685,7 +685,7 @@ export async function reviewAuctionSignup(payload) {
  * @returns {Promise<Object>}
  */
 export async function deleteAuctionSignup(id) {
-  const res = await fetch(`/api/admin/lelang/signups?id=${encodeURIComponent(id)}`, {
+  const res = await fetch(`/api/admin/auction/signups?id=${encodeURIComponent(id)}`, {
     method: "DELETE",
     headers: { ...getAuthHeaders() },
   });
@@ -703,7 +703,7 @@ export async function deleteAuctionSignup(id) {
  * @returns {Promise<Object>}
  */
 export async function saveAuctionSlot(slotData) {
-  const res = await fetch("/api/admin/lelang/slots", {
+  const res = await fetch("/api/admin/auction/slots", {
     method: "POST",
     headers: { "Content-Type": "application/json", ...getAuthHeaders() },
     body: JSON.stringify(slotData),
@@ -723,7 +723,7 @@ export async function saveAuctionSlot(slotData) {
  */
 export async function deleteAuctionSlot(params) {
   const query = new URLSearchParams(params);
-  const res = await fetch(`/api/admin/lelang/slots?${query.toString()}`, {
+  const res = await fetch(`/api/admin/auction/slots?${query.toString()}`, {
     method: "DELETE",
     headers: { ...getAuthHeaders() },
   });
@@ -741,7 +741,7 @@ export async function deleteAuctionSlot(params) {
  * @returns {Promise<Object>}
  */
 export async function saveAuctionItem(itemData) {
-  const res = await fetch("/api/admin/lelang/items", {
+  const res = await fetch("/api/admin/auction/items", {
     method: "POST",
     headers: { "Content-Type": "application/json", ...getAuthHeaders() },
     body: JSON.stringify(itemData),
@@ -760,7 +760,7 @@ export async function saveAuctionItem(itemData) {
  * @returns {Promise<Object>}
  */
 export async function deleteAuctionItem(id) {
-  const res = await fetch(`/api/admin/lelang/items?id=${encodeURIComponent(id)}`, {
+  const res = await fetch(`/api/admin/auction/items?id=${encodeURIComponent(id)}`, {
     method: "DELETE",
     headers: { ...getAuthHeaders() },
   });
@@ -778,7 +778,7 @@ export async function deleteAuctionItem(id) {
  * @returns {Promise<Object>}
  */
 export async function saveAuctionWinner(winnerData) {
-  const res = await fetch("/api/admin/lelang/winners", {
+  const res = await fetch("/api/admin/auction/winners", {
     method: "POST",
     headers: { "Content-Type": "application/json", ...getAuthHeaders() },
     body: JSON.stringify(winnerData),
@@ -797,7 +797,7 @@ export async function saveAuctionWinner(winnerData) {
  * @returns {Promise<Object>}
  */
 export async function deleteAuctionWinner(id) {
-  const res = await fetch(`/api/admin/lelang/winners?id=${encodeURIComponent(id)}`, {
+  const res = await fetch(`/api/admin/auction/winners?id=${encodeURIComponent(id)}`, {
     method: "DELETE",
     headers: { ...getAuthHeaders() },
   });

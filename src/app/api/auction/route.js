@@ -101,7 +101,7 @@ export async function GET() {
       },
     });
   } catch (err) {
-    console.error("GET /api/lelang error:", err);
+    console.error("GET /api/auction error:", err);
     return NextResponse.json(
       { error: err.message || "Failed to fetch auction board." },
       { status: 500 }

@@ -41,7 +41,7 @@ export async function GET(request) {
       signups,
     });
   } catch (err) {
-    console.error("GET /api/lelang/signups error:", err);
+    console.error("GET /api/auction/signups error:", err);
     return NextResponse.json(
       { error: "Failed to fetch signups." },
       { status: 500 }
@@ -136,7 +136,7 @@ export async function POST(request) {
       signupId,
     });
   } catch (err) {
-    console.error("POST /api/lelang/signups error:", err);
+    console.error("POST /api/auction/signups error:", err);
     return NextResponse.json(
       { error: err.message || "Failed to submit queue registration." },
       { status: 500 }

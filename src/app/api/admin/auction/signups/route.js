@@ -152,7 +152,7 @@ export async function POST(request) {
       { status: 400 }
     );
   } catch (err) {
-    console.error("POST /api/admin/lelang/signups error:", err);
+    console.error("POST /api/admin/auction/signups error:", err);
     return NextResponse.json(
       { error: err.message || "Failed to process registration." },
       { status: 500 }
@@ -199,7 +199,7 @@ export async function DELETE(request) {
       message: "Registration deleted successfully.",
     });
   } catch (err) {
-    console.error("DELETE /api/admin/lelang/signups error:", err);
+    console.error("DELETE /api/admin/auction/signups error:", err);
     return NextResponse.json(
       { error: err.message || "Failed to delete registration." },
       { status: 500 }

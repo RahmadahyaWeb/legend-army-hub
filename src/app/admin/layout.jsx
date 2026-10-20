@@ -28,7 +28,7 @@ const navigation = [
   },
   {
     name: "Auction Arena",
-    href: "/admin/lelang",
+    href: "/admin/auction",
     icon: Gavel,
   },
   {

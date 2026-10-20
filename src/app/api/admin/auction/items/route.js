@@ -79,7 +79,7 @@ export async function POST(request) {
       itemId,
     });
   } catch (err) {
-    console.error("POST /api/admin/lelang/items error:", err);
+    console.error("POST /api/admin/auction/items error:", err);
     return NextResponse.json(
       { error: err.message || "Failed to save auction item." },
       { status: 500 }
@@ -123,7 +123,7 @@ export async function DELETE(request) {
       message: "Auction item deleted successfully.",
     });
   } catch (err) {
-    console.error("DELETE /api/admin/lelang/items error:", err);
+    console.error("DELETE /api/admin/auction/items error:", err);
     return NextResponse.json(
       { error: err.message || "Failed to delete auction item." },
       { status: 500 }

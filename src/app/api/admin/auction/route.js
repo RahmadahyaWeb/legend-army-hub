@@ -128,7 +128,7 @@ export async function GET(request) {
       },
     });
   } catch (err) {
-    console.error("GET /api/admin/lelang error:", err);
+    console.error("GET /api/admin/auction error:", err);
     return NextResponse.json(
       { error: err.message || "Failed to fetch admin auction data." },
       { status: 500 }
